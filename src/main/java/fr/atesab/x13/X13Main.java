@@ -69,17 +69,14 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 
 	private double oldGama;
 	private boolean xrayEnable = false;
+	private boolean redstoneEnable = false;
 	private boolean caveEnable = false;
-
 	private boolean fullBrightEnable = false;
-
 	private boolean showLocation = true;
+	private String defaultXrayBlocks, defaultCaveBlocks, defaultRedstoneBlocks;
+	private List<Block> xrayBlocks, caveBlocks, redstoneBlocks;
 
-	private List<Block> xrayBlocks;
-
-	private List<Block> caveBlocks;
-
-	private KeyBinding xray, cave, fullbright, config;
+	private KeyBinding xray, cave, redstone, fullbright, config;
 
 	public X13Main() {
 		instance = this;
@@ -90,16 +87,21 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 	}
 
 	public void cave(boolean enable) {
+		cave(enable, true);
+	}
+
+	public void cave(boolean enable, boolean reloadRenderers) {
 		caveEnable = enable;
 		Minecraft mc = Minecraft.getMinecraft();
-		if (!(xrayEnable || fullBrightEnable)) {
+		if (!(xrayEnable || fullBrightEnable || redstoneEnable)) {
 			if (enable) {
 				oldGama = mc.gameSettings.gammaSetting;
 				mc.gameSettings.gammaSetting = 30;
 			} else
 				mc.gameSettings.gammaSetting = oldGama;
 		}
-		mc.renderGlobal.loadRenderers();
+		if (reloadRenderers)
+			reloadRenderers();
 	}
 
 	public void fullBright() {
@@ -108,7 +110,7 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 
 	public void fullBright(boolean enable) {
 		fullBrightEnable = enable;
-		if (!(xrayEnable || caveEnable)) {
+		if (!(xrayEnable || caveEnable || redstoneEnable)) {
 			Minecraft mc = Minecraft.getMinecraft();
 			if (enable) {
 				oldGama = mc.gameSettings.gammaSetting;
@@ -122,6 +124,10 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 		return caveBlocks;
 	}
 
+	public List<Block> getRedstoneBlocks() {
+		return redstoneBlocks;
+	}
+
 	public File getSaveFile() {
 		return new File(Minecraft.getMinecraft().gameDir, "xray.json");
 	}
@@ -130,22 +136,56 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 		return xrayBlocks;
 	}
 
+	public String getDefaultCaveBlocks() {
+		return defaultCaveBlocks;
+	}
+
+	public String getDefaultRedstoneBlocks() {
+		return defaultRedstoneBlocks;
+	}
+
+	public String getDefaultXrayBlocks() {
+		return defaultXrayBlocks;
+	}
+
 	public void init() {
 		log("Initialisation");
 		Minecraft mc = Minecraft.getMinecraft();
 		mc.gameSettings.keyBindings = ArrayUtils.addAll(mc.gameSettings.keyBindings,
 				xray = new KeyBinding("x13.mod.xray", 88, "key.categories.misc"), // X
 				cave = new KeyBinding("x13.mod.cave", 67, "key.categories.misc"), // C
-				fullbright = new KeyBinding("x13.mod.fullbright", 72, "key.categories.misc"),
+				fullbright = new KeyBinding("x13.mod.fullbright", 72, "key.categories.misc"), // H
+				redstone = new KeyBinding("x13.mod.redstone", 82, "key.categories.misc"), // R
 				config = new KeyBinding("x13.mod.config", 78, "key.categories.misc")); // N
 		mc.gameSettings.loadOptions();
-		caveBlocks = Lists.newArrayList(Blocks.DIRT, Blocks.GRASS, Blocks.GRAVEL, Blocks.GRASS_BLOCK, Blocks.GRASS_PATH,
-				Blocks.SAND, Blocks.SANDSTONE, Blocks.RED_SAND);
-		xrayBlocks = Lists.newArrayList(Blocks.IRON_ORE, Blocks.COAL_ORE, Blocks.DIAMOND_ORE, Blocks.GOLD_ORE,
-				Blocks.EMERALD_ORE, Blocks.REDSTONE_ORE, Blocks.OBSIDIAN, Blocks.DIAMOND_BLOCK, Blocks.IRON_ORE,
-				Blocks.GOLD_BLOCK, Blocks.EMERALD_BLOCK, Blocks.END_PORTAL, Blocks.END_PORTAL_FRAME, Blocks.PORTAL,
-				Blocks.BEACON, Blocks.MOB_SPAWNER, Blocks.BOOKSHELF, Blocks.LAVA, Blocks.WATER, Blocks.NETHER_WART,
-				Blocks.BLUE_ICE, Blocks.DRAGON_WALL_HEAD, Blocks.DRAGON_HEAD, Blocks.DRAGON_EGG);
+		defaultXrayBlocks = getBlocksNames(xrayBlocks = Lists.newArrayList(Blocks.IRON_ORE, Blocks.COAL_ORE,
+				Blocks.DIAMOND_ORE, Blocks.GOLD_ORE, Blocks.EMERALD_ORE, Blocks.REDSTONE_ORE, Blocks.OBSIDIAN,
+				Blocks.DIAMOND_BLOCK, Blocks.IRON_ORE, Blocks.GOLD_BLOCK, Blocks.EMERALD_BLOCK, Blocks.END_PORTAL,
+				Blocks.END_PORTAL_FRAME, Blocks.PORTAL, Blocks.BEACON, Blocks.MOB_SPAWNER, Blocks.BOOKSHELF,
+				Blocks.LAVA, Blocks.WATER, Blocks.NETHER_WART, Blocks.BLUE_ICE, Blocks.DRAGON_WALL_HEAD,
+				Blocks.DRAGON_HEAD, Blocks.DRAGON_EGG, Blocks.NETHER_QUARTZ_ORE, Blocks.CHEST, Blocks.TRAPPED_CHEST,
+				Blocks.DISPENSER, Blocks.DROPPER, Blocks.LAPIS_ORE, Blocks.LAPIS_BLOCK, Blocks.TNT, Blocks.CLAY,
+				Blocks.WET_SPONGE, Blocks.SPONGE, Blocks.OAK_PLANKS, Blocks.CONDUIT, Blocks.ENDER_CHEST))
+						.collect(Collectors.joining(" "));
+		defaultCaveBlocks = getBlocksNames(caveBlocks = Lists.newArrayList(Blocks.DIRT, Blocks.GRASS, Blocks.GRAVEL,
+				Blocks.GRASS_BLOCK, Blocks.GRASS_PATH, Blocks.SAND, Blocks.SANDSTONE, Blocks.RED_SAND))
+						.collect(Collectors.joining(" "));
+		defaultRedstoneBlocks = getBlocksNames(redstoneBlocks = Lists.newArrayList(Blocks.REDSTONE_BLOCK,
+				Blocks.REDSTONE_LAMP, Blocks.REDSTONE_ORE, Blocks.REDSTONE_TORCH, Blocks.REDSTONE_WALL_TORCH,
+				Blocks.REDSTONE_WIRE, Blocks.REPEATER, Blocks.REPEATING_COMMAND_BLOCK, Blocks.COMMAND_BLOCK,
+				Blocks.CHAIN_COMMAND_BLOCK, Blocks.COMPARATOR, Blocks.ANVIL, Blocks.CHEST, Blocks.TRAPPED_CHEST,
+				Blocks.DROPPER, Blocks.DISPENSER, Blocks.HOPPER, Blocks.OBSERVER, Blocks.DRAGON_HEAD,
+				Blocks.DRAGON_WALL_HEAD, Blocks.IRON_DOOR, Blocks.ACACIA_DOOR, Blocks.BIRCH_DOOR, Blocks.DARK_OAK_DOOR,
+				Blocks.JUNGLE_DOOR, Blocks.OAK_DOOR, Blocks.SPRUCE_DOOR, Blocks.ACACIA_BUTTON, Blocks.BIRCH_BUTTON,
+				Blocks.DARK_OAK_BUTTON, Blocks.JUNGLE_BUTTON, Blocks.OAK_BUTTON, Blocks.SPRUCE_BUTTON,
+				Blocks.STONE_BUTTON, Blocks.LEVER, Blocks.TNT, Blocks.PISTON, Blocks.PISTON_HEAD, Blocks.MOVING_PISTON,
+				Blocks.STICKY_PISTON, Blocks.NOTE_BLOCK, Blocks.DAYLIGHT_DETECTOR, Blocks.IRON_TRAPDOOR,
+				Blocks.ACACIA_TRAPDOOR, Blocks.BIRCH_TRAPDOOR, Blocks.DARK_OAK_TRAPDOOR, Blocks.JUNGLE_TRAPDOOR,
+				Blocks.OAK_TRAPDOOR, Blocks.SPRUCE_TRAPDOOR, Blocks.ACACIA_PRESSURE_PLATE, Blocks.BIRCH_PRESSURE_PLATE,
+				Blocks.DARK_OAK_PRESSURE_PLATE, Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.JUNGLE_PRESSURE_PLATE,
+				Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.OAK_PRESSURE_PLATE, Blocks.SPRUCE_PRESSURE_PLATE,
+				Blocks.STONE_PRESSURE_PLATE, Blocks.RAIL, Blocks.ACTIVATOR_RAIL, Blocks.DETECTOR_RAIL,
+				Blocks.POWERED_RAIL, Blocks.ENDER_CHEST)).collect(Collectors.joining(" "));
 		loadConfigs();
 	}
 
@@ -155,6 +195,10 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 
 	public boolean isFullBrightEnable() {
 		return fullBrightEnable;
+	}
+
+	public boolean isRedstoneEnable() {
+		return redstoneEnable;
 	}
 
 	public boolean isShowLocation() {
@@ -170,10 +214,15 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 		try {
 			Map<String, Object> map = new GsonBuilder().create().fromJson(
 					new InputStreamReader(new FileInputStream(getSaveFile()), Charset.forName("UTF-8")), HashMap.class);
-			setConfig(xrayBlocks, ((List<String>) map.getOrDefault("xrayBlocks", Lists.newArrayList())).stream()
-					.toArray(String[]::new));
-			setConfig(caveBlocks, ((List<String>) map.getOrDefault("caveBlocks", Lists.newArrayList())).stream()
-					.toArray(String[]::new));
+			Object xb = map.get("xrayBlocks");
+			if (xb != null)
+				setConfig(xrayBlocks, ((List<String>) xb).stream().toArray(String[]::new));
+			Object cb = map.get("caveBlocks");
+			if (cb != null)
+				setConfig(caveBlocks, ((List<String>) cb).stream().toArray(String[]::new));
+			Object rb = map.get("redstoneBlocks");
+			if (rb != null)
+				setConfig(redstoneBlocks, ((List<String>) rb).stream().toArray(String[]::new));
 			fullBrightEnable = (boolean) map.getOrDefault("fullBright", false);
 			oldGama = (double) map.getOrDefault("oldGama", 0D);
 			showLocation = (boolean) map.getOrDefault("showLocation", true);
@@ -198,25 +247,61 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 	public void processKeybinds() {
 		if (xray.isPressed()) {
 			cave(false);
+			redstone(false);
 			xray();
 		} else if (cave.isPressed()) {
 			xray(false);
+			redstone(false);
 			cave();
+		} else if (redstone.isPressed()) {
+			xray(false);
+			cave(false);
+			redstone();
 		} else if (fullbright.isPressed())
 			fullBright();
 		else if (config.isPressed())
 			Minecraft.getMinecraft().displayGuiScreen(new XrayMenu(null));
 	}
 
+	public void redstone() {
+		redstone(!redstoneEnable);
+	}
+
+	public void redstone(boolean enable) {
+		redstone(enable, true);
+	}
+
+	public void redstone(boolean enable, boolean reloadRenderers) {
+		redstoneEnable = enable;
+		Minecraft mc = Minecraft.getMinecraft();
+		if (!(xrayEnable || fullBrightEnable || caveEnable)) {
+			if (enable) {
+				oldGama = mc.gameSettings.gammaSetting;
+				mc.gameSettings.gammaSetting = 30;
+			} else
+				mc.gameSettings.gammaSetting = oldGama;
+		}
+		if (reloadRenderers)
+			reloadRenderers();
+	}
+
 	public void reloadModules() {
-		xray(isXrayEnable());
-		cave(isCaveEnable());
+		xray(isXrayEnable(), false);
+		cave(isCaveEnable(), false);
+		redstone(isRedstoneEnable(), false);
 		fullBright(isFullBrightEnable());
+		reloadRenderers();
+	}
+
+	private void reloadRenderers() {
+		Minecraft.getMinecraft().renderGlobal.loadRenderers();
 	}
 
 	@Override
 	public void renderOverlay() {
 		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.debugRenderer.shouldRender())
+			return;
 		int c;
 		String s;
 		if (xrayEnable) {
@@ -225,6 +310,9 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 		} else if (caveEnable) {
 			c = 0xffffff00;
 			s = "[" + I18n.format("x13.mod.cave") + "] ";
+		} else if (redstoneEnable) {
+			c = 0xffff0000;
+			s = "[" + I18n.format("x13.mod.redstone") + "] ";
 		} else if (fullBrightEnable) {
 			c = 0xff00ffff;
 			s = "[" + I18n.format("x13.mod.fullbright") + "] ";
@@ -250,6 +338,7 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 					.toJson(Util.acceptAndReturn(Maps.newHashMap(), m -> {
 						m.put("xrayBlocks", getBlocksNames(xrayBlocks).collect(Collectors.toList()));
 						m.put("caveBlocks", getBlocksNames(caveBlocks).collect(Collectors.toList()));
+						m.put("redstoneBlocks", getBlocksNames(redstoneBlocks).collect(Collectors.toList()));
 						m.put("showLocation", showLocation);
 						m.put("oldGama", oldGama);
 						m.put("fullBrightEnable", fullBrightEnable);
@@ -270,9 +359,10 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 		}
 	}
 
-	void setConfig(String xrayData, String caveData) {
+	void setConfig(String xrayData, String caveData, String redstoneData) {
 		setConfig(xrayBlocks, xrayData.split(" "));
 		setConfig(caveBlocks, caveData.split(" "));
+		setConfig(redstoneBlocks, redstoneData.split(" "));
 		saveConfigs();
 	}
 
@@ -285,15 +375,20 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 	}
 
 	public void xray(boolean enable) {
+		xray(enable, true);
+	}
+
+	public void xray(boolean enable, boolean reloadRenderers) {
 		xrayEnable = enable;
 		Minecraft mc = Minecraft.getMinecraft();
-		if (!(caveEnable || fullBrightEnable)) {
+		if (!(caveEnable || fullBrightEnable || redstoneEnable)) {
 			if (enable) {
 				oldGama = mc.gameSettings.gammaSetting;
 				mc.gameSettings.gammaSetting = 30;
 			} else
 				mc.gameSettings.gammaSetting = oldGama;
 		}
-		mc.renderGlobal.loadRenderers();
+		if (reloadRenderers)
+			reloadRenderers();
 	}
 }

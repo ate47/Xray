@@ -1,10 +1,12 @@
 {
-	"x13.mod.xray": "Xray",
-	"x13.mod.cave": "Cave",
+	"x13.mod.xray": "Xray Mode",
+	"x13.mod.cave": "Cave Mode",
+	"x13.mod.redstone": "Redstone Mode",
 	"x13.mod.fullbright": "Fullbright",
-	"x13.mod.config": "Config",
+	"x13.mod.config": "Config Xray",
 	"x13.mod.xray.blocks": "Xray blocks",
 	"x13.mod.cave.blocks": "Cave blocks",
+	"x13.mod.redstone.blocks": "Redstone blocks",
 	"x13.mod.showloc": "Location",
 	"x13.mod.enable": "Enabled"
 }

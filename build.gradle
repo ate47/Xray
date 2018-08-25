@@ -35,7 +35,7 @@ apply plugin: 'java'
 apply plugin: 'org.spongepowered.mixin'
 
 group 'fr.atesab.x13'
-version '1.0'
+version '1.0.1'
 archivesBaseName = 'X13'
 
 sourceCompatibility = 1.8

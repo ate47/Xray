@@ -18,11 +18,13 @@ public class MixinBlock {
 	private static void shouldSideBeRendered(IBlockState state, IBlockReader reader, BlockPos pos, EnumFacing face,
 			CallbackInfoReturnable<Boolean> ci) {
 		X13Main mod = X13Main.getX13();
-		if (mod.isXrayEnable()) {
+		if (mod.isXrayEnable())
 			ci.setReturnValue(mod.getXrayBlocks().contains(state.getBlock()));
-		} else if (mod.isCaveEnable()) {
+		else if (mod.isCaveEnable())
 			ci.setReturnValue(!(mod.getCaveBlocks().contains(state.getBlock()))
 					&& reader.getBlockState(pos.offset(face)).isAir());
-		}
+		else if (mod.isRedstoneEnable())
+			ci.setReturnValue(mod.getRedstoneBlocks().contains(state.getBlock()));
+
 	}
 }
