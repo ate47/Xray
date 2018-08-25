@@ -1,0 +1,10 @@
+{
+	"id": "x13",
+	"name": "x13",
+	"authors": [
+		"ATE47"
+	],
+	"listeners": [
+		"fr.atesab.x13.X13Main"
+	]
+}

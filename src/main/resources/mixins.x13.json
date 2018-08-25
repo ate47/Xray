@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"minVersion": "0.7.7",
+	"compatibilityLevel": "JAVA_8",
+	"target": "@env(DEFAULT)",
+	"package": "fr.atesab.x13.mixin",
+	"refmap": "mixins.x13.refmap.json",
+	"mixins": [
+		"MixinBlock",
+		"MixinMinecraft"
+	]
+}
