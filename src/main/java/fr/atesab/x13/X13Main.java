@@ -240,7 +240,15 @@ public class X13Main implements InitializationListener, KeybindHandler, OverlayR
 	public void onInitialization() {
 		log("Load Mixins...");
 		MixinBootstrap.init();
-		Mixins.addConfiguration("mixins.x13.json");
+		log("Search Optifine...");
+		try {
+			log("Load Mixins for Optifine...");
+			Class.forName("net.optifine.Lang"); // search Optifine
+			Mixins.addConfiguration("mixins.x13.optifine.json");
+		} catch (ClassNotFoundException e) {
+			log("Load Mixins without Optifine...");
+			Mixins.addConfiguration("mixins.x13.json");
+		}
 	}
 
 	@Override
