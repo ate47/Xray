@@ -7,6 +7,7 @@
 	"refmap": "mixins.x13.refmap.json",
 	"mixins": [
 		"MixinBlockUtils",
-		"MixinMinecraft"
+		"MixinMinecraft",
+		"MixinKeyBinding"
 	]
 }
