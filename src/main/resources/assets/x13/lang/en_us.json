@@ -4,9 +4,8 @@
 	"x13.mod.redstone": "Redstone Mode",
 	"x13.mod.fullbright": "Fullbright",
 	"x13.mod.config": "Config Xray",
-	"x13.mod.xray.blocks": "Xray blocks",
-	"x13.mod.cave.blocks": "Cave blocks",
-	"x13.mod.redstone.blocks": "Redstone blocks",
+	"x13.mod.blocks": "%s blocks",
 	"x13.mod.showloc": "Location",
-	"x13.mod.enable": "Enabled"
+	"x13.mod.enable": "Enabled",
+	"key.categories.xray": "Xray"
 }

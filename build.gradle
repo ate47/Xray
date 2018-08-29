@@ -23,19 +23,16 @@ buildscript {
     }
     dependencies {
         classpath 'org.dimdev:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'com.matthewprenger:CurseGradle:1.0-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 
-apply plugin: 'com.matthewprenger.cursegradle'
-//apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 apply plugin: 'java'
 apply plugin: 'org.spongepowered.mixin'
 
 group 'fr.atesab.x13'
-version '1.0.2'
+version '1.0.3'
 archivesBaseName = 'X13'
 
 sourceCompatibility = 1.8

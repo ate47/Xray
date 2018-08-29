@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import fr.atesab.x13.X13Main;
+import fr.atesab.x13.XrayMain;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -16,14 +16,6 @@ public class MixinBlockUtils {
 	@Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
 	private static void shouldSideBeRendered(IBlockState state, IBlockReader reader, BlockPos pos, EnumFacing face,
 			CallbackInfoReturnable<Boolean> ci) {
-		X13Main mod = X13Main.getX13();
-		if (mod.isXrayEnable())
-			ci.setReturnValue(mod.getXrayBlocks().contains(state.getBlock()));
-		else if (mod.isCaveEnable())
-			ci.setReturnValue(!(mod.getCaveBlocks().contains(state.getBlock()))
-					&& reader.getBlockState(pos.offset(face)).isAir());
-		else if (mod.isRedstoneEnable())
-			ci.setReturnValue(mod.getRedstoneBlocks().contains(state.getBlock()));
-
+		XrayMain.getMod().shouldSideBeRendered(state, reader, pos, face, ci);
 	}
 }

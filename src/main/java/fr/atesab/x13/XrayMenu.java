@@ -1,9 +1,9 @@
 package fr.atesab.x13;
 
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 
@@ -36,9 +36,8 @@ public class XrayMenu extends GuiScreen {
 		 * @param setter
 		 *            a function to set the boolean value
 		 */
-		public GuiBooleanButton(int x, int y, int w, int h, String lang, Supplier<Boolean> getter,
-				Consumer<Boolean> setter) {
-			super(0, x, y, w, h, lang);
+		public GuiBooleanButton(String lang, Supplier<Boolean> getter, Consumer<Boolean> setter) {
+			super(0, 0, 0, 130, 20, lang);
 			this.lang = lang;
 			this.getter = getter;
 			this.setter = setter;
@@ -62,36 +61,79 @@ public class XrayMenu extends GuiScreen {
 		}
 	}
 
+	public class XrayModeElement {
+		private GuiTextField field;
+		private String text;
+		private String title;
+		private final boolean oldConfig;
+		private XrayMode mode;
+
+		public XrayModeElement(XrayMode mode) {
+			text = XrayMain.getBlockNamesToString(mode.getBlocks());
+			oldConfig = mode.isEnabled();
+			this.mode = mode;
+			modeElements.add(this);
+		}
+
+		private void cancel() {
+			mode.toggle(oldConfig, false);
+		}
+
+		private void draw(int mouseX, int mouseY, float partialTick) {
+			fontRenderer.drawStringWithShadow(title, width / 2 - 200, field.y - fontRenderer.FONT_HEIGHT / 2 + 9,
+					0xffffffff);
+			field.func_195608_a(mouseX, mouseY, partialTick);
+		}
+
+		private int getSizeX() {
+			return fontRenderer.getStringWidth(title = I18n.format("x13.mod.blocks", mode.getNameTranslate()) + ": ");
+		}
+
+		private void init(int x, int y, int sizeX) {
+			field_195124_j.add(field = new GuiTextField(0, fontRenderer, x, y + 2, 338 - sizeX, 16));
+			addButton(new GuiBooleanButton(mode.getNameTranslate(), mode::isEnabled, mode::toggle));
+			addButton(new GuiButton(3, width / 2 + 150, y, 50, 20, I18n.format("controls.reset")) {
+				@Override
+				public void mouseClicked(double arg0, double arg1) {
+					field.setText(text = mode.getDefaultBlocks());
+					super.mouseClicked(arg0, arg1);
+				}
+			});
+			field.setMaxStringLength(Integer.MAX_VALUE);
+			field.setText(text);
+		}
+
+		private void save() {
+			mode.setConfig(text.split(" "));
+		}
+
+		private void update() {
+			text = field.getText();
+		}
+	}
+
+	private static void setBlock(GuiButton b, int x, int y, int width) {
+		b.x = x;
+		b.y = y;
+		b.setWidth(width);
+	}
+
 	private GuiScreen parent;
-	private GuiTextField xrayBlocks;
-	private GuiTextField caveBlocks;
-	private GuiTextField redstoneBlocks;
-	private String title1;
-	private String title2;
-	private String title3;
-	private String xrayText;
-	private String caveText;
-	private String redstoneText;
-	private X13Main mod;
-	private final boolean oldXrayConfig;
-	private final boolean oldCaveConfig;
-	private final boolean oldRedstoneConfig;
+	private XrayMain mod;
+
 	private final boolean oldFullbrightConfig;
 	private final boolean oldShowLocationConfig;
 
 	private List<GuiBooleanButton> colorButtons = Lists.newArrayList();
 
+	private List<XrayModeElement> modeElements = Lists.newArrayList();
+
 	public XrayMenu(GuiScreen parent) {
 		super();
 		this.parent = parent;
 		fontRenderer = Minecraft.getMinecraft().fontRenderer;
-		this.mod = X13Main.getX13();
-		xrayText = X13Main.getBlocksNames(mod.getXrayBlocks()).collect(Collectors.joining(" "));
-		caveText = X13Main.getBlocksNames(mod.getCaveBlocks()).collect(Collectors.joining(" "));
-		redstoneText = X13Main.getBlocksNames(mod.getRedstoneBlocks()).collect(Collectors.joining(" "));
-		oldXrayConfig = mod.isXrayEnable();
-		oldCaveConfig = mod.isCaveEnable();
-		oldRedstoneConfig = mod.isRedstoneEnable();
+		mod = XrayMain.getMod();
+		mod.getModes().forEach(XrayModeElement::new);
 		oldFullbrightConfig = mod.isFullBrightEnable();
 		oldShowLocationConfig = mod.isShowLocation();
 	}
@@ -102,15 +144,7 @@ public class XrayMenu extends GuiScreen {
 		String s = "Xray 13";
 		fontRenderer.drawStringWithShadow(s, width / 2 - fontRenderer.getStringWidth("Xray 13") / 2, height / 2 - 84,
 				0xffffffff);
-		fontRenderer.drawStringWithShadow(title1, width / 2 - 200, xrayBlocks.y - fontRenderer.FONT_HEIGHT / 2 + 9,
-				0xffffffff);
-		fontRenderer.drawStringWithShadow(title2, width / 2 - 200, caveBlocks.y - fontRenderer.FONT_HEIGHT / 2 + 9,
-				0xffffffff);
-		fontRenderer.drawStringWithShadow(title3, width / 2 - 200, redstoneBlocks.y - fontRenderer.FONT_HEIGHT / 2 + 9,
-				0xffffffff);
-		xrayBlocks.func_195608_a(mouseX, mouseY, partialTick);
-		caveBlocks.func_195608_a(mouseX, mouseY, partialTick);
-		redstoneBlocks.func_195608_a(mouseX, mouseY, partialTick);
+		modeElements.forEach(modeElement -> modeElement.draw(mouseX, mouseY, partialTick));
 		super.drawScreen(mouseX, mouseY, partialTick);
 	}
 
@@ -120,12 +154,8 @@ public class XrayMenu extends GuiScreen {
 		addButton(new GuiButton(0, width / 2 - 200, height / 2, 198, 20, I18n.format("gui.cancel")) {
 			@Override
 			public void mouseClicked(double x, double y) {
-				mod.xray(oldXrayConfig, false);
-				mod.cave(oldCaveConfig, false);
-				mod.redstone(oldRedstoneConfig, false);
-				mod.fullBright(oldFullbrightConfig);
-				mod.setShowLocation(oldShowLocationConfig);
-				mod.reloadModules();
+				modeElements.forEach(XrayModeElement::cancel);
+				mod.fullBright(oldFullbrightConfig).modules().setShowLocation(oldShowLocationConfig);
 				mc.displayGuiScreen(parent);
 				super.mouseClicked(x, y);
 			}
@@ -133,79 +163,49 @@ public class XrayMenu extends GuiScreen {
 		addButton(new GuiButton(0, width / 2 + 2, height / 2, 198, 20, I18n.format("gui.done")) {
 			@Override
 			public void mouseClicked(double x, double y) {
-				mod.setConfig(xrayText, caveText, redstoneText);
+				modeElements.forEach(XrayModeElement::save);
 				mc.displayGuiScreen(parent);
 				super.mouseClicked(x, y);
 			}
 		});
-		addButton(new GuiBooleanButton(width / 2 - 200, height / 2 + 24, 130, 20, "x13.mod.xray", mod::isXrayEnable,
-				b -> {
-					mod.cave(false, false);
-					mod.redstone(false, false);
-					mod.xray();
-				}));
-		addButton(
-				new GuiBooleanButton(width / 2 - 66, height / 2 + 24, 132, 20, "x13.mod.cave", mod::isCaveEnable, b -> {
-					mod.xray(false, false);
-					mod.redstone(false, false);
-					mod.cave();
-				}));
-		addButton(new GuiBooleanButton(width / 2 + 70, height / 2 + 24, 130, 20, "x13.mod.redstone",
-				mod::isRedstoneEnable, b -> {
-					mod.xray(false, false);
-					mod.cave(false, false);
-					mod.redstone();
-				}));
-		addButton(new GuiBooleanButton(width / 2 - 200, height / 2 + 48, 198, 20, "x13.mod.fullbright",
-				mod::isFullBrightEnable, mod::fullBright));
-		addButton(new GuiBooleanButton(width / 2 + 2, height / 2 + 48, 198, 20, "x13.mod.showloc", mod::isShowLocation,
-				mod::setShowLocation));
-		title1 = I18n.format("x13.mod.xray.blocks") + ": ";
-		title2 = I18n.format("x13.mod.cave.blocks") + ": ";
-		title3 = I18n.format("x13.mod.redstone.blocks") + ": ";
-		int l = Math.max(fontRenderer.getStringWidth(title1),
-				Math.max(fontRenderer.getStringWidth(title2), fontRenderer.getStringWidth(title3)));
-		int x = width / 2 - 195 + l;
-		field_195124_j.add(xrayBlocks = new GuiTextField(0, fontRenderer, x, height / 2 - 70, 338 - l, 18));
-		field_195124_j.add(caveBlocks = new GuiTextField(1, fontRenderer, x, height / 2 - 46, 338 - l, 18));
-		field_195124_j.add(redstoneBlocks = new GuiTextField(2, fontRenderer, x, height / 2 - 22, 338 - l, 18));
-		x = width / 2 + 150;
-		String s = I18n.format("controls.reset");
-		addButton(new GuiButton(3, x, height / 2 - 72, 50, 20, s) {
-			@Override
-			public void mouseClicked(double arg0, double arg1) {
-				xrayBlocks.setText(xrayText = mod.getDefaultXrayBlocks());
-				super.mouseClicked(arg0, arg1);
-			}
-		});
-		addButton(new GuiButton(4, x, height / 2 - 48, 50, 20, s) {
-			@Override
-			public void mouseClicked(double arg0, double arg1) {
-				caveBlocks.setText(caveText = mod.getDefaultCaveBlocks());
-				super.mouseClicked(arg0, arg1);
-			}
-		});
-		addButton(new GuiButton(5, x, height / 2 - 24, 50, 20, s) {
-			@Override
-			public void mouseClicked(double arg0, double arg1) {
-				redstoneBlocks.setText(redstoneText = mod.getDefaultRedstoneBlocks());
-				super.mouseClicked(arg0, arg1);
-			}
-		});
-		xrayBlocks.setMaxStringLength(Integer.MAX_VALUE);
-		xrayBlocks.setText(xrayText);
-		caveBlocks.setMaxStringLength(Integer.MAX_VALUE);
-		caveBlocks.setText(caveText);
-		redstoneBlocks.setMaxStringLength(Integer.MAX_VALUE);
-		redstoneBlocks.setText(redstoneText);
+		OptionalInt max = modeElements.stream().mapToInt(XrayModeElement::getSizeX).max();
+		int sizeX = (max.isPresent() ? max.getAsInt() : 0);
+		int x = width / 2 - 195 + sizeX;
+		int y = height / 2 - 22 - 24 * modeElements.size();
+		for (XrayModeElement element : modeElements) {
+			y += 24;
+			element.init(x, y, sizeX);
+		}
+		addButton(new GuiBooleanButton("x13.mod.fullbright", mod::isFullBrightEnable, mod::fullBright));
+		addButton(new GuiBooleanButton("x13.mod.showloc", mod::isShowLocation, mod::setShowLocation));
+		int i, j = colorButtons.size() / 3;
+		int y_ = height / 2;
+		for (i = 0; i < j; i++) {
+			y_ += 24;
+			setBlock(colorButtons.get(i * 3), width / 2 - 200, y_, 130);
+			setBlock(colorButtons.get(i * 3 + 1), width / 2 - 66, y_, 132);
+			setBlock(colorButtons.get(i * 3 + 2), width / 2 + 70, y_, 130);
+		}
+		y_ += 24;
+		switch (colorButtons.size() - (i * 3)) {
+		case 1:
+			setBlock(colorButtons.get(i * 3 - 1), width / 2 - 200, y_, 198);
+			setBlock(colorButtons.get(i * 3), width / 2 + 2, y_, 198);
+			y_ -= 24;
+			setBlock(colorButtons.get(i * 3 - 3), width / 2 - 200, y_, 198);
+			setBlock(colorButtons.get(i * 3 - 2), width / 2 + 2, y_, 198);
+			break;
+		case 2:
+			setBlock(colorButtons.get(i * 3), width / 2 - 200, y_, 198);
+			setBlock(colorButtons.get(i * 3 + 1), width / 2 + 2, y_, 198);
+			break;
+		}
 		super.initGui();
 	}
 
 	@Override
 	public void updateScreen() {
-		xrayText = xrayBlocks.getText();
-		caveText = caveBlocks.getText();
-		redstoneText = redstoneBlocks.getText();
+		modeElements.forEach(XrayModeElement::update);
 		super.updateScreen();
 	}
 
