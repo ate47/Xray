@@ -46,10 +46,12 @@ public class XrayMenu extends GuiScreen {
 		}
 
 		@Override
-		public void mouseClicked(double arg0, double arg1) {
+		public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+			if (!super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_))
+				return false;
 			setter.accept(!getter.get());
 			colorButtons.forEach(GuiBooleanButton::setString);
-			super.mouseClicked(arg0, arg1);
+			return true;
 		}
 
 		private GuiButton setString() {
@@ -82,7 +84,7 @@ public class XrayMenu extends GuiScreen {
 		private void draw(int mouseX, int mouseY, float partialTick) {
 			fontRenderer.drawStringWithShadow(title, width / 2 - 200, field.y - fontRenderer.FONT_HEIGHT / 2 + 9,
 					0xffffffff);
-			field.func_195608_a(mouseX, mouseY, partialTick);
+			field.drawTextField(mouseX, mouseY, partialTick);
 		}
 
 		private int getSizeX() {
@@ -90,13 +92,15 @@ public class XrayMenu extends GuiScreen {
 		}
 
 		private void init(int x, int y, int sizeX) {
-			field_195124_j.add(field = new GuiTextField(0, fontRenderer, x, y + 2, 338 - sizeX, 16));
+			children.add(field = new GuiTextField(0, fontRenderer, x, y + 2, 338 - sizeX, 16));
 			addButton(new GuiBooleanButton(mode.getNameTranslate(), mode::isEnabled, mode::toggle));
 			addButton(new GuiButton(3, width / 2 + 150, y, 50, 20, I18n.format("controls.reset")) {
 				@Override
-				public void mouseClicked(double arg0, double arg1) {
+				public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+					if (!super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_))
+						return false;
 					field.setText(text = mode.getDefaultBlocks());
-					super.mouseClicked(arg0, arg1);
+					return true;
 				}
 			});
 			field.setMaxStringLength(Integer.MAX_VALUE);
@@ -131,7 +135,7 @@ public class XrayMenu extends GuiScreen {
 	public XrayMenu(GuiScreen parent) {
 		super();
 		this.parent = parent;
-		fontRenderer = Minecraft.getMinecraft().fontRenderer;
+		fontRenderer = Minecraft.getInstance().fontRenderer;
 		mod = XrayMain.getMod();
 		mod.getModes().forEach(XrayModeElement::new);
 		oldFullbrightConfig = mod.isFullBrightEnable();
@@ -139,13 +143,13 @@ public class XrayMenu extends GuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTick) {
+	public void render(int mouseX, int mouseY, float partialTick) {
 		drawDefaultBackground();
 		String s = "Xray 13";
 		fontRenderer.drawStringWithShadow(s, width / 2 - fontRenderer.getStringWidth("Xray 13") / 2, height / 2 - 84,
 				0xffffffff);
 		modeElements.forEach(modeElement -> modeElement.draw(mouseX, mouseY, partialTick));
-		super.drawScreen(mouseX, mouseY, partialTick);
+		super.render(mouseX, mouseY, partialTick);
 	}
 
 	@Override
@@ -153,19 +157,23 @@ public class XrayMenu extends GuiScreen {
 		colorButtons.clear();
 		addButton(new GuiButton(0, width / 2 - 200, height / 2, 198, 20, I18n.format("gui.cancel")) {
 			@Override
-			public void mouseClicked(double x, double y) {
+			public boolean mouseClicked(double x, double y, int b) {
+				if (!super.mouseClicked(x,y,b))
+					return false;
 				modeElements.forEach(XrayModeElement::cancel);
 				mod.fullBright(oldFullbrightConfig).modules().setShowLocation(oldShowLocationConfig);
 				mc.displayGuiScreen(parent);
-				super.mouseClicked(x, y);
+				return true;
 			}
 		});
 		addButton(new GuiButton(0, width / 2 + 2, height / 2, 198, 20, I18n.format("gui.done")) {
 			@Override
-			public void mouseClicked(double x, double y) {
+			public boolean mouseClicked(double x, double y, int b) {
+				if (!super.mouseClicked(x,y,b))
+					return false;
 				modeElements.forEach(XrayModeElement::save);
 				mc.displayGuiScreen(parent);
-				super.mouseClicked(x, y);
+				return true;
 			}
 		});
 		OptionalInt max = modeElements.stream().mapToInt(XrayModeElement::getSizeX).max();
@@ -204,9 +212,9 @@ public class XrayMenu extends GuiScreen {
 	}
 
 	@Override
-	public void updateScreen() {
+	public void tick() {
 		modeElements.forEach(XrayModeElement::update);
-		super.updateScreen();
+		super.tick();
 	}
 
 }

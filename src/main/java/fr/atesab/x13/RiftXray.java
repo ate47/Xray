@@ -39,7 +39,7 @@ public class RiftXray implements KeybindHandler, InitializationListener, Overlay
 
 	@Override
 	public void registerKeys(KeyBinding... keys) {
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 		mc.gameSettings.keyBindings = ArrayUtils.addAll(mc.gameSettings.keyBindings, keys);
 
 	}

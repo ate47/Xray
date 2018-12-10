@@ -40,6 +40,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.IRegistry;
 import net.minecraft.world.IBlockReader;
 
 public class XrayMain {
@@ -47,7 +48,7 @@ public class XrayMain {
 	private static XrayMain instance;
 
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
-		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Block.REGISTRY::getNameForObject)
+		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(IRegistry.BLOCK::getKey)
 				.filter(Objects::nonNull).map(Objects::toString).collect(collector);
 	}
 
@@ -151,7 +152,7 @@ public class XrayMain {
 	 * Mod config file
 	 */
 	public File getSaveFile() {
-		return new File(Minecraft.getMinecraft().gameDir, "xray.json");
+		return new File(Minecraft.getInstance().gameDir, "xray.json");
 	}
 
 	/**
@@ -161,13 +162,13 @@ public class XrayMain {
 		if (isInit)
 			return;
 		log("Initialization");
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 		registerXrayMode(
 				// Xray Mode
 				new XrayMode("xray", 88, ViewMode.EXCLUSIVE, Blocks.IRON_ORE, Blocks.COAL_ORE, Blocks.DIAMOND_ORE,
 						Blocks.GOLD_ORE, Blocks.EMERALD_ORE, Blocks.REDSTONE_ORE, Blocks.OBSIDIAN, Blocks.DIAMOND_BLOCK,
 						Blocks.IRON_ORE, Blocks.GOLD_BLOCK, Blocks.EMERALD_BLOCK, Blocks.END_PORTAL,
-						Blocks.END_PORTAL_FRAME, Blocks.PORTAL, Blocks.BEACON, Blocks.MOB_SPAWNER, Blocks.BOOKSHELF,
+						Blocks.END_PORTAL_FRAME, Blocks.NETHER_PORTAL, Blocks.BEACON, Blocks.SPAWNER, Blocks.BOOKSHELF,
 						Blocks.LAVA, Blocks.WATER, Blocks.NETHER_WART, Blocks.BLUE_ICE, Blocks.DRAGON_WALL_HEAD,
 						Blocks.DRAGON_HEAD, Blocks.DRAGON_EGG, Blocks.NETHER_QUARTZ_ORE, Blocks.CHEST,
 						Blocks.TRAPPED_CHEST, Blocks.DISPENSER, Blocks.DROPPER, Blocks.LAPIS_ORE, Blocks.LAPIS_BLOCK,
@@ -206,7 +207,7 @@ public class XrayMain {
 	 * load internal fullbright by checking if a mode is enabled
 	 */
 	public XrayMain internalFullbright() {
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 		boolean f = fullBrightEnable;
 		for (XrayMode mode : modes)
 			if (f = (f || mode.isEnabled()))
@@ -282,7 +283,7 @@ public class XrayMain {
 		for (XrayMode mode : modes)
 			mode.toggle(mode.isEnabled(), false);
 		fullBright(isFullBrightEnable());
-		Minecraft.getMinecraft().renderGlobal.loadRenderers();
+		Minecraft.getInstance().worldRenderer.loadRenderers();
 		return this;
 	}
 
@@ -317,7 +318,7 @@ public class XrayMain {
 		if (fullbright.isPressed())
 			fullBright();
 		else if (config.isPressed())
-			Minecraft.getMinecraft().displayGuiScreen(new XrayMenu(null));
+			Minecraft.getInstance().displayGuiScreen(new XrayMenu(null));
 	}
 
 	/**
@@ -351,7 +352,7 @@ public class XrayMain {
 				s = "";
 			}
 		}
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 		FontRenderer render = mc.fontRenderer;
 		EntityPlayerSP player = mc.player;
 		if (!s.isEmpty())
@@ -370,7 +371,7 @@ public class XrayMain {
 		try {
 			Writer writer = new FileWriterWithEncoding(getSaveFile(), Charset.forName("UTF-8"));
 			new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create()
-					.toJson(Util.acceptAndReturn(Maps.newHashMap(), m -> {
+					.toJson(Util.make(Maps.newHashMap(), m -> {
 						modes.forEach(mode -> m.put(mode.getName() + "Blocks", getBlockNamesToList(mode.getBlocks())));
 						m.put("showLocation", showLocation);
 						m.put("oldGama", oldGama);

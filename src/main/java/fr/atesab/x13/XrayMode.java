@@ -15,6 +15,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.IRegistry;
 import net.minecraft.world.IBlockReader;
 
 public class XrayMode implements SideRenderer {
@@ -135,7 +136,7 @@ public class XrayMode implements SideRenderer {
 	public void setConfig(String[] data) {
 		blocks.clear();
 		for (String d : data) {
-			Block b = Block.REGISTRY.getObject(new ResourceLocation(d));
+			Block b = IRegistry.BLOCK.get(new ResourceLocation(d));
 			if (b != null && !b.equals(Blocks.AIR))
 				blocks.add(b);
 		}
@@ -162,7 +163,7 @@ public class XrayMode implements SideRenderer {
 		toggle0(enable, reloadRenderers);
 		XrayMain.getMod().internalFullbright();
 		if (reloadRenderers)
-			Minecraft.getMinecraft().renderGlobal.loadRenderers();
+			Minecraft.getInstance().worldRenderer.loadRenderers();
 	}
 
 	private void toggle0(boolean enable, boolean reloadRenderers) {

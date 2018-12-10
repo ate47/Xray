@@ -1,35 +1,19 @@
 buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = "DimDev"
-            url = "https://www.dimdev.org/maven/"
-        }
-
-        maven {
-            name = "Forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-
-        maven {
-            name = "Sponge"
-            url = "https://repo.spongepowered.org/maven"
-        }
-
-        maven {
-            name = "Sonatype"
-            url = 'https://oss.sonatype.org/content/groups/public'
-        }
-    }
-    dependencies {
-        classpath 'org.dimdev:ForgeGradle:2.3-SNAPSHOT'
+	repositories {
+		mavenCentral()
+		maven { url 'https://www.jitpack.io' }
+		maven { url 'https://files.minecraftforge.net/maven' }
+        maven { url 'http://repo.spongepowered.org/maven' }
+        maven { url = "https://www.dimdev.org/maven/" }
+	}
+	dependencies {
+		classpath 'com.github.Chocohead:ForgeGradle:moderniser-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
-    }
+	}
 }
-
 apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-apply plugin: 'java'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'java'
 
 group 'fr.atesab.x13'
 version '1.0.3'
@@ -40,34 +24,23 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    mavenLocal()
-
-    maven {
-        name = "DimDev"
-        url = "https://www.dimdev.org/maven/"
-    }
-
-    maven {
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven"
-    }
-
-    maven {
-        name = "JitPack"
-        url = "https://jitpack.io"
-    }
+    maven { url 'https://repo.spongepowered.org/maven/' }
+    maven { url 'https://www.jitpack.io' }
+    maven { url 'https://files.minecraftforge.net/maven' }
+    maven { url 'https://www.dimdev.org/maven/' }
+    maven { url "http://repo.strezz.org/artifactory/list/Strezz-Central" }
 }
 
 dependencies {
+	implementation 'com.github.Chocohead:Rift:jitpack-SNAPSHOT:dev'
     compile files('libs/FakeOptifine.jar')
-	implementation 'org.dimdev:rift:1.0.3-45:dev'
 }
 
 minecraft {
-    version = '1.13'
-    mappings = 'snapshot_5'
-    runDir = 'run'
-    tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderClientTweaker'
+	version = '1.13.2'
+	mappings = 'snapshot_20181130'
+	runDir = 'run'
+	tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderClientTweaker'
 }
 
 mixin {
