@@ -14,7 +14,7 @@ import net.minecraft.world.IBlockReader;
 @Mixin(value = net.optifine.util.BlockUtils.class, priority = 500)
 public class MixinBlockUtils {
 	@Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
-	private static void shouldSideBeRendered(IBlockState state, IBlockReader reader, BlockPos pos, EnumFacing face,
+	private static void shouldSideBeRendered(IBlockState state, IBlockReader reader, BlockPos pos, EnumFacing face, net.optifine.render.RenderEnv env,
 			CallbackInfoReturnable<Boolean> ci) {
 		XrayMain.getMod().shouldSideBeRendered(state, reader, pos, face, ci);
 	}
