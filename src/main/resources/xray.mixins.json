@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "fr.atesab.xray.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [],
+	"client": [
+		"MixinBlock"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
