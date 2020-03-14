@@ -2,28 +2,25 @@ package fr.atesab.xray;
 
 import java.util.List;
 
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import com.google.common.collect.Lists;
 
-import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.IBlockReader;
 
 public class XrayMode implements SideRenderer {
 	@FunctionalInterface
 	public static interface Viewer {
-		public boolean shouldRenderSide(boolean blockInList, BlockState state, BlockView reader, BlockPos pos,
-				Direction face);
+		public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, IBlockReader blockState,
+				BlockPos blockAccess, Direction pos);
 	}
 
 	public static enum ViewMode {
@@ -34,6 +31,7 @@ public class XrayMode implements SideRenderer {
 		/**
 		 * Inclusive mode, like in Cave Mode
 		 */
+		@SuppressWarnings("deprecation")
 		INCLUSIVE((il, v1, reader, pos, face) -> !il && reader.getBlockState(pos.offset(face)).isAir());
 
 		private Viewer viewer;
@@ -48,11 +46,10 @@ public class XrayMode implements SideRenderer {
 	}
 
 	private static final List<XrayMode> MODES = Lists.newArrayList();
-	private boolean custom;
 	private List<Block> blocks;
 	private final String defaultBlocks;
 	private boolean enabled;
-	private FabricKeyBinding key;
+	private KeyBinding key;
 	private final String name;
 	private final int color;
 	private ViewMode viewMode;
@@ -70,23 +67,18 @@ public class XrayMode implements SideRenderer {
 		this.color = nextColor();
 		this.enabled = false;
 		this.blocks = Lists.newArrayList();
-		// Identifier id, InputUtil.Type type, int code, String category
-		this.key = new FabricKeyBinding(new Identifier(name), InputUtil.Type.KEYSYM, keyCode, "key.categories.xray") {
-		};
+		this.key = new KeyBinding(name, keyCode, "key.categories.xray");
 		this.viewMode = viewMode;
 		this.defaultBlocks = "";
-		custom = true;
 		MODES.add(this);
 	}
 
-	XrayMode(String name, int keyCode, ViewMode viewMode, Block... defaultBlocks) {
+	public XrayMode(String name, int keyCode, ViewMode viewMode, Block... defaultBlocks) {
 		this.name = name;
 		this.color = nextColor();
 		this.enabled = false;
 		this.blocks = Lists.newArrayList(defaultBlocks);
-		this.key = new FabricKeyBinding(new Identifier("xray:" + name), InputUtil.Type.KEYSYM, keyCode,
-				"key.categories.xray") {
-		};
+		this.key = new KeyBinding("x13.mod." + name, keyCode, "key.categories.xray");
 		this.viewMode = viewMode;
 		this.defaultBlocks = XrayMain.getBlockNamesToString(blocks);
 		MODES.add(this);
@@ -104,7 +96,7 @@ public class XrayMode implements SideRenderer {
 		return color;
 	}
 
-	public FabricKeyBinding getKey() {
+	public KeyBinding getKey() {
 		return key;
 	}
 
@@ -113,7 +105,7 @@ public class XrayMode implements SideRenderer {
 	}
 
 	public String getNameTranslate() {
-		return name.startsWith(CUSTOM_PREFIX) ? name : I18n.translate("x13.mod." + name);
+		return name.startsWith(CUSTOM_PREFIX) ? name : I18n.format("x13.mod." + name);
 	}
 
 	public ViewMode getViewMode() {
@@ -135,7 +127,6 @@ public class XrayMode implements SideRenderer {
 	public boolean toggleKey() {
 		if (key.isPressed()) {
 			toggle();
-			key.setPressed(false);
 			return true;
 		}
 		return false;
@@ -144,18 +135,11 @@ public class XrayMode implements SideRenderer {
 	public void setConfig(String[] data) {
 		blocks.clear();
 		for (String d : data) {
-			Block b = Registry.BLOCK.get(new Identifier(d));
+			@SuppressWarnings("deprecation")
+			Block b = Registry.BLOCK.getValue(new ResourceLocation(d)).orElse(null);
 			if (b != null && !b.equals(Blocks.AIR))
 				blocks.add(b);
 		}
-	}
-
-	@Override
-	public void shouldSideBeRendered(BlockState state, BlockView reader, BlockPos pos, Direction face,
-			CallbackInfoReturnable<Boolean> ci) {
-		if (isEnabled())
-			ci.setReturnValue(
-					viewMode.getViewer().shouldRenderSide(blocks.contains(state.getBlock()), state, reader, pos, face));
 	}
 
 	public void toggle() {
@@ -169,16 +153,20 @@ public class XrayMode implements SideRenderer {
 	public void toggle(boolean enable, boolean reloadRenderers) {
 		MODES.forEach(m -> m.toggle0(false, false));
 		toggle0(enable, reloadRenderers);
-		XrayMain.getMod().internalFullbright();
+		XrayMain.internalFullbright();
 		if (reloadRenderers)
-			MinecraftClient.getInstance().worldRenderer.reload();
+			Minecraft.getInstance().worldRenderer.loadRenderers();
 	}
 
 	private void toggle0(boolean enable, boolean reloadRenderers) {
 		enabled = enable;
 	}
 
-	public boolean isCustom() {
-		return custom;
+	@Override
+	public void shouldSideBeRendered(BlockState adjacentState, IBlockReader blockState, BlockPos blockAccess,
+			Direction pos, CallbackInfo<Boolean> ci) {
+		if (isEnabled())
+			ci.setReturnValue(viewMode.getViewer().shouldRenderSide(blocks.contains(adjacentState.getBlock()),
+					adjacentState, blockState, blockAccess, pos));
 	}
 }
