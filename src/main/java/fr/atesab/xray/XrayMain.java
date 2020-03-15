@@ -51,7 +51,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 
 public class XrayMain implements ClientModInitializer, HudRenderCallback, ClientTickCallback {
-	private static final Logger log = LogManager.getLogger("X13");
+	private static final Logger log = LogManager.getLogger("XrayMod");
 	private static XrayMain instance;
 
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
@@ -259,6 +259,15 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 	@Override
 	public void onInitializeClient() {
 		log("Initialization");
+
+		KeyBindingRegistry.INSTANCE.addCategory("key.categories.xray");
+
+		KeyBindingRegistry.INSTANCE.register(fullbright = FabricKeyBinding.Builder
+				.create(new Identifier("xray:fullbright"), Type.KEYSYM, GLFW.GLFW_KEY_H, "key.categories.xray")
+				.build());
+		KeyBindingRegistry.INSTANCE.register(config = FabricKeyBinding.Builder
+				.create(new Identifier("xray:config"), Type.KEYSYM, GLFW.GLFW_KEY_N, "key.categories.xray").build());
+
 		registerXrayMode(
 				// Xray Mode
 				new XrayMode("xray", 88, ViewMode.EXCLUSIVE, Blocks.IRON_ORE, Blocks.COAL_ORE, Blocks.DIAMOND_ORE,
@@ -294,22 +303,19 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 						Blocks.DETECTOR_RAIL, Blocks.POWERED_RAIL, Blocks.ENDER_CHEST, Blocks.LECTERN));
 		fullbrightColor = XrayMode.nextColor();
 		loadConfigs();
+		HudRenderCallback.EVENT.register(this);
+		ClientTickCallback.EVENT.register(this);
 
-		log("Load Mixins...");
 		MixinBootstrap.init();
 		log("Search Optifine...");
-		log("Load Mixins for Optifine...");
-		Mixins.addConfiguration("xray.mixins.json");
-		HudRenderCallback.EVENT.register(this);
-		KeyBindingRegistry.INSTANCE.addCategory("key.categories.xray");
-
-		KeyBindingRegistry.INSTANCE.register(fullbright = FabricKeyBinding.Builder
-				.create(new Identifier("xray:fullbright"), Type.KEYSYM, GLFW.GLFW_KEY_H, "key.categories.xray")
-				.build());
-		KeyBindingRegistry.INSTANCE.register(config = FabricKeyBinding.Builder
-				.create(new Identifier("xray:config"), Type.KEYSYM, GLFW.GLFW_KEY_N, "key.categories.xray").build());
-
-		ClientTickCallback.EVENT.register(this);
+		try {
+			Class.forName("net.optifine.Lang"); // search Optifine
+			log("Load Mixins for Optifine...");
+			Mixins.addConfiguration("optiray.mixins.json");
+		} catch (ClassNotFoundException e) {
+			log("Load Mixins without Optifine...");
+			Mixins.addConfiguration("xray.mixins.json");
+		}
 
 	}
 

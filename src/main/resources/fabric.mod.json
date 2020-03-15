@@ -1,15 +1,15 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "xray",
 	"version": "${version}",
 	"name": "Xray mod",
-	"description": "Boried about finding in a legitimate way your diamond? This mod is here for you!",
+	"description": "Bored by finding your diamonds legitimately? This mod is for you!",
 	"authors": [
 		"ATE47"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/ate47/Xray",
+		"sources": "https://github.com/ate47/Xray"
 	},
 	"license": "",
 	"icon": "assets/xray/icon.png",
@@ -19,13 +19,14 @@
 			"fr.atesab.xray.XrayMain"
 		]
 	},
-	"mixins": [
-		"xray.mixins.json"
-	],
+	"mixins": [],
 	"depends": {
 		"fabricloader": ">=0.7.2",
 		"fabric": "*",
 		"minecraft": "1.15.2"
+	},
+	"recommends": {
+		"optifabric": "*"
 	},
 	"suggests": {
 		"flamingo": "*"
