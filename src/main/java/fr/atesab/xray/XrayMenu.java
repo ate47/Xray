@@ -1,12 +1,6 @@
 package fr.atesab.xray;
 
-import java.util.List;
-import java.util.OptionalInt;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import com.google.common.collect.Lists;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -16,6 +10,11 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+
+import java.util.List;
+import java.util.OptionalInt;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class XrayMenu extends Screen {
 	/**

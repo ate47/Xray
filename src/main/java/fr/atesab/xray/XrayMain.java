@@ -1,30 +1,9 @@
 package fr.atesab.xray;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import com.mojang.blaze3d.matrix.MatrixStack;
-import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFW;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.GsonBuilder;
-
+import com.mojang.blaze3d.matrix.MatrixStack;
 import fr.atesab.xray.XrayMode.ViewMode;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -50,6 +29,16 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
 @Mod(XrayMain.MOD_ID)
@@ -269,12 +258,13 @@ public class XrayMain {
 	public void onRenderOverlay(RenderGameOverlayEvent.Post ev) {
 
 		// In other time it breaks armor/hunger/air hud #10
-		if(ev.getType() != RenderGameOverlayEvent.ElementType.TEXT)
+		if (ev.getType() != RenderGameOverlayEvent.ElementType.TEXT)
 			return;
 
 		int c;
 		String s;
-		nameFinder: {
+		nameFinder:
+		{
 			for (XrayMode mode : modes)
 				if (mode.isEnabled()) {
 					c = mode.getColor();

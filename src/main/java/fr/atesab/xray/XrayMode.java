@@ -1,9 +1,6 @@
 package fr.atesab.xray;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,11 +13,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IBlockReader;
 
+import java.util.List;
+
 public class XrayMode implements SideRenderer {
 	@FunctionalInterface
 	public static interface Viewer {
 		public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, IBlockReader blockState,
-				BlockPos blockAccess, Direction pos);
+										BlockPos blockAccess, Direction pos);
 	}
 
 	public static enum ViewMode {
@@ -54,8 +53,11 @@ public class XrayMode implements SideRenderer {
 	private final int color;
 	private ViewMode viewMode;
 	private static int colorCursor = -1;
-	private static final int[] COLORS = { 0xff00ffff, 0xff00ff00, 0xffff0000, 0xffffff00, 0xffff00ff, 0xff7aff00,
-			0xffff7a00, 0xff00ff7a, 0xffff007a, 0xff7a00ff, 0xff7a7aff, 0xff7aff7a, 0xffff7a7a };
+	private static final int[] COLORS = {
+			0xff00ffff, 0xffff0000, 0xffffff00, 0xffff00ff,
+			0xff7aff00, 0xffff7a00, 0xff00ff7a, 0xffff007a,
+			0xff7a00ff, 0xff7a7aff, 0xff7aff7a, 0xffff7a7a
+	};
 	public static final String CUSTOM_PREFIX = "Custom_";
 
 	static int nextColor() {
@@ -164,7 +166,7 @@ public class XrayMode implements SideRenderer {
 
 	@Override
 	public void shouldSideBeRendered(BlockState adjacentState, IBlockReader blockState, BlockPos blockAccess,
-			Direction pos, CallbackInfo<Boolean> ci) {
+									 Direction pos, CallbackInfo<Boolean> ci) {
 		if (isEnabled())
 			ci.setReturnValue(viewMode.getViewer().shouldRenderSide(blocks.contains(adjacentState.getBlock()),
 					adjacentState, blockState, blockAccess, pos));
