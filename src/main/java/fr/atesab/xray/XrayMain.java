@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +37,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
@@ -286,11 +287,14 @@ public class XrayMain {
 		Minecraft mc = Minecraft.getInstance();
 		FontRenderer render = mc.fontRenderer;
 		ClientPlayerEntity player = mc.player;
+
+		MatrixStack matrixStack = ev.getMatrixStack();
+
 		if (!s.isEmpty())
-			render.drawStringWithShadow(s = "[" + s + "] ", 5, 5, c);
+			render.drawStringWithShadow(matrixStack, s = "[" + s + "] ", 5, 5, c);
 		if (showLocation && player != null) {
-			Vec3d pos = player.getPositionVector();
-			render.drawStringWithShadow("XYZ: " + (significantNumbers(pos.x) + " / " + significantNumbers(pos.y) + " / "
+			Vector3d pos = player.getPositionVec();
+			render.drawStringWithShadow(matrixStack, "XYZ: " + (significantNumbers(pos.x) + " / " + significantNumbers(pos.y) + " / "
 					+ significantNumbers(pos.z)), 5 + render.getStringWidth(s), 5, 0xffffffff);
 		}
 	}

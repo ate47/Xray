@@ -136,8 +136,8 @@ public class XrayMode implements SideRenderer {
 		blocks.clear();
 		for (String d : data) {
 			@SuppressWarnings("deprecation")
-			Block b = Registry.BLOCK.getValue(new ResourceLocation(d)).orElse(null);
-			if (b != null && !b.equals(Blocks.AIR))
+			Block b = Registry.BLOCK.getOrDefault(new ResourceLocation(d));
+			if (!b.equals(Blocks.AIR))
 				blocks.add(b);
 		}
 	}
