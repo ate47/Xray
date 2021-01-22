@@ -266,6 +266,11 @@ public class XrayMain {
 
 	@SubscribeEvent
 	public void onRenderOverlay(RenderGameOverlayEvent.Post ev) {
+
+		// In other time it breaks armor/hunger/air hud #10
+		if(ev.getType() != RenderGameOverlayEvent.ElementType.TEXT)
+			return;
+
 		int c;
 		String s;
 		nameFinder: {
