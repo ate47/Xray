@@ -9,5 +9,5 @@ import net.minecraft.world.IBlockReader;
 @FunctionalInterface
 public interface SideRenderer {
 	public void shouldSideBeRendered(BlockState adjacentState, IBlockReader blockState, BlockPos blockAccess, Direction pos,
-			CallbackInfo<Boolean> ci);
+									 CallbackInfo<Boolean> ci);
 }
