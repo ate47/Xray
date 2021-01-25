@@ -1,11 +1,5 @@
 # Xray
 
-## Original
-
-Author: [ATE47](https://github.com/ate47)
-- [GitHub](https://github.com/ate47/Xray)
-- [Curse](https://minecraft.curseforge.com/projects/xray-1-13-rift-modloader)
-
 ## Description
 
 Bored by finding your diamonds legitimately? This mod is for you!
