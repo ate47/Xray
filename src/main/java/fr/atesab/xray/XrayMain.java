@@ -165,7 +165,6 @@ public class XrayMain {
 
 	/**
 	 * True if the side should be rendered, injected on
-	 * {@link Block#shouldSideBeRendered(IBlockState, IBlockReader, BlockPos, EnumFacing)}
 	 */
 	public static int shouldSideBeRendered(
 			BlockState adjacentState,
@@ -339,41 +338,87 @@ public class XrayMain {
 	private void setup(final FMLCommonSetupEvent event) {
 		log("Initialization");
 		registerXrayMode(
+				// @formatter:off
 				// Xray Mode
-				new XrayMode("xray", GLFW.GLFW_KEY_X, ViewMode.EXCLUSIVE, Blocks.IRON_ORE, Blocks.COAL_ORE,
-						Blocks.DIAMOND_ORE, Blocks.GOLD_ORE, Blocks.EMERALD_ORE, Blocks.REDSTONE_ORE, Blocks.OBSIDIAN,
-						Blocks.DIAMOND_BLOCK, Blocks.IRON_ORE, Blocks.GOLD_BLOCK, Blocks.EMERALD_BLOCK,
-						Blocks.END_PORTAL, Blocks.END_PORTAL_FRAME, Blocks.NETHER_PORTAL, Blocks.BEACON, Blocks.SPAWNER,
-						Blocks.BOOKSHELF, Blocks.LAVA, Blocks.WATER, Blocks.NETHER_WART, Blocks.BLUE_ICE,
-						Blocks.DRAGON_WALL_HEAD, Blocks.DRAGON_HEAD, Blocks.DRAGON_EGG, Blocks.NETHER_QUARTZ_ORE,
-						Blocks.CHEST, Blocks.TRAPPED_CHEST, Blocks.DISPENSER, Blocks.DROPPER, Blocks.LAPIS_ORE,
-						Blocks.LAPIS_BLOCK, Blocks.TNT, Blocks.CLAY, Blocks.WET_SPONGE, Blocks.SPONGE,
-						Blocks.OAK_PLANKS, Blocks.CONDUIT, Blocks.ENDER_CHEST),
+				new XrayMode(
+					"xray",
+					GLFW.GLFW_KEY_X,
+					ViewMode.EXCLUSIVE,
+					Blocks.IRON_ORE,          Blocks.COAL_ORE,         Blocks.DIAMOND_ORE,     Blocks.GOLD_ORE,
+					Blocks.EMERALD_ORE,       Blocks.REDSTONE_ORE,     Blocks.OBSIDIAN,        Blocks.DIAMOND_BLOCK,
+					Blocks.IRON_ORE,          Blocks.GOLD_BLOCK,       Blocks.EMERALD_BLOCK,   Blocks.END_PORTAL,
+					Blocks.END_PORTAL_FRAME,  Blocks.NETHER_PORTAL,    Blocks.BEACON,          Blocks.SPAWNER,
+					Blocks.BOOKSHELF,         Blocks.LAVA,             Blocks.WATER,           Blocks.NETHER_WART,
+					Blocks.BLUE_ICE,          Blocks.DRAGON_WALL_HEAD, Blocks.DRAGON_HEAD,     Blocks.DRAGON_EGG,
+					Blocks.NETHER_QUARTZ_ORE, Blocks.CHEST,            Blocks.TRAPPED_CHEST,   Blocks.DISPENSER,
+					Blocks.DROPPER,           Blocks.LAPIS_ORE,        Blocks.LAPIS_BLOCK,     Blocks.TNT,
+					Blocks.CLAY,              Blocks.WET_SPONGE,       Blocks.SPONGE,          Blocks.OAK_PLANKS,
+					Blocks.CONDUIT,           Blocks.ENDER_CHEST
+				),
+
 				// Cave Mode
-				new XrayMode("cave", GLFW.GLFW_KEY_C, ViewMode.INCLUSIVE, Blocks.DIRT, Blocks.GRASS, Blocks.GRAVEL,
-						Blocks.GRASS_BLOCK, Blocks.GRASS_PATH, Blocks.SAND, Blocks.SANDSTONE, Blocks.RED_SAND),
+				new XrayMode(
+					"cave",
+					GLFW.GLFW_KEY_C,
+					ViewMode.INCLUSIVE,
+					Blocks.DIRT,              Blocks.GRASS,            Blocks.GRAVEL,          Blocks.GRASS_BLOCK,
+					Blocks.GRASS_PATH,        Blocks.SAND,             Blocks.SANDSTONE,       Blocks.RED_SAND
+				),
+
 				// Redstone mode
-				new XrayMode("redstone", GLFW.GLFW_KEY_R, ViewMode.EXCLUSIVE, Blocks.REDSTONE_BLOCK,
-						Blocks.REDSTONE_LAMP, Blocks.REDSTONE_ORE, Blocks.REDSTONE_TORCH, Blocks.REDSTONE_WALL_TORCH,
-						Blocks.REDSTONE_WIRE, Blocks.REPEATER, Blocks.REPEATING_COMMAND_BLOCK, Blocks.COMMAND_BLOCK,
-						Blocks.CHAIN_COMMAND_BLOCK, Blocks.COMPARATOR, Blocks.ANVIL, Blocks.CHEST, Blocks.TRAPPED_CHEST,
-						Blocks.DROPPER, Blocks.DISPENSER, Blocks.HOPPER, Blocks.OBSERVER, Blocks.DRAGON_HEAD,
-						Blocks.DRAGON_WALL_HEAD, Blocks.IRON_DOOR, Blocks.ACACIA_DOOR, Blocks.BIRCH_DOOR,
-						Blocks.DARK_OAK_DOOR, Blocks.JUNGLE_DOOR, Blocks.OAK_DOOR, Blocks.SPRUCE_DOOR,
-						Blocks.ACACIA_BUTTON, Blocks.BIRCH_BUTTON, Blocks.DARK_OAK_BUTTON, Blocks.JUNGLE_BUTTON,
-						Blocks.OAK_BUTTON, Blocks.SPRUCE_BUTTON, Blocks.STONE_BUTTON, Blocks.LEVER, Blocks.TNT,
-						Blocks.PISTON, Blocks.PISTON_HEAD, Blocks.MOVING_PISTON, Blocks.STICKY_PISTON,
-						Blocks.NOTE_BLOCK, Blocks.DAYLIGHT_DETECTOR, Blocks.IRON_TRAPDOOR, Blocks.ACACIA_TRAPDOOR,
-						Blocks.BIRCH_TRAPDOOR, Blocks.DARK_OAK_TRAPDOOR, Blocks.JUNGLE_TRAPDOOR, Blocks.OAK_TRAPDOOR,
-						Blocks.SPRUCE_TRAPDOOR, Blocks.ACACIA_PRESSURE_PLATE, Blocks.BIRCH_PRESSURE_PLATE,
-						Blocks.DARK_OAK_PRESSURE_PLATE, Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE,
-						Blocks.JUNGLE_PRESSURE_PLATE, Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.OAK_PRESSURE_PLATE,
-						Blocks.SPRUCE_PRESSURE_PLATE, Blocks.STONE_PRESSURE_PLATE, Blocks.RAIL, Blocks.ACTIVATOR_RAIL,
-						Blocks.DETECTOR_RAIL, Blocks.POWERED_RAIL, Blocks.ENDER_CHEST));
-		ClientRegistry.registerKeyBinding(
-				fullbright = new KeyBinding("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray")); // H
-		ClientRegistry
-				.registerKeyBinding(config = new KeyBinding("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray")); // N
+				new XrayMode(
+					"redstone",
+					GLFW.GLFW_KEY_R,
+					ViewMode.EXCLUSIVE,
+					Blocks.REDSTONE_BLOCK,                             Blocks.REDSTONE_LAMP,
+					Blocks.REDSTONE_ORE,                               Blocks.REDSTONE_TORCH,
+					Blocks.REDSTONE_WALL_TORCH,                        Blocks.REDSTONE_WIRE,
+					Blocks.REPEATER,                                   Blocks.REPEATING_COMMAND_BLOCK,
+					Blocks.COMMAND_BLOCK,                              Blocks.CHAIN_COMMAND_BLOCK,
+					Blocks.COMPARATOR,                                 Blocks.ANVIL,
+					Blocks.CHEST,                                      Blocks.TRAPPED_CHEST,
+					Blocks.DROPPER,                                    Blocks.DISPENSER,
+					Blocks.HOPPER,                                     Blocks.OBSERVER,
+					Blocks.DRAGON_HEAD,                                Blocks.DRAGON_WALL_HEAD,
+					Blocks.IRON_DOOR,                                  Blocks.ACACIA_DOOR,
+					Blocks.BIRCH_DOOR,                                 Blocks.DARK_OAK_DOOR,
+					Blocks.JUNGLE_DOOR,                                Blocks.OAK_DOOR,
+					Blocks.SPRUCE_DOOR,                                Blocks.ACACIA_BUTTON,
+					Blocks.BIRCH_BUTTON,                               Blocks.DARK_OAK_BUTTON,
+					Blocks.JUNGLE_BUTTON,                              Blocks.OAK_BUTTON,
+					Blocks.SPRUCE_BUTTON,                              Blocks.STONE_BUTTON,
+					Blocks.LEVER,                                      Blocks.TNT,
+					Blocks.PISTON,                                     Blocks.PISTON_HEAD,
+					Blocks.MOVING_PISTON,                              Blocks.STICKY_PISTON,
+					Blocks.NOTE_BLOCK,                                 Blocks.DAYLIGHT_DETECTOR,
+					Blocks.IRON_TRAPDOOR,                              Blocks.ACACIA_TRAPDOOR,
+					Blocks.BIRCH_TRAPDOOR,                             Blocks.DARK_OAK_TRAPDOOR,
+					Blocks.JUNGLE_TRAPDOOR,                            Blocks.OAK_TRAPDOOR,
+					Blocks.SPRUCE_TRAPDOOR,                            Blocks.ACACIA_PRESSURE_PLATE,
+					Blocks.BIRCH_PRESSURE_PLATE,                       Blocks.DARK_OAK_PRESSURE_PLATE,
+					Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE,              Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE,
+					Blocks.JUNGLE_PRESSURE_PLATE,                      Blocks.OAK_PRESSURE_PLATE,
+					Blocks.SPRUCE_PRESSURE_PLATE,                      Blocks.STONE_PRESSURE_PLATE,
+					Blocks.RAIL,                                       Blocks.ACTIVATOR_RAIL,
+					Blocks.DETECTOR_RAIL,                              Blocks.POWERED_RAIL,
+					Blocks.ENDER_CHEST
+				));
+				// @formatter:on
+
+		// H
+		ClientRegistry.registerKeyBinding(fullbright = new KeyBinding(
+				"x13.mod.fullbright",
+				GLFW.GLFW_KEY_H,
+				"key.categories.xray"
+		));
+
+		// N
+		ClientRegistry.registerKeyBinding(config = new KeyBinding(
+				"x13.mod.config",
+				GLFW.GLFW_KEY_N,
+				"key.categories.xray"
+		));
+
 		fullbrightColor = XrayMode.nextColor();
 		loadConfigs();
 	}
