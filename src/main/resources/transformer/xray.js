@@ -4,8 +4,7 @@ var VarInsnNode = Java.type('org.objectweb.asm.tree.VarInsnNode');
 var MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode')
 var InsnNode = Java.type('org.objectweb.asm.tree.InsnNode');
 var InsnList = Java.type('org.objectweb.asm.tree.InsnList');
-var TableSwitchInsnNode = Java
-        .type('org.objectweb.asm.tree.TableSwitchInsnNode');
+var TableSwitchInsnNode = Java.type('org.objectweb.asm.tree.TableSwitchInsnNode');
 var LabelNode = Java.type('org.objectweb.asm.tree.LabelNode');
 
 var SHOULD_SIDE_BE_RENDERED = ASM.mapMethod("func_176225_a"); // shouldSideBeRendered(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/IBlockReader;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Direction;)Z
@@ -69,7 +68,9 @@ function initializeCoreMod() {
 			                    + "Lnet/minecraft/block/BlockState;"
 			                    + "Lnet/minecraft/world/IBlockReader;"
 			                    + "Lnet/minecraft/util/math/BlockPos;"
-			                    + "Lnet/minecraft/util/Direction;" + ")I",
+			                    + "Lnet/minecraft/util/Direction;"
+
+					+ ")I",
 			            false));
 
 			    var case0 = new LabelNode();

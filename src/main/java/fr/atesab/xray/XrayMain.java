@@ -167,13 +167,31 @@ public class XrayMain {
 	 * True if the side should be rendered, injected on
 	 * {@link Block#shouldSideBeRendered(IBlockState, IBlockReader, BlockPos, EnumFacing)}
 	 */
-	public static int shouldSideBeRendered(BlockState adjacentState, IBlockReader blockState, BlockPos blockAccess, Direction pos) {
+	public static int shouldSideBeRendered(
+			BlockState adjacentState,
+			IBlockReader blockState,
+			BlockPos blockAccess,
+			Direction pos
+	) {
 		CallbackInfo<Boolean> ci = new CallbackInfo<>();
 		for (XrayMode mode : modes)
 			mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
 		if (ci.isCancelled())
 			return ci.getReturnValue() ? 0 : 1;
 		return 2;
+	}
+
+	/**
+	 * Filler for OptiFine
+	 */
+	public static int shouldSideBeRendered(
+			BlockState adjacentState,
+			IBlockReader blockState,
+			BlockPos blockAccess,
+			Direction pos,
+			Object arg
+	) {
+		return shouldSideBeRendered(adjacentState, blockState, blockAccess, pos);
 	}
 
 	private static String significantNumbers(double d) {
