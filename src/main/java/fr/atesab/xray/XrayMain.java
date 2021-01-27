@@ -344,16 +344,37 @@ public class XrayMain {
 					"xray",
 					GLFW.GLFW_KEY_X,
 					ViewMode.EXCLUSIVE,
-					Blocks.IRON_ORE,          Blocks.COAL_ORE,         Blocks.DIAMOND_ORE,     Blocks.GOLD_ORE,
-					Blocks.EMERALD_ORE,       Blocks.REDSTONE_ORE,     Blocks.OBSIDIAN,        Blocks.DIAMOND_BLOCK,
-					Blocks.IRON_ORE,          Blocks.GOLD_BLOCK,       Blocks.EMERALD_BLOCK,   Blocks.END_PORTAL,
-					Blocks.END_PORTAL_FRAME,  Blocks.NETHER_PORTAL,    Blocks.BEACON,          Blocks.SPAWNER,
-					Blocks.BOOKSHELF,         Blocks.LAVA,             Blocks.WATER,           Blocks.NETHER_WART,
-					Blocks.BLUE_ICE,          Blocks.DRAGON_WALL_HEAD, Blocks.DRAGON_HEAD,     Blocks.DRAGON_EGG,
-					Blocks.NETHER_QUARTZ_ORE, Blocks.CHEST,            Blocks.TRAPPED_CHEST,   Blocks.DISPENSER,
-					Blocks.DROPPER,           Blocks.LAPIS_ORE,        Blocks.LAPIS_BLOCK,     Blocks.TNT,
-					Blocks.CLAY,              Blocks.WET_SPONGE,       Blocks.SPONGE,          Blocks.OAK_PLANKS,
-					Blocks.CONDUIT,           Blocks.ENDER_CHEST
+
+						/* Ores */
+						Blocks.COAL_ORE, Blocks.IRON_ORE, Blocks.GOLD_ORE, Blocks.DIAMOND_ORE,
+						Blocks.EMERALD_ORE, Blocks.REDSTONE_ORE, Blocks.LAPIS_ORE, Blocks.NETHER_GOLD_ORE,
+						Blocks.ANCIENT_DEBRIS, Blocks.NETHER_QUARTZ_ORE,
+
+						// 1.17
+						/* Blocks.COPPER_ORE */
+
+						/* Ore Blocks */
+						Blocks.COAL_BLOCK, Blocks.IRON_BLOCK, Blocks.GOLD_BLOCK, Blocks.DIAMOND_BLOCK,
+						Blocks.EMERALD_BLOCK, Blocks.REDSTONE_BLOCK, Blocks.LAPIS_BLOCK, Blocks.NETHERITE_BLOCK,
+
+						/* Blocks */
+						Blocks.OBSIDIAN, Blocks.BLUE_ICE, Blocks.CLAY, Blocks.BOOKSHELF,
+						Blocks.SPONGE, Blocks.WET_SPONGE,
+
+						/* Other */
+						Blocks.NETHER_WART, Blocks.SPAWNER, Blocks.LAVA,Blocks.WATER,
+						Blocks.TNT, Blocks.CONDUIT,
+
+						/* Portals */
+						Blocks.END_PORTAL_FRAME, Blocks.END_PORTAL, Blocks.NETHER_PORTAL,
+
+						/* Interactive */
+						Blocks.BEACON, Blocks.CHEST, Blocks.TRAPPED_CHEST, Blocks.ENDER_CHEST,
+						Blocks.DISPENSER, Blocks.DROPPER,
+
+						/* Useless */
+						Blocks.DRAGON_WALL_HEAD, Blocks.DRAGON_HEAD, Blocks.DRAGON_EGG
+
 				),
 
 				// Cave Mode
