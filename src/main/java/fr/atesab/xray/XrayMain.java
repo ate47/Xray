@@ -2,6 +2,7 @@ package fr.atesab.xray;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import fr.atesab.xray.XrayMode.ViewMode;
@@ -218,7 +219,19 @@ public class XrayMain {
 	 * Mod config file
 	 */
 	public File getSaveFile() {
-		return new File(Minecraft.getInstance().gameDir, "xray.json");
+		File old_file = new File(Minecraft.getInstance().gameDir, "xray.json");
+		File new_file = new File(Minecraft.getInstance().gameDir, "config/xray.json");
+
+		// if old exists but new not
+		if(old_file.exists() && !new_file.exists()) {
+			try {
+				Files.move(old_file, new_file);
+			} catch (IOException e) {
+				new_file = old_file;
+			}
+		}
+
+		return new_file;
 	}
 
 	/**
