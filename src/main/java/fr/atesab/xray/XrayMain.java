@@ -162,6 +162,7 @@ public class XrayMain {
 
 	public static void setShowLocation(boolean showLocation) {
 		XrayMain.showLocation = showLocation;
+		saveConfigs();
 	}
 
 	/**
@@ -218,7 +219,7 @@ public class XrayMain {
 	/**
 	 * Mod config file
 	 */
-	public File getSaveFile() {
+	public static File getSaveFile() {
 		File old_file = new File(Minecraft.getInstance().gameDir, "xray.json");
 		File new_file = new File(Minecraft.getInstance().gameDir, "config/xray.json");
 
@@ -327,7 +328,7 @@ public class XrayMain {
 	/**
 	 * Save mod configs
 	 */
-	public void saveConfigs() {
+	public static void saveConfigs() {
 		try {
 			Writer writer = new FileWriterWithEncoding(getSaveFile(), Charset.forName("UTF-8"));
 			new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create()
