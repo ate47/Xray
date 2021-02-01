@@ -1,15 +1,17 @@
 package fr.atesab.xray;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.KeybindText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 import java.util.List;
 import java.util.OptionalInt;
@@ -20,8 +22,8 @@ public class XrayMenu extends Screen {
 	/**
 	 * A button to set boolean value
 	 */
-	private class GuiBooleanButton extends AbstractButton {
-		private String lang;
+	private class GuiBooleanButton extends AbstractButtonWidget {
+		private Text lang;
 		private Supplier<Boolean> getter;
 		private Consumer<Boolean> setter;
 
@@ -36,8 +38,8 @@ public class XrayMenu extends Screen {
 		 * @param getter a function to get the boolean value
 		 * @param setter a function to set the boolean value
 		 */
-		public GuiBooleanButton(String lang, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-			super(0, 0, 130, 20, new StringTextComponent(lang));
+		public GuiBooleanButton(Text lang, Supplier<Boolean> getter, Consumer<Boolean> setter) {
+			super(0, 0, 130, 20, lang);
 			this.lang = lang;
 			this.getter = getter;
 			this.setter = setter;
@@ -46,7 +48,7 @@ public class XrayMenu extends Screen {
 		}
 
 		@Override
-		public void onPress() {
+		public void onClick(double mouseX, double mouseY) {
 			setter.accept(!getter.get());
 			colorButtons.forEach(GuiBooleanButton::setString);
 		}
@@ -54,11 +56,8 @@ public class XrayMenu extends Screen {
 		private GuiBooleanButton setString() {
 			boolean value = getter.get(); // the value of the boolean
 			// set the display text COLOR(GREEN/RED) LANG_NAME (Enabled)?
-			StringTextComponent txt = new StringTextComponent(
-					"\u00a7" + (value ? 'a' : 'c') + I18n.format(lang)
-							+ (value ? " (" + I18n.format("x13.mod.enable") + ")" : "")
-			);
-			setMessage(txt);
+			setMessage(new KeybindText("\u00a7" + (value ? 'a' : 'c') + I18n.translate(lang.asString())
+					+ (value ? " (" + I18n.translate("x13.mod.enable") + ")" : "")));
 			return this;
 		}
 	}
@@ -69,9 +68,11 @@ public class XrayMenu extends Screen {
 		private String title;
 		private final boolean oldConfig;
 		private XrayMode mode;
+		private TextRenderer font;
 
 		public XrayModeElement(XrayMode mode) {
 			text = XrayMain.getBlockNamesToString(mode.getBlocks());
+			font = MinecraftClient.getInstance().textRenderer;
 			oldConfig = mode.isEnabled();
 			this.mode = mode;
 			modeElements.add(this);
@@ -82,21 +83,29 @@ public class XrayMenu extends Screen {
 		}
 
 		private void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
-			font.drawStringWithShadow(matrixStack, title, width / 2 - 200, field.y - font.FONT_HEIGHT / 2 + 9, 0xffffffff);
+			font.drawWithShadow(matrixStack, title, width / 2 - 200, field.y - font.fontHeight / 2 + 9, 0xffffffff);
 			field.render(matrixStack, mouseX, mouseY, partialTick);
 		}
 
 		private int getSizeX() {
-			return font.getStringWidth(title = I18n.format("x13.mod.blocks", mode.getNameTranslate()) + ": ");
+			return font.getWidth(title = I18n.translate("x13.mod.blocks", mode.getNameTranslate()) + ": ");
 		}
 
 		private void init(int x, int y, int sizeX) {
-			children.add(field = new TextFieldWidget(font, x, y + 2, 338 - sizeX, 16, new StringTextComponent("")));
-			addButton(new GuiBooleanButton(mode.getNameTranslate(), mode::isEnabled, mode::toggle));
-			addButton(new Button(width / 2 + 150, y, 50, 20, new StringTextComponent(I18n.format("controls.reset")), b -> {
-				field.setText(text = mode.getDefaultBlocks());
-			}));
-			field.setMaxStringLength(Integer.MAX_VALUE);
+			children.add(field = new TextFieldWidget(
+					font,
+					x, y + 2, 338 - sizeX, 16,
+					new KeybindText("")
+			));
+			addButton(new GuiBooleanButton(new KeybindText(mode.getNameTranslate()), mode::isEnabled, mode::toggle));
+			addButton(new ButtonWidget(
+					width / 2 + 150, y, 50, 20,
+					new KeybindText(I18n.translate("controls.reset")),
+					b -> {
+						field.setText(text = mode.getDefaultBlocks());
+					}
+			));
+			field.setMaxLength(Integer.MAX_VALUE);
 			field.setText(text);
 		}
 
@@ -109,13 +118,14 @@ public class XrayMenu extends Screen {
 		}
 	}
 
-	private static void setBlock(GuiBooleanButton b, int x, int y, int width) {
+	private static void setBlock(AbstractButtonWidget b, int x, int y, int width) {
 		b.x = x;
 		b.y = y;
 		b.setWidth(width);
 	}
 
 	private Screen parent;
+	private XrayMain mod;
 
 	private final boolean oldFullbrightConfig;
 	private final boolean oldShowLocationConfig;
@@ -123,43 +133,54 @@ public class XrayMenu extends Screen {
 	private List<GuiBooleanButton> colorButtons = Lists.newArrayList();
 
 	private List<XrayModeElement> modeElements = Lists.newArrayList();
-	private Minecraft mc;
+	TextRenderer font;
 
 	public XrayMenu(Screen parent) {
-		super(new TranslationTextComponent("x13.mod.config"));
+		super(new TranslatableText("x13.mod.config"));
 		this.parent = parent;
-		font = Minecraft.getInstance().fontRenderer;
-		XrayMain.getModes().forEach(XrayModeElement::new);
-		oldFullbrightConfig = XrayMain.isFullBrightEnable();
-		oldShowLocationConfig = XrayMain.isShowLocation();
-		mc = Minecraft.getInstance();
+		font = MinecraftClient.getInstance().textRenderer;
+		mod = XrayMain.getMod();
+		mod.getModes().forEach(XrayModeElement::new);
+		oldFullbrightConfig = mod.isFullBrightEnable();
+		oldShowLocationConfig = mod.isShowLocation();
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		renderBackground(matrixStack);
-		font.drawStringWithShadow(matrixStack, XrayMain.MOD_NAME, width / 2 - font.getStringWidth(XrayMain.MOD_NAME) / 2,
-				height / 2 - 84, 0xffffffff);
-		modeElements.forEach(modeElement -> modeElement.draw(matrixStack, mouseX, mouseY, partialTicks));
-
-		super.render(matrixStack, mouseX, mouseY, partialTicks);
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
+		//renderBackground();
+		String s = I18n.translate("x13.mod.config");
+		font.drawWithShadow(
+				matrixStack,
+				new KeybindText(s),
+				width / 2 - font.getWidth("Xray 13") / 2, height / 2 - 84,
+				0xffffffff
+		);
+		modeElements.forEach(modeElement -> modeElement.draw(matrixStack, mouseX, mouseY, partialTick));
+		super.render(matrixStack, mouseX, mouseY, partialTick);
 	}
-
 
 	@Override
 	protected void init() {
+		MinecraftClient minecraft = MinecraftClient.getInstance();
+
 		colorButtons.clear();
-		addButton(new Button(width / 2 - 200, height / 2, 198, 20, new StringTextComponent(I18n.format("gui.cancel")), b -> {
-			modeElements.forEach(XrayModeElement::cancel);
-			XrayMain.fullBright(oldFullbrightConfig);
-			XrayMain.modules();
-			XrayMain.setShowLocation(oldShowLocationConfig);
-			mc.displayGuiScreen(parent);
-		}));
-		addButton(new Button(width / 2 + 2, height / 2, 198, 20, new StringTextComponent(I18n.format("gui.done")), b -> {
-			modeElements.forEach(XrayModeElement::save);
-			mc.displayGuiScreen(parent);
-		}));
+		addButton(new ButtonWidget(
+				width / 2 - 200, height / 2, 198, 20,
+				new KeybindText(I18n.translate("gui.cancel")),
+				b -> {
+					modeElements.forEach(XrayModeElement::cancel);
+					mod.fullBright(oldFullbrightConfig).modules().setShowLocation(oldShowLocationConfig);
+					minecraft.openScreen(parent);
+				}
+		));
+		addButton(new ButtonWidget(
+				width / 2 + 2, height / 2, 198, 20,
+				new KeybindText(I18n.translate("gui.done")),
+				b -> {
+					modeElements.forEach(XrayModeElement::save);
+					minecraft.openScreen(parent);
+				}
+		));
 		OptionalInt max = modeElements.stream().mapToInt(XrayModeElement::getSizeX).max();
 		int sizeX = (max.isPresent() ? max.getAsInt() : 0);
 		int x = width / 2 - 195 + sizeX;
@@ -168,28 +189,28 @@ public class XrayMenu extends Screen {
 			y += 24;
 			element.init(x, y, sizeX);
 		}
-		addButton(new GuiBooleanButton("x13.mod.fullbright", XrayMain::isFullBrightEnable, XrayMain::fullBright));
-		addButton(new GuiBooleanButton("x13.mod.showloc", XrayMain::isShowLocation, XrayMain::setShowLocation));
+		addButton(new GuiBooleanButton(new KeybindText("x13.mod.fullbright"), mod::isFullBrightEnable, mod::fullBright));
+		addButton(new GuiBooleanButton(new KeybindText("x13.mod.showloc"), mod::isShowLocation, mod::setShowLocation));
 		int i, j = colorButtons.size() / 3;
-		int middle = height / 2;
+		int y_ = height / 2;
 		for (i = 0; i < j; i++) {
-			middle += 24;
-			setBlock(colorButtons.get(i * 3), width / 2 - 200, middle, 130);
-			setBlock(colorButtons.get(i * 3 + 1), width / 2 - 66, middle, 132);
-			setBlock(colorButtons.get(i * 3 + 2), width / 2 + 70, middle, 130);
+			y_ += 24;
+			setBlock(colorButtons.get(i * 3), width / 2 - 200, y_, 130);
+			setBlock(colorButtons.get(i * 3 + 1), width / 2 - 66, y_, 132);
+			setBlock(colorButtons.get(i * 3 + 2), width / 2 + 70, y_, 130);
 		}
-		middle += 24;
+		y_ += 24;
 		switch (colorButtons.size() - (i * 3)) {
 			case 1:
-				setBlock(colorButtons.get(i * 3 - 1), width / 2 - 200, middle, 198);
-				setBlock(colorButtons.get(i * 3), width / 2 + 2, middle, 198);
-				middle -= 24;
-				setBlock(colorButtons.get(i * 3 - 3), width / 2 - 200, middle, 198);
-				setBlock(colorButtons.get(i * 3 - 2), width / 2 + 2, middle, 198);
+				setBlock(colorButtons.get(i * 3 - 1), width / 2 - 200, y_, 198);
+				setBlock(colorButtons.get(i * 3), width / 2 + 2, y_, 198);
+				y_ -= 24;
+				setBlock(colorButtons.get(i * 3 - 3), width / 2 - 200, y_, 198);
+				setBlock(colorButtons.get(i * 3 - 2), width / 2 + 2, y_, 198);
 				break;
 			case 2:
-				setBlock(colorButtons.get(i * 3), width / 2 - 200, middle, 198);
-				setBlock(colorButtons.get(i * 3 + 1), width / 2 + 2, middle, 198);
+				setBlock(colorButtons.get(i * 3), width / 2 - 200, y_, 198);
+				setBlock(colorButtons.get(i * 3 + 1), width / 2 + 2, y_, 198);
 				break;
 		}
 		super.init();

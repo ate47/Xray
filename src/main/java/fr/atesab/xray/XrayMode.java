@@ -1,24 +1,26 @@
 package fr.atesab.xray;
 
 import com.google.common.collect.Lists;
+import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
+import net.fabricmc.loom.util.FabricApiExtension;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.BlockView;
 
 import java.util.List;
 
 public class XrayMode implements SideRenderer {
 	@FunctionalInterface
 	public static interface Viewer {
-		public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, IBlockReader blockState,
+		public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, BlockView blockState,
 										BlockPos blockAccess, Direction pos);
 	}
 
@@ -48,7 +50,7 @@ public class XrayMode implements SideRenderer {
 	private List<Block> blocks;
 	private final String defaultBlocks;
 	private boolean enabled;
-	private KeyBinding key;
+	private FabricKeyBinding key;
 	private final String name;
 	private final int color;
 	private ViewMode viewMode;
@@ -69,7 +71,13 @@ public class XrayMode implements SideRenderer {
 		this.color = nextColor();
 		this.enabled = false;
 		this.blocks = Lists.newArrayList();
-		this.key = new KeyBinding(name, keyCode, "key.categories.xray");
+		this.key = new FabricKeyBinding(
+				new Identifier(name),
+				InputUtil.Type.KEYSYM,
+				keyCode,
+				"key.categories.xray"
+		) {
+		};
 		this.viewMode = viewMode;
 		this.defaultBlocks = "";
 		MODES.add(this);
@@ -80,7 +88,13 @@ public class XrayMode implements SideRenderer {
 		this.color = nextColor();
 		this.enabled = false;
 		this.blocks = Lists.newArrayList(defaultBlocks);
-		this.key = new KeyBinding("x13.mod." + name, keyCode, "key.categories.xray");
+		this.key = new FabricKeyBinding(
+				new Identifier("x13.mod." + name),
+				InputUtil.Type.KEYSYM,
+				keyCode,
+				"key.categories.xray"
+		) {
+		};
 		this.viewMode = viewMode;
 		this.defaultBlocks = XrayMain.getBlockNamesToString(blocks);
 		MODES.add(this);
@@ -98,7 +112,7 @@ public class XrayMode implements SideRenderer {
 		return color;
 	}
 
-	public KeyBinding getKey() {
+	public FabricKeyBinding getKey() {
 		return key;
 	}
 
@@ -107,7 +121,7 @@ public class XrayMode implements SideRenderer {
 	}
 
 	public String getNameTranslate() {
-		return name.startsWith(CUSTOM_PREFIX) ? name : I18n.format("x13.mod." + name);
+		return name.startsWith(CUSTOM_PREFIX) ? name : I18n.translate("x13.mod." + name);
 	}
 
 	public ViewMode getViewMode() {
@@ -137,9 +151,8 @@ public class XrayMode implements SideRenderer {
 	public void setConfig(String[] data) {
 		blocks.clear();
 		for (String d : data) {
-			@SuppressWarnings("deprecation")
-			Block b = Registry.BLOCK.getOrDefault(new ResourceLocation(d));
-			if (!b.equals(Blocks.AIR))
+			Block b = Registry.BLOCK.get(new Identifier(d));
+			if (b != null && !b.equals(Blocks.AIR))
 				blocks.add(b);
 		}
 	}
@@ -155,9 +168,9 @@ public class XrayMode implements SideRenderer {
 	public void toggle(boolean enable, boolean reloadRenderers) {
 		MODES.forEach(m -> m.toggle0(false, false));
 		toggle0(enable, reloadRenderers);
-		XrayMain.internalFullbright();
+		XrayMain.getMod().internalFullbright();
 		if (reloadRenderers)
-			Minecraft.getInstance().worldRenderer.loadRenderers();
+			MinecraftClient.getInstance().worldRenderer.reload();
 	}
 
 	private void toggle0(boolean enable, boolean reloadRenderers) {
@@ -165,7 +178,7 @@ public class XrayMode implements SideRenderer {
 	}
 
 	@Override
-	public void shouldSideBeRendered(BlockState adjacentState, IBlockReader blockState, BlockPos blockAccess,
+	public void shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
 									 Direction pos, CallbackInfo<Boolean> ci) {
 		if (isEnabled())
 			ci.setReturnValue(viewMode.getViewer().shouldRenderSide(blocks.contains(adjacentState.getBlock()),

@@ -4,49 +4,44 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import fr.atesab.xray.XrayMode.ViewMode;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
+import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.Direction;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IBlockReader;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
+import org.spongepowered.asm.mixin.Mixins;
 
+import net.minecraft.world.BlockView;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-@OnlyIn(Dist.CLIENT)
-@Mod(XrayMain.MOD_ID)
-public class XrayMain {
+public class XrayMain implements ClientModInitializer, HudRenderCallback, ClientTickCallback {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
 	private static final Logger log = LogManager.getLogger(MOD_ID);
+
+	private static XrayMain instance;
 
 	private static List<XrayMode> modes = Lists.newArrayList();
 
@@ -59,22 +54,22 @@ public class XrayMain {
 	private static boolean internalFullbrightEnable = false;
 
 	private static boolean showLocation = true;
-	private static KeyBinding fullbright, config;
+	private static FabricKeyBinding fullbright, config;
 	private static int fullbrightColor = 0;
 
 	/**
 	 * Toggle fullBright
 	 */
-	public static void fullBright() {
-		fullBright(!fullBrightEnable);
+	public XrayMain fullBright() {
+		return fullBright(!fullBrightEnable);
 	}
 
 	/**
 	 * Set fullBright
 	 */
-	public static void fullBright(boolean enable) {
+	public XrayMain fullBright(boolean enable) {
 		fullBrightEnable = enable;
-		internalFullbright();
+		return internalFullbright();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -107,23 +102,24 @@ public class XrayMain {
 	/**
 	 * load internal fullbright by checking if a mode is enabled
 	 */
-	public static void internalFullbright() {
-		Minecraft mc = Minecraft.getInstance();
+	public XrayMain internalFullbright() {
+		MinecraftClient mc = MinecraftClient.getInstance();
 		boolean f = fullBrightEnable;
 		for (XrayMode mode : modes)
 			if (f = (f || mode.isEnabled()))
 				break;
 		if (f) {
 			if (!internalFullbrightEnable) {
-				oldGama = mc.gameSettings.gamma;
-				mc.gameSettings.gamma = 30;
+				oldGama = mc.options.gamma;
+				mc.options.gamma = 30;
 			}
 		} else
-			mc.gameSettings.gamma = oldGama;
+			mc.options.gamma = oldGama;
 		internalFullbrightEnable = f;
+		return this;
 	}
 
-	public static boolean isFullBrightEnable() {
+	public boolean isFullBrightEnable() {
 		return fullBrightEnable;
 	}
 
@@ -131,7 +127,7 @@ public class XrayMain {
 		return internalFullbrightEnable;
 	}
 
-	public static boolean isShowLocation() {
+	public boolean isShowLocation() {
 		return showLocation;
 	}
 
@@ -142,25 +138,25 @@ public class XrayMain {
 	/**
 	 * Reload modules
 	 */
-	public static void modules() {
+	public XrayMain modules() {
 		for (XrayMode mode : modes)
 			mode.toggle(mode.isEnabled(), false);
 		fullBright(isFullBrightEnable());
-		if (Minecraft.getInstance().worldRenderer != null)
-			Minecraft.getInstance().worldRenderer.loadRenderers(); // WorldRenderer
+		MinecraftClient.getInstance().worldRenderer.reload();
+		return this;
 	}
 
 	/**
 	 * Register mode(s) and keybinding(s)
 	 */
-	public static void registerXrayMode(XrayMode... modes) {
+	public void registerXrayMode(XrayMode... modes) {
 		for (XrayMode mode : modes) {
-			XrayMain.modes.add(mode);
-			ClientRegistry.registerKeyBinding(mode.getKey());
+			this.modes.add(mode);
+			KeyBindingRegistry.INSTANCE.register(mode.getKey());
 		}
 	}
 
-	public static void setShowLocation(boolean showLocation) {
+	public void setShowLocation(boolean showLocation) {
 		XrayMain.showLocation = showLocation;
 		saveConfigs();
 	}
@@ -170,7 +166,7 @@ public class XrayMain {
 	 */
 	public static int shouldSideBeRendered(
 			BlockState adjacentState,
-			IBlockReader blockState,
+			BlockView blockState,
 			BlockPos blockAccess,
 			Direction pos
 	) {
@@ -187,7 +183,7 @@ public class XrayMain {
 	 */
 	public static int shouldSideBeRendered(
 			BlockState adjacentState,
-			IBlockReader blockState,
+			BlockView blockState,
 			BlockPos blockAccess,
 			Direction pos,
 			Object arg
@@ -210,21 +206,27 @@ public class XrayMain {
 		return (a ? "-" : "") + d1 + s;
 	}
 
+
 	public XrayMain() {
-		log("Register mod listener...");
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		MinecraftForge.EVENT_BUS.register(this);
+		instance = this;
+	}
+
+	/**
+	 * get this mod
+	 */
+	public static XrayMain getMod() {
+		return instance;
 	}
 
 	/**
 	 * Mod config file
 	 */
 	public static File getSaveFile() {
-		File old_file = new File(Minecraft.getInstance().gameDir, "xray.json");
-		File new_file = new File(Minecraft.getInstance().gameDir, "config/xray.json");
+		File old_file = new File(MinecraftClient.getInstance().runDirectory, "xray.json");
+		File new_file = new File(MinecraftClient.getInstance().runDirectory, "config/xray.json");
 
 		// if old exists but new not
-		if(old_file.exists() && !new_file.exists()) {
+		if (old_file.exists() && !new_file.exists()) {
 			try {
 				Files.move(old_file, new_file);
 			} catch (IOException e) {
@@ -272,25 +274,21 @@ public class XrayMain {
 		saveConfigs();
 	}
 
-	@SubscribeEvent
-	public void onKeyEvent(KeyInputEvent ev) {
-		if (Minecraft.getInstance().currentScreen == null) {
+	@Override
+	public void tick(MinecraftClient minecraftClient) {
+		if (MinecraftClient.getInstance().currentScreen == null) {
 			for (XrayMode mode : modes)
 				if (mode.toggleKey())
 					return;
-			if (fullbright.isPressed())
+			if (fullbright.wasPressed())
 				fullBright();
-			else if (config.isPressed())
-				Minecraft.getInstance().displayGuiScreen(new XrayMenu(null));
+			else if (config.wasPressed())
+				MinecraftClient.getInstance().openScreen(new XrayMenu(null));
 		}
 	}
 
-	@SubscribeEvent
-	public void onRenderOverlay(RenderGameOverlayEvent.Post ev) {
-
-		// In other time it breaks armor/hunger/air hud #10
-		if (ev.getType() != RenderGameOverlayEvent.ElementType.TEXT)
-			return;
+	@Override
+	public void onHudRender(MatrixStack matrixStack, float v) {
 
 		int c;
 		String s;
@@ -304,31 +302,29 @@ public class XrayMain {
 				}
 			if (fullBrightEnable) {
 				c = fullbrightColor;
-				s = I18n.format("x13.mod.fullbright");
+				s = I18n.translate("x13.mod.fullbright");
 			} else {
 				c = 0xffffffff;
 				s = "";
 			}
 		}
-		Minecraft mc = Minecraft.getInstance();
-		FontRenderer render = mc.fontRenderer;
+		MinecraftClient mc = MinecraftClient.getInstance();
+		TextRenderer render = mc.textRenderer;
 		ClientPlayerEntity player = mc.player;
 
-		MatrixStack matrixStack = ev.getMatrixStack();
-
 		if (!s.isEmpty())
-			render.drawStringWithShadow(matrixStack, s = "[" + s + "] ", 5, 5, c);
+			render.drawWithShadow(matrixStack, s = "[" + s + "] ", 5, 5, c);
 		if (showLocation && player != null) {
-			Vector3d pos = player.getPositionVec();
-			render.drawStringWithShadow(matrixStack, "XYZ: " + (significantNumbers(pos.x) + " / " + significantNumbers(pos.y) + " / "
-					+ significantNumbers(pos.z)), 5 + render.getStringWidth(s), 5, 0xffffffff);
+			Vec3d pos = player.getPos();
+			render.drawWithShadow(matrixStack, "XYZ: " + (significantNumbers(pos.x) + " / " + significantNumbers(pos.y) + " / "
+					+ significantNumbers(pos.z)), 5 + render.getWidth(s), 5, 0xffffffff);
 		}
 	}
 
 	/**
 	 * Save mod configs
 	 */
-	public static void saveConfigs() {
+	public void saveConfigs() {
 		try {
 			Writer writer = new FileWriterWithEncoding(getSaveFile(), Charset.forName("UTF-8"));
 			new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create()
@@ -349,7 +345,8 @@ public class XrayMain {
 		modules();
 	}
 
-	private void setup(final FMLCommonSetupEvent event) {
+	@Override
+	public void onInitializeClient() {
 		log("Initialization");
 		registerXrayMode(
 				// @formatter:off
@@ -445,22 +442,20 @@ public class XrayMain {
 				));
 				// @formatter:on
 
-		// H
-		ClientRegistry.registerKeyBinding(fullbright = new KeyBinding(
-				"x13.mod.fullbright",
-				GLFW.GLFW_KEY_H,
-				"key.categories.xray"
-		));
-
-		// N
-		ClientRegistry.registerKeyBinding(config = new KeyBinding(
-				"x13.mod.config",
-				GLFW.GLFW_KEY_N,
-				"key.categories.xray"
-		));
-
 		fullbrightColor = XrayMode.nextColor();
 		loadConfigs();
+
+		HudRenderCallback.EVENT.register(this);
+		ClientTickCallback.EVENT.register(this);
+
+		try {
+			Class.forName("net.optifine.Lang");
+			log("Load Mixins for Optifine...");
+			Mixins.addConfiguration("optiray.mixins.json");
+		} catch (ClassNotFoundException e) {
+			log("Load Mixins without Optifine...");
+			Mixins.addConfiguration("xray.mixins.json");
+		}
 	}
 
 }
