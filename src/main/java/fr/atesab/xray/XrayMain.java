@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
 import fr.atesab.xray.XrayMode.ViewMode;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -37,7 +38,7 @@ import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public class XrayMain implements ModInitializer, HudRenderCallback, ClientTickCallback {
+public class XrayMain implements ClientModInitializer, HudRenderCallback, ClientTickCallback {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
 	private static final Logger log = LogManager.getLogger(MOD_ID);
@@ -339,8 +340,9 @@ public class XrayMain implements ModInitializer, HudRenderCallback, ClientTickCa
 		modules();
 	}
 
+
 	@Override
-	public void onInitialize() {
+	public void onInitializeClient() {
 		log("Initialization");
 		registerXrayMode(
 				// @formatter:off
@@ -457,15 +459,6 @@ public class XrayMain implements ModInitializer, HudRenderCallback, ClientTickCa
 				"key.categories.xray"
 		));
 
-
-//		try {
-//			Class.forName("net.optifine.Lang");
-//			log("Load Mixins for Optifine...");
-//			Mixins.addConfiguration("optiray.mixins.json");
-//		} catch (ClassNotFoundException e) {
-//			log("Load Mixins without Optifine...");
-//			Mixins.addConfiguration("xray.mixins.json");
-//		}
 	}
 
 }
