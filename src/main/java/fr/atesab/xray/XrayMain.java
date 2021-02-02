@@ -5,9 +5,8 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
 import fr.atesab.xray.XrayMode.ViewMode;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
-import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.block.Block;
@@ -16,6 +15,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
@@ -23,20 +23,21 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import net.minecraft.world.BlockView;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public class XrayMain implements ClientModInitializer, HudRenderCallback, ClientTickCallback {
+public class XrayMain implements ModInitializer, HudRenderCallback, ClientTickCallback {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
 	private static final Logger log = LogManager.getLogger(MOD_ID);
@@ -54,7 +55,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 	private static boolean internalFullbrightEnable = false;
 
 	private static boolean showLocation = true;
-	private static FabricKeyBinding fullbright, config;
+	private static KeyBinding fullbright, config;
 	private static int fullbrightColor = 0;
 
 	/**
@@ -74,8 +75,12 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 
 	@SuppressWarnings("deprecation")
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
-		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getKey) // BLOCK
-				.filter(Objects::nonNull).map(Objects::toString).collect(collector);
+		return blocks
+				.stream()
+				.filter(b -> !Blocks.AIR.equals(b))
+				.map(Registry.BLOCK::getId) // BLOCK
+				.filter(Objects::nonNull)
+				.map(Objects::toString).collect(collector);
 	}
 
 	/**
@@ -113,7 +118,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 				oldGama = mc.options.gamma;
 				mc.options.gamma = 30;
 			}
-		} else
+		} else if (mc != null && mc.options != null)
 			mc.options.gamma = oldGama;
 		internalFullbrightEnable = f;
 		return this;
@@ -142,7 +147,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		for (XrayMode mode : modes)
 			mode.toggle(mode.isEnabled(), false);
 		fullBright(isFullBrightEnable());
-		MinecraftClient.getInstance().worldRenderer.reload();
+		if (MinecraftClient.getInstance().worldRenderer != null)
+			MinecraftClient.getInstance().worldRenderer.reload();
 		return this;
 	}
 
@@ -152,7 +158,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 	public void registerXrayMode(XrayMode... modes) {
 		for (XrayMode mode : modes) {
 			this.modes.add(mode);
-			KeyBindingRegistry.INSTANCE.register(mode.getKey());
+			KeyBindingHelper.registerKeyBinding(mode.getKey());
 		}
 	}
 
@@ -161,34 +167,20 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		saveConfigs();
 	}
 
-	/**
-	 * True if the side should be rendered, injected on
-	 */
-	public static int shouldSideBeRendered(
-			BlockState adjacentState,
-			BlockView blockState,
-			BlockPos blockAccess,
-			Direction pos
-	) {
-		CallbackInfo<Boolean> ci = new CallbackInfo<>();
-		for (XrayMode mode : modes)
-			mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
-		if (ci.isCancelled())
-			return ci.getReturnValue() ? 0 : 1;
-		return 2;
-	}
-
-	/**
-	 * Filler for OptiFine
-	 */
 	public static int shouldSideBeRendered(
 			BlockState adjacentState,
 			BlockView blockState,
 			BlockPos blockAccess,
 			Direction pos,
-			Object arg
+			@Nullable CallbackInfoReturnable<Boolean> ci
 	) {
-		return shouldSideBeRendered(adjacentState, blockState, blockAccess, pos);
+		ci = ci != null ? ci : new CallbackInfoReturnable<Boolean>("shouldSideBeRendered", true);
+		for (XrayMode mode : modes) {
+			mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
+		}
+		if (ci.isCancelled())
+			return ci.getReturnValue() ? 0 : 1;
+		return 2;
 	}
 
 	private static String significantNumbers(double d) {
@@ -274,17 +266,19 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		saveConfigs();
 	}
 
+
 	@Override
 	public void tick(MinecraftClient minecraftClient) {
-		if (MinecraftClient.getInstance().currentScreen == null) {
-			for (XrayMode mode : modes)
-				if (mode.toggleKey())
-					return;
-			if (fullbright.wasPressed())
-				fullBright();
-			else if (config.wasPressed())
-				MinecraftClient.getInstance().openScreen(new XrayMenu(null));
-		}
+		if (MinecraftClient.getInstance().currentScreen != null)
+			return;
+		for (XrayMode mode : modes)
+			if (mode.toggleKey())
+				return;
+		if (fullbright.wasPressed())
+			fullBright();
+		if (config.wasPressed())
+			MinecraftClient.getInstance().openScreen(new XrayMenu(null));
+
 	}
 
 	@Override
@@ -346,7 +340,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 	}
 
 	@Override
-	public void onInitializeClient() {
+	public void onInitialize() {
 		log("Initialization");
 		registerXrayMode(
 				// @formatter:off
@@ -448,14 +442,30 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		HudRenderCallback.EVENT.register(this);
 		ClientTickCallback.EVENT.register(this);
 
-		try {
-			Class.forName("net.optifine.Lang");
-			log("Load Mixins for Optifine...");
-			Mixins.addConfiguration("optiray.mixins.json");
-		} catch (ClassNotFoundException e) {
-			log("Load Mixins without Optifine...");
-			Mixins.addConfiguration("xray.mixins.json");
-		}
+
+		// H
+		KeyBindingHelper.registerKeyBinding(fullbright = new KeyBinding(
+				"x13.mod.fullbright",
+				GLFW.GLFW_KEY_H,
+				"key.categories.xray"
+		));
+
+		// N
+		KeyBindingHelper.registerKeyBinding(config = new KeyBinding(
+				"x13.mod.config",
+				GLFW.GLFW_KEY_N,
+				"key.categories.xray"
+		));
+
+
+//		try {
+//			Class.forName("net.optifine.Lang");
+//			log("Load Mixins for Optifine...");
+//			Mixins.addConfiguration("optiray.mixins.json");
+//		} catch (ClassNotFoundException e) {
+//			log("Load Mixins without Optifine...");
+//			Mixins.addConfiguration("xray.mixins.json");
+//		}
 	}
 
 }

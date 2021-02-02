@@ -1,12 +1,11 @@
 package fr.atesab.xray;
 
 import com.google.common.collect.Lists;
-import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
-import net.fabricmc.loom.util.FabricApiExtension;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
@@ -14,6 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class XrayMode implements SideRenderer {
 	private List<Block> blocks;
 	private final String defaultBlocks;
 	private boolean enabled;
-	private FabricKeyBinding key;
+	private KeyBinding key;
 	private final String name;
 	private final int color;
 	private ViewMode viewMode;
@@ -66,37 +67,24 @@ public class XrayMode implements SideRenderer {
 		return COLORS[colorCursor = (colorCursor + 1) % COLORS.length];
 	}
 
-	public XrayMode(String name, int keyCode, ViewMode viewMode) {
+	public XrayMode(String name, int keyCode, ViewMode viewMode, @Nullable Block... defaultBlocks) {
 		this.name = name;
 		this.color = nextColor();
 		this.enabled = false;
-		this.blocks = Lists.newArrayList();
-		this.key = new FabricKeyBinding(
-				new Identifier(name),
+		this.key = new KeyBinding(
+				"x13.mod." + name,
 				InputUtil.Type.KEYSYM,
 				keyCode,
 				"key.categories.xray"
-		) {
-		};
+		);
 		this.viewMode = viewMode;
-		this.defaultBlocks = "";
-		MODES.add(this);
-	}
-
-	public XrayMode(String name, int keyCode, ViewMode viewMode, Block... defaultBlocks) {
-		this.name = name;
-		this.color = nextColor();
-		this.enabled = false;
-		this.blocks = Lists.newArrayList(defaultBlocks);
-		this.key = new FabricKeyBinding(
-				new Identifier("x13.mod." + name),
-				InputUtil.Type.KEYSYM,
-				keyCode,
-				"key.categories.xray"
-		) {
-		};
-		this.viewMode = viewMode;
-		this.defaultBlocks = XrayMain.getBlockNamesToString(blocks);
+		if (defaultBlocks != null) {
+			this.blocks = Lists.newArrayList(defaultBlocks);
+			this.defaultBlocks = XrayMain.getBlockNamesToString(blocks);
+		} else {
+			this.blocks = Lists.newArrayList();
+			this.defaultBlocks = "";
+		}
 		MODES.add(this);
 	}
 
@@ -112,7 +100,7 @@ public class XrayMode implements SideRenderer {
 		return color;
 	}
 
-	public FabricKeyBinding getKey() {
+	public KeyBinding getKey() {
 		return key;
 	}
 
@@ -141,7 +129,7 @@ public class XrayMode implements SideRenderer {
 	}
 
 	public boolean toggleKey() {
-		if (key.isPressed()) {
+		if (key.wasPressed()) {
 			toggle();
 			return true;
 		}
@@ -179,7 +167,7 @@ public class XrayMode implements SideRenderer {
 
 	@Override
 	public void shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
-									 Direction pos, CallbackInfo<Boolean> ci) {
+									 Direction pos, CallbackInfoReturnable<Boolean> ci) {
 		if (isEnabled())
 			ci.setReturnValue(viewMode.getViewer().shouldRenderSide(blocks.contains(adjacentState.getBlock()),
 					adjacentState, blockState, blockAccess, pos));

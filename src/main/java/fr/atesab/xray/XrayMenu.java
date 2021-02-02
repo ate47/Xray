@@ -10,7 +10,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.KeybindText;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class XrayMenu extends Screen {
 	 * A button to set boolean value
 	 */
 	private class GuiBooleanButton extends AbstractButtonWidget {
-		private Text lang;
+		private String lang;
 		private Supplier<Boolean> getter;
 		private Consumer<Boolean> setter;
 
@@ -38,8 +37,8 @@ public class XrayMenu extends Screen {
 		 * @param getter a function to get the boolean value
 		 * @param setter a function to set the boolean value
 		 */
-		public GuiBooleanButton(Text lang, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-			super(0, 0, 130, 20, lang);
+		public GuiBooleanButton(String lang, Supplier<Boolean> getter, Consumer<Boolean> setter) {
+			super(0, 0, 130, 20, new KeybindText(lang));
 			this.lang = lang;
 			this.getter = getter;
 			this.setter = setter;
@@ -56,8 +55,14 @@ public class XrayMenu extends Screen {
 		private GuiBooleanButton setString() {
 			boolean value = getter.get(); // the value of the boolean
 			// set the display text COLOR(GREEN/RED) LANG_NAME (Enabled)?
-			setMessage(new KeybindText("\u00a7" + (value ? 'a' : 'c') + I18n.translate(lang.asString())
-					+ (value ? " (" + I18n.translate("x13.mod.enable") + ")" : "")));
+			String color = "\u00a7" + (value ? 'a' : 'c');
+			// @formatter:off
+			setMessage(new KeybindText(
+					color +
+					I18n.translate(lang) +
+					(value ? " (" + I18n.translate("x13.mod.enable") + ")" : "")
+			));
+			// @formatter:on
 			return this;
 		}
 	}
@@ -97,7 +102,7 @@ public class XrayMenu extends Screen {
 					x, y + 2, 338 - sizeX, 16,
 					new KeybindText("")
 			));
-			addButton(new GuiBooleanButton(new KeybindText(mode.getNameTranslate()), mode::isEnabled, mode::toggle));
+			addButton(new GuiBooleanButton(mode.getNameTranslate(), mode::isEnabled, mode::toggle));
 			addButton(new ButtonWidget(
 					width / 2 + 150, y, 50, 20,
 					new KeybindText(I18n.translate("controls.reset")),
@@ -147,7 +152,7 @@ public class XrayMenu extends Screen {
 
 	@Override
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
-		//renderBackground();
+		renderBackground(matrixStack);
 		String s = I18n.translate("x13.mod.config");
 		font.drawWithShadow(
 				matrixStack,
@@ -189,8 +194,8 @@ public class XrayMenu extends Screen {
 			y += 24;
 			element.init(x, y, sizeX);
 		}
-		addButton(new GuiBooleanButton(new KeybindText("x13.mod.fullbright"), mod::isFullBrightEnable, mod::fullBright));
-		addButton(new GuiBooleanButton(new KeybindText("x13.mod.showloc"), mod::isShowLocation, mod::setShowLocation));
+		addButton(new GuiBooleanButton("x13.mod.fullbright", mod::isFullBrightEnable, mod::fullBright));
+		addButton(new GuiBooleanButton("x13.mod.showloc", mod::isShowLocation, mod::setShowLocation));
 		int i, j = colorButtons.size() / 3;
 		int y_ = height / 2;
 		for (i = 0; i < j; i++) {

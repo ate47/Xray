@@ -6,7 +6,7 @@
   "mixins": [
   ],
   "client": [
-    "XrayMixin"
+    "MixinBlock"
   ],
   "injectors": {
     "defaultRequire": 1
