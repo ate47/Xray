@@ -24,7 +24,8 @@
     ]
   },
   "mixins": [
-    "xray.mixins.json"
+    "xray.sodium.mixins.json",
+    "xray.vanilla.mixins.json"
   ],
 
   "depends": {
