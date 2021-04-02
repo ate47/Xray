@@ -1,0 +1,11 @@
+{
+	"x13.mod.xray": "Mode Xray",
+	"x13.mod.cave": "Mode Grotte",
+	"x13.mod.redstone": "Mode Redstone",
+	"x13.mod.fullbright": "Pleine luminosité",
+	"x13.mod.config": "Configurer Xray",
+	"x13.mod.blocks": "%s blocs",
+	"x13.mod.showloc": "Position",
+	"x13.mod.enable": "Activé",
+	"key.categories.xray": "Xray"
+}
