@@ -146,8 +146,12 @@ public class XrayMain {
 		for (XrayMode mode : modes)
 			mode.toggle(mode.isEnabled(), false);
 		fullBright(isFullBrightEnable());
+		try {
 		if (Minecraft.getInstance().worldRenderer != null)
 			Minecraft.getInstance().worldRenderer.loadRenderers(); // WorldRenderer
+		} catch (IllegalStateException e) {
+			e.printStackTrace();	
+		}
 	}
 
 	/**
