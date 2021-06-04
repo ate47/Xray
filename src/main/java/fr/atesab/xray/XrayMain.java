@@ -148,8 +148,12 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		for (XrayMode mode : modes)
 			mode.toggle(mode.isEnabled(), false);
 		fullBright(isFullBrightEnable());
-		if (MinecraftClient.getInstance().worldRenderer != null)
-			MinecraftClient.getInstance().worldRenderer.reload();
+		try {
+			if (MinecraftClient.getInstance().worldRenderer != null)
+				MinecraftClient.getInstance().worldRenderer.reload();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();	
+		}
 		return this;
 	}
 
