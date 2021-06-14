@@ -7,16 +7,17 @@ import com.google.gson.GsonBuilder;
 import fr.atesab.xray.XrayMode.ViewMode;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndTick;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
@@ -38,7 +39,7 @@ import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public class XrayMain implements ClientModInitializer, HudRenderCallback, ClientTickCallback {
+public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTick {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
 	private static final Logger log = LogManager.getLogger(MOD_ID);
@@ -76,12 +77,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 
 	@SuppressWarnings("deprecation")
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
-		return blocks
-				.stream()
-				.filter(b -> !Blocks.AIR.equals(b))
-				.map(Registry.BLOCK::getId) // BLOCK
-				.filter(Objects::nonNull)
-				.map(Objects::toString).collect(collector);
+		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId) // BLOCK
+				.filter(Objects::nonNull).map(Objects::toString).collect(collector);
 	}
 
 	/**
@@ -152,7 +149,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 			if (MinecraftClient.getInstance().worldRenderer != null)
 				MinecraftClient.getInstance().worldRenderer.reload();
 		} catch (IllegalStateException e) {
-			e.printStackTrace();	
+			e.printStackTrace();
 		}
 		return this;
 	}
@@ -172,13 +169,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		saveConfigs();
 	}
 
-	public static int shouldSideBeRendered(
-			BlockState adjacentState,
-			BlockView blockState,
-			BlockPos blockAccess,
-			Direction pos,
-			@Nullable CallbackInfoReturnable<Boolean> ci
-	) {
+	public static int shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
+			Direction pos, @Nullable CallbackInfoReturnable<Boolean> ci) {
 		ci = ci != null ? ci : new CallbackInfoReturnable<Boolean>("shouldSideBeRendered", true);
 		for (XrayMode mode : modes) {
 			mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
@@ -202,7 +194,6 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 			s = String.format(Locale.US, "%.0f", Double.valueOf(String.format("%.3G", d)));
 		return (a ? "-" : "") + d1 + s;
 	}
-
 
 	public XrayMain() {
 		instance = this;
@@ -271,10 +262,9 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		saveConfigs();
 	}
 
-
 	@Override
-	public void tick(MinecraftClient minecraftClient) {
-		if (MinecraftClient.getInstance().currentScreen != null)
+	public void onEndTick(MinecraftClient client) {
+		if (client.currentScreen != null)
 			return;
 		for (XrayMode mode : modes)
 			if (mode.toggleKey())
@@ -282,7 +272,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		if (fullbright.wasPressed())
 			fullBright();
 		if (config.wasPressed())
-			MinecraftClient.getInstance().openScreen(new XrayMenu(null));
+			client.openScreen(new XrayMenu(null));
 
 	}
 
@@ -291,8 +281,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 
 		int c;
 		String s;
-		nameFinder:
-		{
+		nameFinder: {
 			for (XrayMode mode : modes)
 				if (mode.isEnabled()) {
 					c = mode.getColor();
@@ -315,8 +304,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 			render.drawWithShadow(matrixStack, s = "[" + s + "] ", 5, 5, c);
 		if (showLocation && player != null) {
 			Vec3d pos = player.getPos();
-			render.drawWithShadow(matrixStack, "XYZ: " + (significantNumbers(pos.x) + " / " + significantNumbers(pos.y) + " / "
-					+ significantNumbers(pos.z)), 5 + render.getWidth(s), 5, 0xffffffff);
+			render.drawWithShadow(matrixStack, "XYZ: " + (significantNumbers(pos.x) + " / " + significantNumbers(pos.y)
+					+ " / " + significantNumbers(pos.z)), 5 + render.getWidth(s), 5, 0xffffffff);
 		}
 	}
 
@@ -344,12 +333,11 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		modules();
 	}
 
-
 	@Override
 	public void onInitializeClient() {
 		log("Initialization");
 		registerXrayMode(
-				// @formatter:off
+		// @formatter:off
 				// Xray Mode
 				new XrayMode(
 					"xray",
@@ -362,7 +350,10 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 						Blocks.ANCIENT_DEBRIS, Blocks.NETHER_QUARTZ_ORE,
 
 						// 1.17
-						/* Blocks.COPPER_ORE */
+						Blocks.COPPER_ORE, Blocks.DEEPSLATE_COAL_ORE, Blocks.DEEPSLATE_IRON_ORE, Blocks.DEEPSLATE_GOLD_ORE,
+						Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.DEEPSLATE_EMERALD_ORE, Blocks.DEEPSLATE_REDSTONE_ORE, Blocks.DEEPSLATE_LAPIS_ORE,
+
+						Blocks.RAW_COPPER_BLOCK, Blocks.RAW_GOLD_BLOCK, Blocks.RAW_IRON_BLOCK, Blocks.CRYING_OBSIDIAN,
 
 						/* Ore Blocks */
 						Blocks.COAL_BLOCK, Blocks.IRON_BLOCK, Blocks.GOLD_BLOCK, Blocks.DIAMOND_BLOCK,
@@ -399,7 +390,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 					GLFW.GLFW_KEY_C,
 					ViewMode.INCLUSIVE,
 					Blocks.DIRT,              Blocks.GRASS,            Blocks.GRAVEL,          Blocks.GRASS_BLOCK,
-					Blocks.GRASS_PATH,        Blocks.SAND,             Blocks.SANDSTONE,       Blocks.RED_SAND
+					Blocks.DIRT_PATH,        Blocks.SAND,             Blocks.SANDSTONE,       Blocks.RED_SAND
 				),
 
 				// Redstone mode
@@ -408,7 +399,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 					GLFW.GLFW_KEY_R,
 					ViewMode.EXCLUSIVE,
 					Blocks.REDSTONE_BLOCK,                             Blocks.REDSTONE_LAMP,
-					Blocks.REDSTONE_ORE,                               Blocks.REDSTONE_TORCH,
+					Blocks.REDSTONE_ORE,                               Blocks.REDSTONE_TORCH, 
+					Blocks.DEEPSLATE_REDSTONE_ORE,
 					Blocks.REDSTONE_WALL_TORCH,                        Blocks.REDSTONE_WIRE,
 					Blocks.REPEATER,                                   Blocks.REPEATING_COMMAND_BLOCK,
 					Blocks.COMMAND_BLOCK,                              Blocks.CHAIN_COMMAND_BLOCK,
@@ -438,7 +430,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 					Blocks.SPRUCE_PRESSURE_PLATE,                      Blocks.STONE_PRESSURE_PLATE,
 					Blocks.RAIL,                                       Blocks.ACTIVATOR_RAIL,
 					Blocks.DETECTOR_RAIL,                              Blocks.POWERED_RAIL,
-					Blocks.ENDER_CHEST
+					Blocks.ENDER_CHEST,								   Blocks.TARGET
 				));
 				// @formatter:on
 
@@ -446,22 +438,15 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, Client
 		loadConfigs();
 
 		HudRenderCallback.EVENT.register(this);
-		ClientTickCallback.EVENT.register(this);
-
+		ClientTickEvents.END_CLIENT_TICK.register(this);
 
 		// H
-		KeyBindingHelper.registerKeyBinding(fullbright = new KeyBinding(
-				"x13.mod.fullbright",
-				GLFW.GLFW_KEY_H,
-				"key.categories.xray"
-		));
+		KeyBindingHelper.registerKeyBinding(
+				fullbright = new KeyBinding("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray"));
 
 		// N
-		KeyBindingHelper.registerKeyBinding(config = new KeyBinding(
-				"x13.mod.config",
-				GLFW.GLFW_KEY_N,
-				"key.categories.xray"
-		));
+		KeyBindingHelper
+				.registerKeyBinding(config = new KeyBinding("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray"));
 
 	}
 
