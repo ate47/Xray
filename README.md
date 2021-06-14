@@ -24,6 +24,13 @@ Bored by finding your diamonds legitimately? This mod is for you!
     location on the HUD and add/remove to /reset Blocks lists of cave, redstone and Xray mode<br/>
     <img src="docs/assets/screens/5.png" width="300px">
 
+    You can change the blocks one by one
+    <img src="docs/assets/screens/8.png" width="300px">
+    
+    From the list of blocks
+    <img src="docs/assets/screens/9.png" width="300px">
+
+
 ### Custom modes
 You can create you own mode in Xray by adding in the `xray.json` in `customModes` names of new `<modeName>:<type>`
 
