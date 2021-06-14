@@ -1,22 +1,20 @@
 package fr.atesab.xray;
 
-import com.google.common.collect.Lists;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.KeybindText;
-import net.minecraft.text.TranslatableText;
-
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import com.google.common.collect.Lists;
+
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.KeybindText;
+import net.minecraft.text.TranslatableText;
 
 public class XrayMenu extends Screen {
 	/**
@@ -63,7 +61,7 @@ public class XrayMenu extends Screen {
 
 		@Override
 		public void appendNarrations(NarrationMessageBuilder builder) {
-			//TODO: understand what we have to fill
+			// TODO: understand what we have to fill
 		}
 
 		@Override
@@ -74,60 +72,36 @@ public class XrayMenu extends Screen {
 	}
 
 	public class XrayModeElement {
-		private TextFieldWidget field;
-		private String text;
+		private ButtonWidget blockMenu;
 		private String title;
-		private final boolean oldConfig;
 		private XrayMode mode;
-		private TextRenderer font;
 
 		public XrayModeElement(XrayMode mode) {
-			text = XrayMain.getBlockNamesToString(mode.getBlocks());
-			font = MinecraftClient.getInstance().textRenderer;
-			oldConfig = mode.isEnabled();
 			this.mode = mode;
 			modeElements.add(this);
 		}
 
-		private void cancel() {
-			mode.toggle(oldConfig, false);
-		}
-
 		private void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
-			font.drawWithShadow(matrixStack, title, width / 2 - 200, field.y - font.fontHeight / 2 + 9, 0xffffffff);
-			field.render(matrixStack, mouseX, mouseY, partialTick);
+			textRenderer.drawWithShadow(matrixStack, title, width / 2 - 200, blockMenu.y - textRenderer.fontHeight / 2 + 9, 0xffffffff);
 		}
 
 		private int getSizeX() {
-			return font.getWidth(title = I18n.translate("x13.mod.blocks", mode.getNameTranslate()) + ": ");
+			return textRenderer.getWidth(title = I18n.translate("x13.mod.blocks", mode.getNameTranslate()) + ": ");
 		}
 
 		private void init(int x, int y, int sizeX) {
-			field = new TextFieldWidget(
-					font,
-					x, y + 2, 338 - sizeX, 16,
-					new KeybindText("")
-			);
-			addSelectableChild(field);
+			// field = new TextFieldWidget(
+			// font,
+			// x, y + 2, 338 - sizeX, 16,
+			// new KeybindText("")
+			// );
+			// addSelectableChild(field);
 			addDrawableChild(new GuiBooleanButton(mode.getNameTranslate(), mode::isEnabled, mode::toggle));
-			ButtonWidget reset = (new ButtonWidget(
-					width / 2 + 150, y, 50, 20,
-					new KeybindText(I18n.translate("controls.reset")),
-					b -> {
-						field.setText(text = mode.getDefaultBlocks());
-					}
-			));
+			blockMenu = new XrayModeWidget(x, y, 338 - sizeX, 20, mode, XrayMenu.this);
+			ButtonWidget reset = (new ButtonWidget(width / 2 + 150, y, 50, 20,
+					new KeybindText(I18n.translate("controls.reset")), b -> mode.reset()));
 			addDrawableChild(reset);
-			field.setMaxLength(Integer.MAX_VALUE);
-			field.setText(text);
-		}
-
-		private void save() {
-			mode.setConfig(text.split(" "));
-		}
-
-		private void update() {
-			text = field.getText();
+			addDrawableChild(blockMenu);
 		}
 	}
 
@@ -140,62 +114,40 @@ public class XrayMenu extends Screen {
 	private Screen parent;
 	private XrayMain mod;
 
-	private final boolean oldFullbrightConfig;
-	private final boolean oldShowLocationConfig;
-
 	private List<GuiBooleanButton> colorButtons = Lists.newArrayList();
 
 	private List<XrayModeElement> modeElements = Lists.newArrayList();
-	TextRenderer font;
 
 	public XrayMenu(Screen parent) {
 		super(new TranslatableText("x13.mod.config"));
 		this.parent = parent;
-		font = MinecraftClient.getInstance().textRenderer;
 		mod = XrayMain.getMod();
-		mod.getModes().forEach(XrayModeElement::new);
-		oldFullbrightConfig = mod.isFullBrightEnable();
-		oldShowLocationConfig = mod.isShowLocation();
+		XrayMain.getModes().forEach(XrayModeElement::new);
 	}
 
 	@Override
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
 		renderBackground(matrixStack);
 		String s = I18n.translate("x13.mod.config");
-		font.drawWithShadow(
-				matrixStack,
-				new KeybindText(s),
-				width / 2 - font.getWidth("Xray 13") / 2, height / 2 - 84,
-				0xffffffff
-		);
+		textRenderer.drawWithShadow(matrixStack, new KeybindText(s), width / 2 - textRenderer.getWidth("Xray 13") / 2,
+				height / 2 - 84, 0xffffffff);
 		modeElements.forEach(modeElement -> modeElement.draw(matrixStack, mouseX, mouseY, partialTick));
 		super.render(matrixStack, mouseX, mouseY, partialTick);
 	}
 
 	@Override
 	protected void init() {
-		MinecraftClient minecraft = MinecraftClient.getInstance();
-
 		colorButtons.clear();
-		ButtonWidget cancelBtn = new ButtonWidget(
-				width / 2 - 200, height / 2, 198, 20,
-				new KeybindText(I18n.translate("gui.cancel")),
-				b -> {
-					modeElements.forEach(XrayModeElement::cancel);
-					mod.fullBright(oldFullbrightConfig).modules().setShowLocation(oldShowLocationConfig);
-					minecraft.openScreen(parent);
-				}
-		);
-		ButtonWidget doneBtn = new ButtonWidget(
-				width / 2 + 2, height / 2, 198, 20,
-				new KeybindText(I18n.translate("gui.done")),
-				b -> {
-					modeElements.forEach(XrayModeElement::save);
-					minecraft.openScreen(parent);
-				}
-		);
-		addDrawableChild(cancelBtn);
+		ButtonWidget doneBtn = new ButtonWidget(width / 2 - 200, height / 2, 198, 20,
+				new KeybindText(I18n.translate("gui.done")), b -> {
+					client.openScreen(parent);
+				});
 		addDrawableChild(doneBtn);
+		ButtonWidget resetBtn = new ButtonWidget(width / 2 + 2, height / 2, 198, 20,
+				new KeybindText(I18n.translate("controls.reset")), b -> {
+					XrayMain.getModes().forEach(XrayMode::reset);
+				});
+		addDrawableChild(resetBtn);
 		OptionalInt max = modeElements.stream().mapToInt(XrayModeElement::getSizeX).max();
 		int sizeX = (max.isPresent() ? max.getAsInt() : 0);
 		int x = width / 2 - 195 + sizeX;
@@ -233,7 +185,6 @@ public class XrayMenu extends Screen {
 
 	@Override
 	public void tick() {
-		modeElements.forEach(XrayModeElement::update);
 		super.tick();
 	}
 

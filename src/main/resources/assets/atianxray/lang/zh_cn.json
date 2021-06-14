@@ -7,5 +7,9 @@
   "x13.mod.blocks": "%s 方块",
   "x13.mod.showloc": "位置",
   "x13.mod.enable": "启用",
+	"x13.mod.menu.selector": "Block selector",
+	"x13.mod.menu.extract": "Extract",
+	"x13.mod.menu.replace": "Left click to replace",
+	"x13.mod.menu.delete": "Right click to delete",
   "key.categories.xray": "Xray"
 }
