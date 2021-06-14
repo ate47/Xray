@@ -27,7 +27,7 @@ Bored by finding your diamonds legitimately? This mod is for you!
     You can change the blocks one by one
     <img src="docs/assets/screens/8.png" width="300px">
     
-    From the list of blocks
+    From the list of blocks in the game (even from other mods)
     <img src="docs/assets/screens/9.png" width="300px">
 
 
