@@ -6,7 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "MixinBlock"
+    "MixinBlock",
+    "MixinLightmapTextureManager"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -6,7 +6,6 @@ import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
 import fr.atesab.xray.XrayMode.ViewMode;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndTick;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -42,6 +41,7 @@ import java.util.stream.Collectors;
 public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTick {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
+	private static int maxFullbrightStates = 20;
 	private static final Logger log = LogManager.getLogger(MOD_ID);
 
 	private static XrayMain instance;
@@ -54,7 +54,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	private static boolean fullBrightEnable = false;
 
-	private static boolean internalFullbrightEnable = false;
+	private static int internalFullbrightState = 0;
 
 	private static boolean showLocation = true;
 	private static KeyBinding fullbright, config;
@@ -106,19 +106,16 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	 * load internal fullbright by checking if a mode is enabled
 	 */
 	public XrayMain internalFullbright() {
-		MinecraftClient mc = MinecraftClient.getInstance();
 		boolean f = fullBrightEnable;
 		for (XrayMode mode : modes)
 			if (f = (f || mode.isEnabled()))
 				break;
 		if (f) {
-			if (!internalFullbrightEnable) {
-				oldGama = mc.options.gamma;
-				mc.options.gamma = 30;
-			}
-		} else if (mc != null && mc.options != null)
-			mc.options.gamma = oldGama;
-		internalFullbrightEnable = f;
+			if (internalFullbrightState == 0)
+				internalFullbrightState = 1;
+		} else {
+			internalFullbrightState = 0;
+		}
 		return this;
 	}
 
@@ -127,7 +124,14 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	}
 
 	public static boolean isInternalFullbrightEnable() {
-		return internalFullbrightEnable;
+		return getInternalFullbrightState() != 0;
+	}
+
+	/**
+	 * @return the internalFullbrightEnable
+	 */
+	public static float getInternalFullbrightState() {
+		return 20 * internalFullbrightState / maxFullbrightStates;
 	}
 
 	public boolean isShowLocation() {
@@ -239,9 +243,6 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 					mode.setConfig(((List<String>) blocks).stream().toArray(String[]::new));
 			}
 			fullBrightEnable = (boolean) map.getOrDefault("fullBright", false);
-			internalFullbrightEnable = fullBrightEnable
-					|| (boolean) map.getOrDefault("internalFullbrightEnable", false);
-			oldGama = (double) map.getOrDefault("oldGama", 0D);
 			showLocation = (boolean) map.getOrDefault("showLocation", true);
 			customModes = ((List<String>) map.getOrDefault("customModes", Lists.<String>newArrayList()));
 			registerXrayMode(customModes.stream().map(customMode -> {
@@ -264,6 +265,9 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	@Override
 	public void onEndTick(MinecraftClient client) {
+		if (internalFullbrightState != 0 && internalFullbrightState < maxFullbrightStates) {
+			internalFullbrightState++;
+		}
 		if (client.currentScreen != null)
 			return;
 		for (XrayMode mode : modes)
@@ -320,7 +324,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 						modes.forEach(mode -> m.put(mode.getName() + "Blocks", getBlockNamesToList(mode.getBlocks())));
 						m.put("showLocation", showLocation);
 						m.put("oldGama", oldGama);
-						m.put("internalFullbrightEnable", internalFullbrightEnable);
+						m.put("internalFullbrightEnable", internalFullbrightState);
 						m.put("fullBrightEnable", fullBrightEnable);
 						m.put("customModes", customModes.stream().map(
 								s -> s.split(":", 2).length == 2 ? s : s + ":" + XrayMode.ViewMode.EXCLUSIVE.name())
