@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class XrayMode implements SideRenderer {
+public class XrayMode implements SideRenderer, IColorObject {
 	@FunctionalInterface
 	public static interface Viewer {
 		public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, BlockView blockState,
@@ -109,6 +109,11 @@ public class XrayMode implements SideRenderer {
 		return name.startsWith(CUSTOM_PREFIX) ? name : I18n.translate("x13.mod." + name);
 	}
 
+	@Override
+	public String getModeName() {
+		return getNameTranslate();
+	}
+
 	public ViewMode getViewMode() {
 		return viewMode;
 	}
@@ -137,7 +142,7 @@ public class XrayMode implements SideRenderer {
 		blocks.clear();
 		for (String d : data) {
 			Block b = Registry.BLOCK.get(new Identifier(d));
-			if (b != null && !b.equals(Blocks.AIR))
+			if (!b.equals(Blocks.AIR))
 				blocks.add(b);
 		}
 	}
@@ -151,15 +156,23 @@ public class XrayMode implements SideRenderer {
 	}
 
 	public void toggle(boolean enable, boolean reloadRenderers) {
-		MODES.forEach(m -> m.toggle0(false, false));
-		toggle0(enable, reloadRenderers);
-		XrayMain.getMod().internalFullbright();
+		XrayMain mod = XrayMain.getMod();
+		XrayMode old = mod.getSelectedMode();
+		if (old != null)
+			old.toggle0(false);
+		toggle0(enable);
+		mod.setSelectedMode(this);
+		mod.internalFullbright();
+		MinecraftClient mc = MinecraftClient.getInstance();
 		if (reloadRenderers)
-			MinecraftClient.getInstance().worldRenderer.reload();
+			mc.worldRenderer.reload();
 	}
 
-	private void toggle0(boolean enable, boolean reloadRenderers) {
-		enabled = enable;
+	private void toggle0(boolean enable) {
+		if (enabled && !enable) {
+			XrayMain.getMod().setSelectedMode(null);
+		}
+		this.enabled = enable;
 	}
 
 	@Override

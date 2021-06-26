@@ -9,7 +9,7 @@
       "console": "internalConsole",
       "stopOnEntry": false,
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-XX:+ShowCodeDetailsInExceptionMessages -Dfabric.dli.config\u003dI:\\workspace\\Xray\\.gradle\\loom-cache\\launch.cfg -Dfabric.dli.env\u003dclient -Dfabric.dli.main\u003dnet.fabricmc.loader.launch.knot.KnotClient",
+      "vmArgs": "-XX:+ShowCodeDetailsInExceptionMessages -Dfabric.dli.config\u003dI:\\save\\curse\\minecraft\\scr\\Xray@@0020Mod\\1.17\\.gradle\\loom-cache\\launch.cfg -Dfabric.dli.env\u003dclient -Dfabric.dli.main\u003dnet.fabricmc.loader.launch.knot.KnotClient",
       "args": ""
     },
     {
@@ -20,7 +20,7 @@
       "console": "internalConsole",
       "stopOnEntry": false,
       "mainClass": "net.fabricmc.devlaunchinjector.Main",
-      "vmArgs": "-XX:+ShowCodeDetailsInExceptionMessages -Dfabric.dli.config\u003dI:\\workspace\\Xray\\.gradle\\loom-cache\\launch.cfg -Dfabric.dli.env\u003dserver -Dfabric.dli.main\u003dnet.fabricmc.loader.launch.knot.KnotServer",
+      "vmArgs": "-XX:+ShowCodeDetailsInExceptionMessages -Dfabric.dli.config\u003dI:\\save\\curse\\minecraft\\scr\\Xray@@0020Mod\\1.17\\.gradle\\loom-cache\\launch.cfg -Dfabric.dli.env\u003dserver -Dfabric.dli.main\u003dnet.fabricmc.loader.launch.knot.KnotServer",
       "args": "nogui"
     }
   ]

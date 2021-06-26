@@ -6,7 +6,9 @@
   "mixins": [
   ],
   "client": [
-    "MixinBlockOcclusionCache"
+    "MixinBlock",
+    "MixinBlockOcclusionCache",
+    "MixinMinecraftClient"
   ],
   "injectors": {
     "defaultRequire": 1

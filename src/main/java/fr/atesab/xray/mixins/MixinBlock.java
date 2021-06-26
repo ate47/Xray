@@ -11,28 +11,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * net.minecraft.block.BlockState state, 
- * net.minecraft.world.BlockView world, 
- * net.minecraft.util.math.BlockPos pos,
- * net.minecraft.util.math.Direction side,
- * net.minecraft.util.math.BlockPos blockPos
- */
 @Mixin(value = Block.class)
 public class MixinBlock {
-	@Inject(
-			at = @At("RETURN"),
-			method = "shouldDrawSide(" +
-					"Lnet/minecraft/block/BlockState;" +
-					"Lnet/minecraft/world/BlockView;" +
-					"Lnet/minecraft/util/math/BlockPos;" +
-					"Lnet/minecraft/util/math/Direction;" +
-					"Lnet/minecraft/util/math/BlockPos;" +
-					")Z",
-			cancellable = true
-	)
-	private static void shouldDrawSide(BlockState state, BlockView reader, BlockPos pos, Direction face, 
+	@Inject(at = @At("RETURN"), method = "shouldDrawSide(" + "Lnet/minecraft/block/BlockState;" + // state
+			"Lnet/minecraft/world/BlockView;" + // reader
+			"Lnet/minecraft/util/math/BlockPos;" + // pos
+			"Lnet/minecraft/util/math/Direction;" + // face
+			"Lnet/minecraft/util/math/BlockPos;" + // blockPosaaa
+			")Z", // ci
+			cancellable = true)
+	private static void shouldDrawSide(BlockState state, BlockView reader, BlockPos pos, Direction face,
 			BlockPos blockPos, CallbackInfoReturnable<Boolean> ci) {
-		XrayMain.shouldSideBeRendered(state, reader, pos, face, ci);
+		XrayMain.getMod().shouldSideBeRendered(state, reader, pos, face, ci);
+	}
+
+	private MixinBlock() {
 	}
 }

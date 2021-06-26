@@ -22,6 +22,6 @@ public class MixinBlockOcclusionCache {
 	)
 	private void shouldDrawSide(BlockState state, BlockView reader, BlockPos pos, Direction face,
 									   CallbackInfoReturnable<Boolean> ci) {
-		XrayMain.shouldSideBeRendered(state, reader, pos, face, ci);
+		XrayMain.getMod().shouldSideBeRendered(state, reader, pos, face, ci);
 	}
 }

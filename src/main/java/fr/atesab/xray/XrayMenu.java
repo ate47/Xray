@@ -82,7 +82,8 @@ public class XrayMenu extends Screen {
 		}
 
 		private void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
-			textRenderer.drawWithShadow(matrixStack, title, width / 2 - 200, blockMenu.y - textRenderer.fontHeight / 2 + 9, 0xffffffff);
+			textRenderer.drawWithShadow(matrixStack, title, width / 2 - 200,
+					blockMenu.y - textRenderer.fontHeight / 2 + 9, 0xffffffff);
 		}
 
 		private int getSizeX() {
@@ -122,7 +123,7 @@ public class XrayMenu extends Screen {
 		super(new TranslatableText("x13.mod.config"));
 		this.parent = parent;
 		mod = XrayMain.getMod();
-		XrayMain.getModes().forEach(XrayModeElement::new);
+		mod.getModes().forEach(XrayModeElement::new);
 	}
 
 	@Override
@@ -145,7 +146,7 @@ public class XrayMenu extends Screen {
 		addDrawableChild(doneBtn);
 		ButtonWidget resetBtn = new ButtonWidget(width / 2 + 2, height / 2, 198, 20,
 				new KeybindText(I18n.translate("controls.reset")), b -> {
-					XrayMain.getModes().forEach(XrayMode::reset);
+					mod.getModes().forEach(XrayMode::reset);
 				});
 		addDrawableChild(resetBtn);
 		OptionalInt max = modeElements.stream().mapToInt(XrayModeElement::getSizeX).max();

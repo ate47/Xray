@@ -34,6 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -46,25 +47,50 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	private static XrayMain instance;
 
-	private static List<XrayMode> modes = Lists.newArrayList();
+	private List<XrayMode> modes = Lists.newArrayList();
 
-	private static List<String> customModes = Lists.newArrayList();
+	private XrayMode selectedMode = null;
 
-	private static double oldGama;
+	private List<String> customModes = Lists.newArrayList();
 
-	private static boolean fullBrightEnable = false;
+	private boolean fullBrightEnable = false;
 
-	private static int internalFullbrightState = 0;
+	private int internalFullbrightState = 0;
 
-	private static boolean showLocation = true;
-	private static KeyBinding fullbright, config;
-	private static int fullbrightColor = 0;
+	private boolean showLocation = true;
+	private KeyBinding fullbright;
+	private KeyBinding config;
+	private int fullbrightColor = 0;
+
+	private final IColorObject fullbrightMode = new IColorObject() {
+		public int getColor() {
+			return fullbrightColor;
+		}
+
+		public String getModeName() {
+			return I18n.translate("x13.mod.fullbright");
+		}
+	};
 
 	/**
 	 * Toggle fullBright
 	 */
 	public XrayMain fullBright() {
 		return fullBright(!fullBrightEnable);
+	}
+
+	/**
+	 * @param selectedMode the selectedMode to set
+	 */
+	public void setSelectedMode(XrayMode selectedMode) {
+		this.selectedMode = selectedMode;
+	}
+
+	/**
+	 * @return the selectedMode
+	 */
+	public XrayMode getSelectedMode() {
+		return selectedMode;
 	}
 
 	/**
@@ -75,7 +101,6 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		return internalFullbright();
 	}
 
-	@SuppressWarnings("deprecation")
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
 		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId) // BLOCK
 				.filter(Objects::nonNull).map(Objects::toString).collect(collector);
@@ -98,7 +123,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	/**
 	 * Get all registered modes
 	 */
-	public static List<XrayMode> getModes() {
+	public List<XrayMode> getModes() {
 		return modes;
 	}
 
@@ -106,13 +131,19 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	 * load internal fullbright by checking if a mode is enabled
 	 */
 	public XrayMain internalFullbright() {
-		boolean f = fullBrightEnable;
-		for (XrayMode mode : modes)
-			if (f = (f || mode.isEnabled()))
-				break;
-		if (f) {
+		if (fullBrightEnable) {
 			if (internalFullbrightState == 0)
 				internalFullbrightState = 1;
+			return this;
+		}
+		boolean f = false;
+		for (XrayMode mode : modes)
+			if (mode.isEnabled()) {
+				f = true;
+				break;
+			}
+		if (f) {
+			internalFullbrightState = maxFullbrightStates;
 		} else {
 			internalFullbrightState = 0;
 		}
@@ -123,14 +154,14 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		return fullBrightEnable;
 	}
 
-	public static boolean isInternalFullbrightEnable() {
+	public boolean isInternalFullbrightEnable() {
 		return getInternalFullbrightState() != 0;
 	}
 
 	/**
 	 * @return the internalFullbrightEnable
 	 */
-	public static float getInternalFullbrightState() {
+	public float getInternalFullbrightState() {
 		return 20 * internalFullbrightState / maxFullbrightStates;
 	}
 
@@ -139,7 +170,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	}
 
 	private static void log(String message) {
-		log.info("[" + log.getName() + "] " + message);
+		log.info("[{}] {}", log.getName(), message);
 	}
 
 	/**
@@ -150,8 +181,9 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 			mode.toggle(mode.isEnabled(), false);
 		fullBright(isFullBrightEnable());
 		try {
-			if (MinecraftClient.getInstance().worldRenderer != null)
-				MinecraftClient.getInstance().worldRenderer.reload();
+			MinecraftClient mc = MinecraftClient.getInstance();
+			if (mc.worldRenderer != null)
+				mc.worldRenderer.reload();
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
@@ -169,24 +201,24 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	}
 
 	public void setShowLocation(boolean showLocation) {
-		XrayMain.showLocation = showLocation;
+		this.showLocation = showLocation;
 		saveConfigs();
 	}
 
-	public static int shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
-			Direction pos, @Nullable CallbackInfoReturnable<Boolean> ci) {
-		ci = ci != null ? ci : new CallbackInfoReturnable<Boolean>("shouldSideBeRendered", true);
+	public int shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess, Direction pos,
+			@Nullable CallbackInfoReturnable<Boolean> ci) {
+		ci = ci != null ? ci : new CallbackInfoReturnable<>("shouldSideBeRendered", true);
 		for (XrayMode mode : modes) {
 			mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
 		}
 		if (ci.isCancelled())
-			return ci.getReturnValue() ? 0 : 1;
+			return ci.getReturnValue().booleanValue() ? 0 : 1;
 		return 2;
 	}
 
 	private static String significantNumbers(double d) {
-		boolean a;
-		if (a = d < 0) {
+		boolean a = d < 0;
+		if (a) {
 			d *= -1;
 		}
 		int d1 = (int) (d);
@@ -214,19 +246,20 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	 * Mod config file
 	 */
 	public static File getSaveFile() {
-		File old_file = new File(MinecraftClient.getInstance().runDirectory, "xray.json");
-		File new_file = new File(MinecraftClient.getInstance().runDirectory, "config/xray.json");
+		MinecraftClient mc = MinecraftClient.getInstance();
+		File oldFile = new File(mc.runDirectory, "xray.json");
+		File newFile = new File(mc.runDirectory, "config/xray.json");
 
 		// if old exists but new not
-		if (old_file.exists() && !new_file.exists()) {
+		if (oldFile.exists() && !newFile.exists()) {
 			try {
-				Files.move(old_file, new_file);
+				Files.move(oldFile, newFile);
 			} catch (IOException e) {
-				new_file = old_file;
+				newFile = oldFile;
 			}
 		}
 
-		return new_file;
+		return newFile;
 	}
 
 	/**
@@ -280,26 +313,24 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	}
 
+	private IColorObject findCurrentMode() {
+		for (XrayMode mode : modes)
+			if (mode.isEnabled()) {
+				return mode;
+			}
+		if (fullBrightEnable) {
+			return fullbrightMode;
+		} else {
+			return IColorObject.EMPTY;
+		}
+	}
+
 	@Override
 	public void onHudRender(MatrixStack matrixStack, float v) {
 
-		int c;
-		String s;
-		nameFinder: {
-			for (XrayMode mode : modes)
-				if (mode.isEnabled()) {
-					c = mode.getColor();
-					s = mode.getNameTranslate();
-					break nameFinder;
-				}
-			if (fullBrightEnable) {
-				c = fullbrightColor;
-				s = I18n.translate("x13.mod.fullbright");
-			} else {
-				c = 0xffffffff;
-				s = "";
-			}
-		}
+		IColorObject color = findCurrentMode();
+		int c = color.getColor();
+		String s = color.getModeName();
 		MinecraftClient mc = MinecraftClient.getInstance();
 		TextRenderer render = mc.textRenderer;
 		ClientPlayerEntity player = mc.player;
@@ -317,20 +348,17 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	 * Save mod configs
 	 */
 	public void saveConfigs() {
-		try {
-			Writer writer = new FileWriterWithEncoding(getSaveFile(), Charset.forName("UTF-8"));
+		try (Writer writer = new FileWriterWithEncoding(getSaveFile(), StandardCharsets.UTF_8)) {
 			new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create()
 					.toJson(Util.make(Maps.newHashMap(), m -> {
 						modes.forEach(mode -> m.put(mode.getName() + "Blocks", getBlockNamesToList(mode.getBlocks())));
 						m.put("showLocation", showLocation);
-						m.put("oldGama", oldGama);
 						m.put("internalFullbrightEnable", internalFullbrightState);
 						m.put("fullBrightEnable", fullBrightEnable);
 						m.put("customModes", customModes.stream().map(
 								s -> s.split(":", 2).length == 2 ? s : s + ":" + XrayMode.ViewMode.EXCLUSIVE.name())
 								.collect(Collectors.toList()));
 					}), writer);
-			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -444,13 +472,11 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		HudRenderCallback.EVENT.register(this);
 		ClientTickEvents.END_CLIENT_TICK.register(this);
 
-		// H
-		KeyBindingHelper.registerKeyBinding(
-				fullbright = new KeyBinding("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray"));
+		fullbright = new KeyBinding("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
+		KeyBindingHelper.registerKeyBinding(fullbright);
 
-		// N
-		KeyBindingHelper
-				.registerKeyBinding(config = new KeyBinding("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray"));
+		config = new KeyBinding("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
+		KeyBindingHelper.registerKeyBinding(config);
 
 	}
 

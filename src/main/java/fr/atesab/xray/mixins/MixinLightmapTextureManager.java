@@ -14,8 +14,8 @@ public class MixinLightmapTextureManager {
 
 	@Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;gamma*:D", opcode = Opcodes.GETFIELD), method = "update(F)V")
 	private double getFieldValue(GameOptions options) {
-		if (XrayMain.isInternalFullbrightEnable()) {
-			return XrayMain.getInternalFullbrightState();
+		if (XrayMain.getMod().isInternalFullbrightEnable()) {
+			return XrayMain.getMod().getInternalFullbrightState();
 		} else {
 			return options.gamma;
 		}
