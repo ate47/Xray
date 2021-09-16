@@ -161,7 +161,8 @@ public class XrayMode implements SideRenderer, IColorObject {
 		if (old != null)
 			old.toggle0(false);
 		toggle0(enable);
-		mod.setSelectedMode(this);
+		if (enabled)
+			mod.setSelectedMode(this);
 		mod.internalFullbright();
 		MinecraftClient mc = MinecraftClient.getInstance();
 		if (reloadRenderers)
