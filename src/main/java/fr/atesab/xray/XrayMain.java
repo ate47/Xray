@@ -20,16 +20,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
-import com.mojang.authlib.minecraft.client.MinecraftClient;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.pattern.TextRenderer;
 import org.lwjgl.glfw.GLFW;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fr.atesab.xray.XrayMode.ViewMode;
@@ -50,10 +45,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
 
+@Mod(XrayMain.MOD_ID)
 public class XrayMain {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
@@ -498,9 +495,5 @@ public class XrayMain {
 
 		config = new KeyMapping("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
 		ClientRegistry.registerKeyBinding(config);
-
-		MixinBootstrap.init();
-		Mixins.addConfiguration("xray.vanilla.mixins.json");
 	}
-
 }

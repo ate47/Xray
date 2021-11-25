@@ -5,11 +5,13 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
 
 group 'fr.atesab.xray'
 version '1.1.1'
@@ -43,50 +45,25 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                atianconfig {
                     source sourceSets.main
                 }
             }
+
+            arg "-mixin.config=atianxray.mixins.json"
         }
 
-        server {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                examplemod {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
-
-            mods {
-                examplemod {
-                    source sourceSets.main
-                }
-            }
-        }
     }
+}
+
+mixin {
+    add sourceSets.main, "mixins.atianxray.refmap.json"
+    config 'atianxray.mixins.json'
 }
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.17.1-37.0.107'
+    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -96,6 +73,7 @@ jar {
             "Specification-Title": "XrayMod",
             "Specification-Vendor": "ATE47",
             "Specification-Version": "1", // We are version 1 of ourselves
+            "MixinConfigs": "atianxray.mixins.json",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"ATE47",
