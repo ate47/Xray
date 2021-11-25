@@ -1,45 +1,60 @@
 package fr.atesab.xray;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
-import fr.atesab.xray.XrayMode.ViewMode;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndTick;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.BlockView;
+import com.mojang.authlib.minecraft.client.MinecraftClient;
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
+import org.apache.logging.log4j.core.pattern.TextRenderer;
 import org.lwjgl.glfw.GLFW;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import fr.atesab.xray.XrayMode.ViewMode;
+import net.minecraft.Util;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
 
-public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTick {
+public class XrayMain {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
 	private static int maxFullbrightStates = 20;
@@ -58,8 +73,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	private int internalFullbrightState = 0;
 
 	private boolean showLocation = true;
-	private KeyBinding fullbright;
-	private KeyBinding config;
+	private KeyMapping fullbright;
+	private KeyMapping config;
 	private int fullbrightColor = 0;
 
 	private final IColorObject fullbrightMode = new IColorObject() {
@@ -68,7 +83,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		}
 
 		public String getModeName() {
-			return I18n.translate("x13.mod.fullbright");
+			return I18n.get("x13.mod.fullbright");
 		}
 	};
 
@@ -101,6 +116,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		return internalFullbright();
 	}
 
+	@SuppressWarnings("deprecation")
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
 		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId) // BLOCK
 				.filter(Objects::nonNull).map(Objects::toString).collect(collector);
@@ -181,9 +197,9 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 			mode.toggle(mode.isEnabled(), false);
 		fullBright(isFullBrightEnable());
 		try {
-			MinecraftClient mc = MinecraftClient.getInstance();
-			if (mc.worldRenderer != null)
-				mc.worldRenderer.reload();
+			var mc = Minecraft.getInstance();
+			if (mc.levelRenderer != null)
+				mc.levelRenderer.allChanged();
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
@@ -196,7 +212,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	public void registerXrayMode(XrayMode... modes) {
 		for (XrayMode mode : modes) {
 			this.modes.add(mode);
-			KeyBindingHelper.registerKeyBinding(mode.getKey());
+			ClientRegistry.registerKeyBinding(mode.getKey());
 		}
 	}
 
@@ -205,8 +221,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		saveConfigs();
 	}
 
-	public int shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess, Direction pos,
-			@Nullable CallbackInfoReturnable<Boolean> ci) {
+	public int shouldSideBeRendered(BlockState adjacentState, BlockGetter blockState, BlockPos blockAccess,
+			Direction pos, CallbackInfoReturnable<Boolean> ci) {
 		ci = ci != null ? ci : new CallbackInfoReturnable<>("shouldSideBeRendered", true);
 		for (XrayMode mode : modes) {
 			mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
@@ -233,6 +249,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	public XrayMain() {
 		instance = this;
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	/**
@@ -246,9 +264,9 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	 * Mod config file
 	 */
 	public static File getSaveFile() {
-		MinecraftClient mc = MinecraftClient.getInstance();
-		File oldFile = new File(mc.runDirectory, "xray.json");
-		File newFile = new File(mc.runDirectory, "config/xray.json");
+		var mc = Minecraft.getInstance();
+		File oldFile = new File(mc.gameDirectory, "xray.json");
+		File newFile = new File(mc.gameDirectory, "config/xray.json");
 
 		// if old exists but new not
 		if (oldFile.exists() && !newFile.exists()) {
@@ -296,20 +314,27 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		saveConfigs();
 	}
 
-	@Override
-	public void onEndTick(MinecraftClient client) {
+	@SubscribeEvent
+	public void onEndTickEvent(TickEvent.ClientTickEvent ev) {
+		if (ev.phase != Phase.END)
+			return;
 		if (internalFullbrightState != 0 && internalFullbrightState < maxFullbrightStates) {
 			internalFullbrightState++;
 		}
-		if (client.currentScreen != null)
+	}
+
+	@SubscribeEvent
+	public void onKeyEvent(KeyInputEvent ev) {
+		var client = Minecraft.getInstance();
+		if (client.screen != null)
 			return;
 		for (XrayMode mode : modes)
 			if (mode.toggleKey())
 				return;
-		if (fullbright.wasPressed())
+		if (fullbright.consumeClick())
 			fullBright();
-		if (config.wasPressed())
-			client.openScreen(new XrayMenu(null));
+		if (config.consumeClick())
+			client.setScreen(new XrayMenu(null));
 
 	}
 
@@ -325,22 +350,22 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		}
 	}
 
-	@Override
-	public void onHudRender(MatrixStack matrixStack, float v) {
-
+	@SubscribeEvent
+	public void onHudRender(RenderGameOverlayEvent ev) {
 		IColorObject color = findCurrentMode();
 		int c = color.getColor();
 		String s = color.getModeName();
-		MinecraftClient mc = MinecraftClient.getInstance();
-		TextRenderer render = mc.textRenderer;
-		ClientPlayerEntity player = mc.player;
+		var matrixStack = ev.getMatrixStack();
+		var mc = Minecraft.getInstance();
+		var render = mc.font;
+		var player = mc.player;
 
 		if (!s.isEmpty())
-			render.drawWithShadow(matrixStack, s = "[" + s + "] ", 5, 5, c);
+			render.draw(matrixStack, s = "[" + s + "] ", 5, 5, c);
 		if (showLocation && player != null) {
-			Vec3d pos = player.getPos();
-			render.drawWithShadow(matrixStack, "XYZ: " + (significantNumbers(pos.x) + " / " + significantNumbers(pos.y)
-					+ " / " + significantNumbers(pos.z)), 5 + render.getWidth(s), 5, 0xffffffff);
+			var pos = player.position();
+			render.draw(matrixStack, "XYZ: " + (significantNumbers(pos.x) + " / " + significantNumbers(pos.y) + " / "
+					+ significantNumbers(pos.z)), 5 + render.width(s), 5, 0xffffffff);
 		}
 	}
 
@@ -365,8 +390,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		modules();
 	}
 
-	@Override
-	public void onInitializeClient() {
+	private void setup(final FMLCommonSetupEvent event) {
 		log("Initialization");
 		registerXrayMode(
 		// @formatter:off
@@ -469,15 +493,14 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		fullbrightColor = XrayMode.nextColor();
 		loadConfigs();
 
-		HudRenderCallback.EVENT.register(this);
-		ClientTickEvents.END_CLIENT_TICK.register(this);
+		fullbright = new KeyMapping("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
+		ClientRegistry.registerKeyBinding(fullbright);
 
-		fullbright = new KeyBinding("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
-		KeyBindingHelper.registerKeyBinding(fullbright);
+		config = new KeyMapping("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
+		ClientRegistry.registerKeyBinding(config);
 
-		config = new KeyBinding("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
-		KeyBindingHelper.registerKeyBinding(config);
-
+		MixinBootstrap.init();
+		Mixins.addConfiguration("xray.vanilla.mixins.json");
 	}
 
 }

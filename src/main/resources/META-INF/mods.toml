@@ -1,0 +1,19 @@
+modLoader="javafml"
+loaderVersion="[37,)"
+issueTrackerURL="https://github.com/ate47/Xray/issues"
+license="The Unlicense"
+[[mods]]
+	modId="atianxray"
+	version="${file.jarVersion}"
+	displayName="XrayMod"
+	displayURL="https://www.curseforge.com/minecraft/mc-mods/xray-1-13-rift-modloader"
+	authors="ATE47, ThaEin"
+	description="Bored by finding your diamonds legitimately? This mod is for you!"
+	logoFile="logo.png"
+
+[[dependencies.atianxray]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.17,1.18)"
+    ordering="NONE"
+    side="BOTH"

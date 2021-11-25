@@ -6,12 +6,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fr.atesab.xray.XrayMain;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
-@Mixin(value = MinecraftClient.class)
+@Mixin(value = Minecraft.class)
 public class MixinMinecraftClient {
 
-	@Inject(at = @At(value = "HEAD"), method = "isAmbientOcclusionEnabled()Z", cancellable = true)
+	@Inject(at = @At(value = "HEAD"), method = "useAmbientOcclusion()Z", cancellable = true)
 	private static void isAmbientOcclusionEnabled(CallbackInfoReturnable<Boolean> ci) {
 		if (XrayMain.getMod().getSelectedMode() != null) {
 			ci.setReturnValue(false);

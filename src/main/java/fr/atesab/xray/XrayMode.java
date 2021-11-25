@@ -1,29 +1,30 @@
 package fr.atesab.xray;
 
-import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.BlockView;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.InputConstants;
+
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class XrayMode implements SideRenderer, IColorObject {
 	@FunctionalInterface
 	public static interface Viewer {
-		public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, BlockView blockState,
+		public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, BlockGetter blockState,
 				BlockPos blockAccess, Direction pos);
 	}
 
@@ -35,7 +36,8 @@ public class XrayMode implements SideRenderer, IColorObject {
 		/**
 		 * Inclusive mode, like in Cave Mode
 		 */
-		INCLUSIVE((il, v1, reader, pos, face) -> !il && reader.getBlockState(pos.offset(face)).isAir());
+		INCLUSIVE((il, v1, reader, pos, face) -> !il
+				&& reader.getBlockState(pos.offset(face.getStepX(), face.getStepY(), face.getStepZ())).isAir());
 
 		private Viewer viewer;
 
@@ -52,7 +54,7 @@ public class XrayMode implements SideRenderer, IColorObject {
 	private List<Block> blocks;
 	private final List<Block> defaultBlocks;
 	private boolean enabled;
-	private KeyBinding key;
+	private KeyMapping key;
 	private final String name;
 	private final int color;
 	private ViewMode viewMode;
@@ -65,11 +67,11 @@ public class XrayMode implements SideRenderer, IColorObject {
 		return COLORS[colorCursor = (colorCursor + 1) % COLORS.length];
 	}
 
-	public XrayMode(String name, int keyCode, ViewMode viewMode, @Nullable Block... defaultBlocks) {
+	public XrayMode(String name, int keyCode, ViewMode viewMode, Block... defaultBlocks) {
 		this.name = name;
 		this.color = nextColor();
 		this.enabled = false;
-		this.key = new KeyBinding("x13.mod." + name, InputUtil.Type.KEYSYM, keyCode, "key.categories.xray");
+		this.key = new KeyMapping("x13.mod." + name, InputConstants.Type.KEYSYM, keyCode, "key.categories.xray");
 		this.viewMode = viewMode;
 		if (defaultBlocks != null) {
 			this.blocks = Lists.newArrayList(defaultBlocks);
@@ -97,7 +99,7 @@ public class XrayMode implements SideRenderer, IColorObject {
 		return color;
 	}
 
-	public KeyBinding getKey() {
+	public KeyMapping getKey() {
 		return key;
 	}
 
@@ -106,7 +108,7 @@ public class XrayMode implements SideRenderer, IColorObject {
 	}
 
 	public String getNameTranslate() {
-		return name.startsWith(CUSTOM_PREFIX) ? name : I18n.translate("x13.mod." + name);
+		return name.startsWith(CUSTOM_PREFIX) ? name : I18n.get("x13.mod." + name);
 	}
 
 	@Override
@@ -131,17 +133,18 @@ public class XrayMode implements SideRenderer, IColorObject {
 	}
 
 	public boolean toggleKey() {
-		if (key.wasPressed()) {
+		if (key.consumeClick()) {
 			toggle();
 			return true;
 		}
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setConfig(String[] data) {
 		blocks.clear();
 		for (String d : data) {
-			Block b = Registry.BLOCK.get(new Identifier(d));
+			Block b = Registry.BLOCK.get(new ResourceLocation(d));
 			if (!b.equals(Blocks.AIR))
 				blocks.add(b);
 		}
@@ -164,9 +167,8 @@ public class XrayMode implements SideRenderer, IColorObject {
 		if (enabled)
 			mod.setSelectedMode(this);
 		mod.internalFullbright();
-		MinecraftClient mc = MinecraftClient.getInstance();
 		if (reloadRenderers)
-			mc.worldRenderer.reload();
+			Minecraft.getInstance().levelRenderer.allChanged();
 	}
 
 	private void toggle0(boolean enable) {
@@ -177,7 +179,7 @@ public class XrayMode implements SideRenderer, IColorObject {
 	}
 
 	@Override
-	public void shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
+	public void shouldSideBeRendered(BlockState adjacentState, BlockGetter blockState, BlockPos blockAccess,
 			Direction pos, CallbackInfoReturnable<Boolean> ci) {
 		if (isEnabled())
 			ci.setReturnValue(viewMode.getViewer().shouldRenderSide(blocks.contains(adjacentState.getBlock()),
