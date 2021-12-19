@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.LightTexture;
 @Mixin(value = LightTexture.class)
 public class MixinLightmapTextureManager {
 
-	@Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;gamma*:D", opcode = Opcodes.GETFIELD), method = "updateLightTexture(F)V")
+	@Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;gamma:D", opcode = Opcodes.GETFIELD), method = "updateLightTexture(F)V")
 	private double getFieldValue(Options options) {
 		if (XrayMain.getMod().isInternalFullbrightEnable()) {
 			return XrayMain.getMod().getInternalFullbrightState();

@@ -21,6 +21,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
 
+import net.minecraftforge.client.ClientRegistry;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,7 +49,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
 
 @Mod(XrayMain.MOD_ID)
 public class XrayMain {
