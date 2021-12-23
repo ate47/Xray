@@ -1,6 +1,6 @@
 plugins {
 	id 'maven-publish'
-	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -51,9 +51,7 @@ java {
 }
 
 jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
-	}
+	from "LICENSE"
 }
 
 // configure the maven publication
