@@ -14,7 +14,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
 group 'fr.atesab'
-version '1.2.0'
+version '1.2.1'
 archivesBaseName = 'XrayMod'
 project.ext.artifactId = "xray"
 
