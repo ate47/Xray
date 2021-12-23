@@ -141,7 +141,7 @@ public class XrayMenu extends Screen {
 		colorButtons.clear();
 		ButtonWidget doneBtn = new ButtonWidget(width / 2 - 200, height / 2, 198, 20,
 				new KeybindText(I18n.translate("gui.done")), b -> {
-					client.openScreen(parent);
+					client.setScreen(parent);
 				});
 		addDrawableChild(doneBtn);
 		ButtonWidget resetBtn = new ButtonWidget(width / 2 + 2, height / 2, 198, 20,

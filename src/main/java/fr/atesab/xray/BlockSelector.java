@@ -88,7 +88,7 @@ public abstract class BlockSelector extends Screen {
         });
         ButtonWidget cancelBtn = new ButtonWidget(width / 2 - 100, pageBottom, 200, 20,
                 new TranslatableText("gui.cancel"), b -> {
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 });
         nextPage = new ButtonWidget(width / 2 + 104, pageBottom, 20, 20, new LiteralText("->"), b -> {
             page++;
@@ -176,7 +176,7 @@ public abstract class BlockSelector extends Screen {
             if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
                 if (button == 0) { // left click: select
                     save(b);
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                     return true;
                 }
                 return false;

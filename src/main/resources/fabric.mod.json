@@ -5,10 +5,7 @@
 
   "name": "XrayMod",
   "description": "Bored by finding your diamonds legitimately? This mod is for you!",
-  "authors": [
-    "ATE47",
-    "ThaEin"
-  ],
+  "authors": ["ATE47", "ThaEin"],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/xray-1-13-rift-modloader",
     "sources": "https://github.com/ate47/Xray"
@@ -19,19 +16,14 @@
 
   "environment": "*",
   "entrypoints": {
-    "client": [
-      "fr.atesab.xray.XrayMain"
-    ]
+    "client": ["fr.atesab.xray.XrayMain"]
   },
-  "mixins": [
-    "xray.sodium.mixins.json",
-    "xray.vanilla.mixins.json"
-  ],
+  "mixins": ["xray.sodium.mixins.json", "xray.vanilla.mixins.json"],
 
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",
-    "minecraft": "1.17.x"
+    "minecraft": "1.18.x"
   },
   "conflicts": {
     "optifabric": "*"

@@ -27,10 +27,10 @@ public class ExtractionScreen extends Screen {
         addSelectableChild(data);
         addDrawableChild(new ButtonWidget(width / 2 - 200, height / 2, 198, 20, new TranslatableText("gui.done"), b -> {
             mode.setConfig(data.getText().split(" "));
-            client.openScreen(parent);
+            client.setScreen(parent);
         }));
         addDrawableChild(new ButtonWidget(width / 2 + 2, height / 2, 198, 20, new TranslatableText("gui.cancel"), b -> {
-            client.openScreen(parent);
+            client.setScreen(parent);
         }));
         super.init();
     }
@@ -39,7 +39,8 @@ public class ExtractionScreen extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         String name = mode.getNameTranslate();
-        textRenderer.draw(matrices, name, width / 2 - textRenderer.getWidth(name) / 2, height / 2 - 24 - 4 - textRenderer.fontHeight, 0xffffaa00);
+        textRenderer.draw(matrices, name, width / 2 - textRenderer.getWidth(name) / 2,
+                height / 2 - 24 - 4 - textRenderer.fontHeight, 0xffffaa00);
         data.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }

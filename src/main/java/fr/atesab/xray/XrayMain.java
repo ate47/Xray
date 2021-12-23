@@ -1,9 +1,34 @@
 package fr.atesab.xray;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.GsonBuilder;
+
+import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.include.com.google.common.collect.Maps;
+
 import fr.atesab.xray.XrayMode.ViewMode;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -25,19 +50,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
-import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTick {
 	public static final String MOD_ID = "atianxray";
@@ -47,11 +59,11 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	private static XrayMain instance;
 
-	private List<XrayMode> modes = Lists.newArrayList();
+	private List<XrayMode> modes = new ArrayList<>();
 
 	private XrayMode selectedMode = null;
 
-	private List<String> customModes = Lists.newArrayList();
+	private List<String> customModes = new ArrayList<>();
 
 	private boolean fullBrightEnable = false;
 
@@ -309,7 +321,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		if (fullbright.wasPressed())
 			fullBright();
 		if (config.wasPressed())
-			client.openScreen(new XrayMenu(null));
+			client.setScreen(new XrayMenu(null));
 
 	}
 
@@ -386,6 +398,9 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 						Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.DEEPSLATE_EMERALD_ORE, Blocks.DEEPSLATE_REDSTONE_ORE, Blocks.DEEPSLATE_LAPIS_ORE,
 
 						Blocks.RAW_COPPER_BLOCK, Blocks.RAW_GOLD_BLOCK, Blocks.RAW_IRON_BLOCK, Blocks.CRYING_OBSIDIAN,
+
+						// 1.18
+						Blocks.COPPER_BLOCK,
 
 						/* Ore Blocks */
 						Blocks.COAL_BLOCK, Blocks.IRON_BLOCK, Blocks.GOLD_BLOCK, Blocks.DIAMOND_BLOCK,

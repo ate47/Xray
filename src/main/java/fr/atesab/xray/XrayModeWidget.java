@@ -16,10 +16,9 @@ public class XrayModeWidget extends ButtonWidget {
 
     public XrayModeWidget(int x, int y, int width, int height, XrayMode mode, Screen menu) {
         super(x, y, width, height, new LiteralText(""),
-                b -> MinecraftClient.getInstance().openScreen(new XrayBlockMenu(menu, mode)));
+                b -> MinecraftClient.getInstance().setScreen(new XrayBlockMenu(menu, mode)));
         this.mode = mode;
     }
-
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -31,7 +30,7 @@ public class XrayModeWidget extends ButtonWidget {
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y
-        && mouseY <= this.y + this.height) {
+                && mouseY <= this.y + this.height) {
             DrawableHelper.fill(matrices, x, y, x + width, y + height, 0x33ffaa00);
         } else {
             DrawableHelper.fill(matrices, x, y, x + width, y + height, 0x33ffffff);
