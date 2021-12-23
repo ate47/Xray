@@ -28,10 +28,6 @@ public class XrayMenu extends Screen {
 		/**
 		 * Create a button to set boolean value
 		 *
-		 * @param x
-		 * @param y
-		 * @param w
-		 * @param h
 		 * @param lang   button name
 		 * @param getter a function to get the boolean value
 		 * @param setter a function to set the boolean value
