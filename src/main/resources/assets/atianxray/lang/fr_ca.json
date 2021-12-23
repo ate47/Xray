@@ -1,0 +1,15 @@
+{
+  "x13.mod.xray": "Mode Xray",
+  "x13.mod.cave": "Mode Grotte",
+  "x13.mod.redstone": "Mode Redstone",
+  "x13.mod.fullbright": "Fullbright",
+  "x13.mod.config": "Config de Xray",
+  "x13.mod.blocks": "%s blocs",
+  "x13.mod.showloc": "Position",
+  "x13.mod.enable": "Activé",
+  "x13.mod.menu.selector": "Selecteur de bloc",
+  "x13.mod.menu.extract": "Extraire",
+  "x13.mod.menu.replace": "Clique gauche pour remplacer",
+  "x13.mod.menu.delete": "Clique droit pour supprimer",
+  "key.categories.xray": "Xray"
+}
