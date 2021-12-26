@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import net.minecraftforge.client.ClientRegistry;
@@ -283,7 +284,7 @@ public class XrayMain {
 	@SuppressWarnings("unchecked")
 	public void loadConfigs() {
 		try {
-			Map<String, Object> map = new GsonBuilder().create().fromJson(
+			Map<String, Object> map = GSON.fromJson(
 					new InputStreamReader(new FileInputStream(getSaveFile()), Charset.forName("UTF-8")), HashMap.class);
 			for (XrayMode mode : modes) {
 				Object blocks = map.get(mode.getName() + "Blocks");
@@ -366,13 +367,14 @@ public class XrayMain {
 		}
 	}
 
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().setLenient().create();
+
 	/**
 	 * Save mod configs
 	 */
 	public void saveConfigs() {
 		try (Writer writer = new FileWriterWithEncoding(getSaveFile(), StandardCharsets.UTF_8)) {
-			new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create()
-					.toJson(Util.make(Maps.newHashMap(), m -> {
+			GSON.toJson(Util.make(Maps.newHashMap(), m -> {
 						modes.forEach(mode -> m.put(mode.getName() + "Blocks", getBlockNamesToList(mode.getBlocks())));
 						m.put("showLocation", showLocation);
 						m.put("internalFullbrightEnable", internalFullbrightState);
