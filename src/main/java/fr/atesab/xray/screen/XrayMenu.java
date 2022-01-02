@@ -1,4 +1,4 @@
-package fr.atesab.xray;
+package fr.atesab.xray.screen;
 
 import java.util.List;
 import java.util.OptionalInt;
@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import fr.atesab.xray.XrayMain;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -166,17 +167,17 @@ public class XrayMenu extends Screen {
 		}
 		y_ += 24;
 		switch (colorButtons.size() - (i * 3)) {
-		case 1:
-			setBlock(colorButtons.get(i * 3 - 1), width / 2 - 200, y_, 198);
-			setBlock(colorButtons.get(i * 3), width / 2 + 2, y_, 198);
-			y_ -= 24;
-			setBlock(colorButtons.get(i * 3 - 3), width / 2 - 200, y_, 198);
-			setBlock(colorButtons.get(i * 3 - 2), width / 2 + 2, y_, 198);
-			break;
-		case 2:
-			setBlock(colorButtons.get(i * 3), width / 2 - 200, y_, 198);
-			setBlock(colorButtons.get(i * 3 + 1), width / 2 + 2, y_, 198);
-			break;
+			case 1:
+				setBlock(colorButtons.get(i * 3 - 1), width / 2 - 200, y_, 198);
+				setBlock(colorButtons.get(i * 3), width / 2 + 2, y_, 198);
+				y_ -= 24;
+				setBlock(colorButtons.get(i * 3 - 3), width / 2 - 200, y_, 198);
+				setBlock(colorButtons.get(i * 3 - 2), width / 2 + 2, y_, 198);
+				break;
+			case 2:
+				setBlock(colorButtons.get(i * 3), width / 2 - 200, y_, 198);
+				setBlock(colorButtons.get(i * 3 + 1), width / 2 + 2, y_, 198);
+				break;
 		}
 		super.init();
 	}

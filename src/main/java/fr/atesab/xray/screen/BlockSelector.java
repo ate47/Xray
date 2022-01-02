@@ -1,4 +1,4 @@
-package fr.atesab.xray;
+package fr.atesab.xray.screen;
 
 import java.util.ArrayList;
 import java.util.List;

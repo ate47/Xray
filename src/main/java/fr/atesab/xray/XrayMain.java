@@ -28,6 +28,8 @@ import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fr.atesab.xray.XrayMode.ViewMode;
+import fr.atesab.xray.color.IColorObject;
+import fr.atesab.xray.screen.XrayMenu;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;

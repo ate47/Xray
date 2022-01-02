@@ -1,9 +1,11 @@
-package fr.atesab.xray;
+package fr.atesab.xray.widget;
 
 import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import fr.atesab.xray.screen.XrayBlockMenu;
+import fr.atesab.xray.config.BlockConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.Button;
@@ -12,20 +14,20 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
-public class XrayModeWidget extends Button {
-    private XrayMode mode;
+public class BlockConfigWidget extends Button {
+    private BlockConfig cfg;
 
-    public XrayModeWidget(int x, int y, int width, int height, XrayMode mode, Screen menu) {
+    public BlockConfigWidget(int x, int y, int width, int height, BlockConfig cfg, Screen menu) {
         super(x, y, width, height, new TextComponent(""),
-                b -> Minecraft.getInstance().setScreen(new XrayBlockMenu(menu, mode)));
-        this.mode = mode;
+                b -> Minecraft.getInstance().setScreen(new XrayBlockMenu(menu, cfg)));
+        this.cfg = cfg;
     }
 
     @Override
     public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
         int fit = (width - 2) / 17;
 
-        List<Block> blocks = mode.getBlocks();
+        List<Block> blocks = cfg.getBlocks().getBlocks();
 
         List<Block> view = blocks.subList(0, Math.min(fit, blocks.size()));
         var client = Minecraft.getInstance();

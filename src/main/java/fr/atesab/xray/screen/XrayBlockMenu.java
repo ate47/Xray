@@ -1,4 +1,4 @@
-package fr.atesab.xray;
+package fr.atesab.xray.screen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import fr.atesab.xray.config.BlockConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -25,7 +26,7 @@ public class XrayBlockMenu extends Screen {
     private static final Component DELETE = new TranslatableComponent("x13.mod.menu.delete")
             .withStyle(ChatFormatting.RED);
     private Screen parent;
-    private XrayMode mode;
+    private BlockConfig mode;
     private List<Block> config;
     private List<Block> visible = new ArrayList<>();
     private EditBox searchBar;
@@ -36,12 +37,12 @@ public class XrayBlockMenu extends Screen {
     private int elementsY = 1;
     private int page = 0;
 
-    public XrayBlockMenu(Screen parent, XrayMode mode) {
-        super(new TextComponent(mode.getNameTranslate()));
+    public XrayBlockMenu(Screen parent, BlockConfig mode) {
+        super(new TextComponent(mode.getName()));
         this.mode = mode;
         this.parent = parent;
         this.config = new ArrayList<>();
-        this.config.addAll(mode.getBlocks());
+        this.config.addAll(mode.getBlocks().getBlocks());
     }
 
     @Override
@@ -92,27 +93,22 @@ public class XrayBlockMenu extends Screen {
             }
         };
 
-        lastPage = new Button(width / 2 - 200, pageBottom, 20, 20, new TextComponent("<-"), b -> {
+        lastPage = new Button(width / 2 - 126, pageBottom, 20, 20, new TextComponent("<-"), b -> {
             page--;
             updateArrows();
         });
 
-        Button doneBtn = new Button(width / 2 - 4 - 114 - 116 / 2, pageBottom, 114, 20,
+        Button doneBtn = new Button(width / 2 - 102, pageBottom, 100, 20,
                 new TranslatableComponent("gui.done"), b -> {
-                    mode.setBlocks(config);
+                    mode.getBlocks().setBlocks(config);
                     getMinecraft().setScreen(parent);
                 });
 
-        Button exportBtn = new Button(width / 2 - 116 / 2, pageBottom, 116, 20,
-                new TranslatableComponent("x13.mod.menu.extract"), b -> {
-                    getMinecraft().setScreen(new ExtractionScreen(this, mode));
-                });
-
-        Button cancelBtn = new Button(width / 2 + 4 + 116 / 2, pageBottom, 114, 20,
+        Button cancelBtn = new Button(width / 2 + 2, pageBottom, 100, 20,
                 new TranslatableComponent("gui.cancel"), b -> {
                     getMinecraft().setScreen(parent);
                 });
-        nextPage = new Button(width / 2 + 200 - 20, pageBottom, 20, 20, new TextComponent("->"), b -> {
+        nextPage = new Button(width / 2 + 106, pageBottom, 20, 20, new TextComponent("->"), b -> {
             page++;
             updateArrows();
         });
@@ -120,7 +116,6 @@ public class XrayBlockMenu extends Screen {
         addWidget(searchBar);
         addRenderableWidget(lastPage);
         addRenderableWidget(doneBtn);
-        addRenderableWidget(exportBtn);
         addRenderableWidget(cancelBtn);
         addRenderableWidget(nextPage);
 
