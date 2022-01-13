@@ -13,7 +13,7 @@ public class MixinMinecraftClient {
 
 	@Inject(at = @At(value = "HEAD"), method = "useAmbientOcclusion()Z", cancellable = true)
 	private static void isAmbientOcclusionEnabled(CallbackInfoReturnable<Boolean> ci) {
-		if (XrayMain.getMod().getSelectedMode() != null) {
+		if (XrayMain.getMod().isInternalFullbrightEnable()) {
 			ci.setReturnValue(false);
 			ci.cancel();
 		}

@@ -1,6 +1,7 @@
 package fr.atesab.xray.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,6 +18,11 @@ public class SyncedBlockList extends TagOnWriteList<String> {
         super(new ArrayList<>());
     }
 
+    public SyncedBlockList(Block... blocks) {
+        super(new ArrayList<>());
+        setBlocks(Arrays.asList(blocks));
+    }
+
     public List<Block> getBlocks() {
         return blocks;
     }
@@ -26,7 +32,7 @@ public class SyncedBlockList extends TagOnWriteList<String> {
         setTagEnabled(false);
         this.blocks = blocks;
         clear();
-        blocks.stream().map(Registry.BLOCK::getKey).map(Object::toString).forEach(this::add);
+        blocks.stream().filter(Objects::nonNull).map(Registry.BLOCK::getKey).map(Object::toString).forEach(this::add);
         setTagEnabled(true);
     }
 
