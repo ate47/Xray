@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -31,12 +33,12 @@ public abstract class PagedScreen<E> extends XrayScreen {
     private Button nextButton;
     private Button lastButton;
 
-    protected PagedScreen(Component title, Screen parent, int elementHeight) {
+    protected PagedScreen(Component title, Screen parent, int elementHeight, Stream<E> stream) {
         super(title, parent);
         this.elementHeight = elementHeight;
 
         this.shouldRecomputePages = false;
-        initElements();
+        initElements(stream);
         this.shouldRecomputePages = true;
         computePages();
         lastButton = new Button(0, 0, 20, 20, new TextComponent("<-"), b -> lastPage());
@@ -69,12 +71,12 @@ public abstract class PagedScreen<E> extends XrayScreen {
     /**
      * add the {@link PagedElement} to the screen
      */
-    protected abstract void initElements();
+    protected abstract void initElements(Stream<E> stream);
 
     /**
      * save the page
      */
-    protected abstract void save();
+    protected abstract void save(Stream<E> stream);
 
     /**
      * cancel the menu
@@ -121,7 +123,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
         addRenderableWidget(
                 new Button(width / 2 - 176, height - 24, 172, 20, new TranslatableComponent("gui.done"), b -> {
-                    save();
+                    save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull));
                     minecraft.setScreen(parent);
                 }));
 
