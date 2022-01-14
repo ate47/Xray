@@ -50,7 +50,7 @@ public class LongItemWidget extends AbstractButton {
 
         renderer.renderGuiItem(itemStack, x + deltaH / 2, y + deltaH / 2);
         font.draw(stack,
-                message, x + deltaH + 16, y + getHeight() / 2 - font.lineHeight / 2,
+                message, x + deltaH + 16 + 2, y + getHeight() / 2 - font.lineHeight / 2,
                 packedFGColor);
     }
 

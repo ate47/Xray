@@ -1,7 +1,9 @@
 package fr.atesab.xray.screen;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -73,17 +75,17 @@ public class XrayMenu extends XrayScreen {
                 }));
 
         addRenderableWidget(new LongItemWidget(
-                width * 0 / 3, height - 20, width / 3 - 1, 20, new TranslatableComponent("x13.mod.link.link"),
+                width * 0 / 3, height - 20, width / 3, 20, new TranslatableComponent("x13.mod.link.mod"),
                 new ItemStack(Blocks.GOLD_ORE), () -> {
                     openLink(XrayMain.MOD_LINK);
                 }));
         addRenderableWidget(new LongItemWidget(
-                width * 1 / 3, height - 20, width * 2 / 3 - 1, 20, new TranslatableComponent("x13.mod.link.issue"),
+                width * 1 / 3, height - 20, width / 3, 20, new TranslatableComponent("x13.mod.link.issue"),
                 new ItemStack(Blocks.TNT), () -> {
                     openLink(XrayMain.MOD_ISSUE);
                 }));
         addRenderableWidget(new LongItemWidget(
-                width * 2 / 3, height - 20, width, 20, new TranslatableComponent("x13.mod.link.source"),
+                width * 2 / 3, height - 20, width - width * 2 / 3, 20, new TranslatableComponent("x13.mod.link.source"),
                 new ItemStack(Items.PAPER), () -> {
                     openLink(XrayMain.MOD_SOURCE);
                 }));
@@ -102,10 +104,14 @@ public class XrayMenu extends XrayScreen {
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
         stack.pushPose();
-        stack.translate(width / 2, height / 2 - 60, 0);
+        stack.translate(width / 2, height / 2 - 70, 0);
         stack.scale(4, 4, 1);
         drawCenteredString(stack, minecraft.font, XrayMain.MOD_NAME, 0, -minecraft.font.lineHeight, 0xffffff33);
         stack.popPose();
+        drawCenteredString(stack, minecraft.font, new TranslatableComponent("x13.mod.by",
+                Arrays.stream(XrayMain.MOD_AUTHORS).collect(Collectors.joining(
+                        ", "))),
+                width / 2, height / 2 - 60, 0xffaaaaaa);
         int size = 400 / 5;
         Gui.fill(stack, 0, height / 2 - size / 2, width / 2 - 200, height / 2 + size / 2, 0x22ffffff);
         Gui.fill(stack, width / 2 + 200, height / 2 - size / 2, width, height / 2 + size / 2, 0x22ffffff);
