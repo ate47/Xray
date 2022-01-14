@@ -13,6 +13,13 @@ public class XrayUtils {
         return mouseX >= x && mouseX <= x2 && mouseY >= y && mouseY <= y2;
     }
 
+    /**
+     * yep, it can cause an Exception, so what?
+     * 
+     * @param <T>    the return type
+     * @param action the action with the exception
+     * @return the return of the action
+     */
     public static <T> T soWhat(SoWhat<T> action) {
         try {
             return action.run();
