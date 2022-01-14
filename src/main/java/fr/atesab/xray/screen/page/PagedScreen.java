@@ -41,9 +41,9 @@ public abstract class PagedScreen<E> extends XrayScreen {
         this.shouldRecomputePages = false;
         initElements(stream);
         this.shouldRecomputePages = true;
-        computePages();
         lastButton = new Button(0, 0, 20, 20, new TextComponent("<-"), b -> lastPage());
         nextButton = new Button(0, 0, 20, 20, new TextComponent("->"), b -> nextPage());
+        computePages();
     }
 
     private void applyToAllElement(ApplyFunction<E> action) {
