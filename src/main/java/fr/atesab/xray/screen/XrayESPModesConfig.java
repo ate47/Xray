@@ -9,8 +9,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
 
-    protected XrayESPModesConfig(Screen parent, Stream<ESPConfig> stream) {
-        super(new TranslatableComponent("x13.mod.modes"), parent, 24, stream);
+    public XrayESPModesConfig(Screen parent, Stream<ESPConfig> stream) {
+        super(new TranslatableComponent("x13.mod.esp"), parent, 24, stream);
     }
 
     @Override

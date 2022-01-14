@@ -43,7 +43,6 @@ public abstract class PagedScreen<E> extends XrayScreen {
         this.shouldRecomputePages = true;
         lastButton = new Button(0, 0, 20, 20, new TextComponent("<-"), b -> lastPage());
         nextButton = new Button(0, 0, 20, 20, new TextComponent("->"), b -> nextPage());
-        computePages();
     }
 
     private void applyToAllElement(ApplyFunction<E> action) {
@@ -116,7 +115,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     @Override
     protected void init() {
-        lastButton.x = width / 2 - 180;
+        lastButton.x = width / 2 - 200;
         nextButton.x = width / 2 + 180;
         lastButton.y = nextButton.y = height - 24;
 
@@ -136,6 +135,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
                 }));
 
         addRenderableWidget(nextButton);
+
+        computePages();
 
         applyToAllElement((element, delta) -> {
             element.init(delta);
@@ -160,8 +161,9 @@ public abstract class PagedScreen<E> extends XrayScreen {
     }
 
     private void computePages() {
-        elementByPage = (height - 48) / elementHeight;
-        maxPage = elements.size() / elementByPage + (elements.size() % elementByPage != 0 ? 1 : 0);
+        elementByPage = (height - 24 + 30) / elementHeight;
+        // set a minimum of 1 page if elements.size() == 0
+        maxPage = Math.max(1, elements.size() / elementByPage + (elements.size() % elementByPage != 0 ? 1 : 0));
 
         page = Math.min(maxPage - 1, page);
         lastButton.active = page != 0;
@@ -177,8 +179,10 @@ public abstract class PagedScreen<E> extends XrayScreen {
             stack.translate(0, -deltaY, 0);
         });
         fill(stack, 0, 0, width, 22, 0xff444444);
-        fill(stack, 0, height - 22, width, height, 0xff444444);
-        drawCenteredString(stack, font, getTitle(), width / 2, 11 - font.lineHeight / 2, 0xffffffff);
+        fill(stack, 0, height - 28, width, height, 0xff444444);
+        String title = getTitle().getString();
+        title += " (" + (page + 1) + "/" + maxPage + ")";
+        drawCenteredString(stack, font, title, width / 2, 11 - font.lineHeight / 2, 0xffffffff);
         super.render(stack, mouseX, mouseY, delta);
     }
 

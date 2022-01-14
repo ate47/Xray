@@ -9,8 +9,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
 
-    protected XrayBlockModesConfig(Screen parent, Stream<BlockConfig> stream) {
-        super(new TranslatableComponent("x13.mod.modes"), parent, 24, stream);
+    public XrayBlockModesConfig(Screen parent, Stream<BlockConfig> stream) {
+        super(new TranslatableComponent("x13.mod.mode"), parent, 24, stream);
     }
 
     @Override
