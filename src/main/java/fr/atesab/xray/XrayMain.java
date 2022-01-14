@@ -35,9 +35,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlclient.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
 
 @Mod(XrayMain.MOD_ID)
@@ -291,5 +293,10 @@ public class XrayMain {
 
 		configKey = new KeyMapping("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
 		ClientRegistry.registerKeyBinding(configKey);
+
+		ModList.get().getModContainerById(MOD_ID).ifPresent(con -> {
+			con.registerExtensionPoint(ConfigGuiFactory.class,
+					() -> new ConfigGuiFactory((mc, parent) -> new XrayMenu(parent)));
+		});
 	}
 }
