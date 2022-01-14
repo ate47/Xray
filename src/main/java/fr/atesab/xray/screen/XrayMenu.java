@@ -33,23 +33,23 @@ public class XrayMenu extends XrayScreen {
                         }));
 
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("Xray"), new ItemStack(Blocks.DIAMOND_ORE), btn -> {
+                new TranslatableComponent("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), btn -> {
                     minecraft.setScreen(new XrayBlockModesConfig(this));
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("ESP"), new ItemStack(Blocks.CREEPER_HEAD), btn -> {
+                new TranslatableComponent("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), btn -> {
                     minecraft.setScreen(new XrayESPModesConfig(this));
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("Fullbright"), new ItemStack(Blocks.GLOWSTONE), btn -> {
+                new TranslatableComponent("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), btn -> {
                     mod.fullBright();
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("Location"), new ItemStack(Items.PAPER), btn -> {
+                new TranslatableComponent("x13.mod.showloc"), new ItemStack(Items.PAPER), btn -> {
                     minecraft.setScreen(new XrayLocationConfig(this));
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("Config"), new ItemStack(Items.REDSTONE), btn -> {
+                new TranslatableComponent("x13.mod.config"), new ItemStack(Items.REDSTONE), btn -> {
                     minecraft.setScreen(new XrayConfigMenu(this));
                 }));
 
