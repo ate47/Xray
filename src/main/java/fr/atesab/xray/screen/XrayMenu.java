@@ -1,6 +1,5 @@
 package fr.atesab.xray.screen;
 
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,9 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
-import fr.atesab.xray.widget.LongItemWidget;
 import fr.atesab.xray.widget.MenuWidget;
-import net.minecraft.Util;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -74,30 +71,7 @@ public class XrayMenu extends XrayScreen {
                     minecraft.setScreen(new XrayConfigMenu(this));
                 }));
 
-        addRenderableWidget(new LongItemWidget(
-                width * 0 / 3, height - 20, width / 3, 20, new TranslatableComponent("x13.mod.link.mod"),
-                new ItemStack(Blocks.GOLD_ORE), () -> {
-                    openLink(XrayMain.MOD_LINK);
-                }));
-        addRenderableWidget(new LongItemWidget(
-                width * 1 / 3, height - 20, width / 3, 20, new TranslatableComponent("x13.mod.link.issue"),
-                new ItemStack(Blocks.TNT), () -> {
-                    openLink(XrayMain.MOD_ISSUE);
-                }));
-        addRenderableWidget(new LongItemWidget(
-                width * 2 / 3, height - 20, width - width * 2 / 3, 20, new TranslatableComponent("x13.mod.link.source"),
-                new ItemStack(Items.PAPER), () -> {
-                    openLink(XrayMain.MOD_SOURCE);
-                }));
-
         super.init();
-    }
-
-    private void openLink(URL url) {
-        try {
-            Util.getPlatform().openUrl(url);
-        } catch (Exception e) {
-        }
     }
 
     @Override
