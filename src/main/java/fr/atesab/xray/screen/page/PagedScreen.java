@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -76,7 +77,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
     /**
      * save the page
      */
-    protected abstract void save(Stream<E> stream);
+    protected abstract void save(List<E> stream);
 
     /**
      * cancel the menu
@@ -123,7 +124,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
         addRenderableWidget(
                 new Button(width / 2 - 176, height - 24, 172, 20, new TranslatableComponent("gui.done"), b -> {
-                    save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull));
+                    save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
+                            .collect(Collectors.toCollection(() -> new ArrayList<>())));
                     minecraft.setScreen(parent);
                 }));
 

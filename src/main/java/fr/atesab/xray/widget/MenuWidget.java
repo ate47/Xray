@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class MenuWidget extends AbstractButton {
     public interface OnPress {
-        void onPress(MenuWidget widget);
+        void onPress();
     }
 
     private ItemStack itemStack;
@@ -31,7 +31,6 @@ public class MenuWidget extends AbstractButton {
         Minecraft client = Minecraft.getInstance();
         boolean hovered = isHovered();
         int centerX = x + width / 2;
-        int centerY = y + height / 2;
         int color;
         if (hovered) {
             color = 0x33ffffff;
@@ -75,7 +74,7 @@ public class MenuWidget extends AbstractButton {
 
     @Override
     public void onPress() {
-        onPress.onPress(this);
+        onPress.onPress();
     }
 
 }

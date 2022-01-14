@@ -1,9 +1,16 @@
 package fr.atesab.xray.screen;
 
+import java.net.URL;
+import java.util.List;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.XrayMain;
+import fr.atesab.xray.config.BlockConfig;
+import fr.atesab.xray.config.ESPConfig;
+import fr.atesab.xray.widget.LongItemWidget;
 import fr.atesab.xray.widget.MenuWidget;
+import net.minecraft.Util;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -33,27 +40,62 @@ public class XrayMenu extends XrayScreen {
                         }));
 
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), btn -> {
-                    minecraft.setScreen(new XrayBlockModesConfig(this));
+                new TranslatableComponent("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), () -> {
+                    minecraft.setScreen(new XrayBlockModesConfig(this, mod.getConfig().getBlockConfigs().stream()) {
+                        @Override
+                        protected void save(List<BlockConfig> list) {
+                            mod.getConfig().setBlockConfigs(list);
+                            mod.saveConfigs();
+                        }
+                    });
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), btn -> {
-                    minecraft.setScreen(new XrayESPModesConfig(this));
+                new TranslatableComponent("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), () -> {
+                    minecraft.setScreen(new XrayESPModesConfig(this, mod.getConfig().getEspConfigs().stream()) {
+                        @Override
+                        protected void save(List<ESPConfig> list) {
+                            mod.getConfig().setEspConfigs(list);
+                            mod.saveConfigs();
+                        }
+                    });
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), btn -> {
+                new TranslatableComponent("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), () -> {
                     mod.fullBright();
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.showloc"), new ItemStack(Items.PAPER), btn -> {
+                new TranslatableComponent("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
                     minecraft.setScreen(new XrayLocationConfig(this));
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.config"), new ItemStack(Items.REDSTONE), btn -> {
+                new TranslatableComponent("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
                     minecraft.setScreen(new XrayConfigMenu(this));
                 }));
 
+        addRenderableWidget(new LongItemWidget(
+                width * 0 / 3, height - 20, width / 3 - 1, 20, new TranslatableComponent("x13.mod.link.link"),
+                new ItemStack(Blocks.GOLD_ORE), () -> {
+                    openLink(XrayMain.MOD_LINK);
+                }));
+        addRenderableWidget(new LongItemWidget(
+                width * 1 / 3, height - 20, width * 2 / 3 - 1, 20, new TranslatableComponent("x13.mod.link.issue"),
+                new ItemStack(Blocks.TNT), () -> {
+                    openLink(XrayMain.MOD_ISSUE);
+                }));
+        addRenderableWidget(new LongItemWidget(
+                width * 2 / 3, height - 20, width, 20, new TranslatableComponent("x13.mod.link.source"),
+                new ItemStack(Items.PAPER), () -> {
+                    openLink(XrayMain.MOD_SOURCE);
+                }));
+
         super.init();
+    }
+
+    private void openLink(URL url) {
+        try {
+            Util.getPlatform().openUrl(url);
+        } catch (Exception e) {
+        }
     }
 
     @Override

@@ -1,31 +1,21 @@
 package fr.atesab.xray.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.stream.Stream;
 
-import net.minecraft.client.gui.components.Button;
+import fr.atesab.xray.config.ESPConfig;
+import fr.atesab.xray.screen.page.PagedScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
 
-public class XrayESPModesConfig extends XrayScreen {
+public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
 
-    public XrayESPModesConfig(Screen parent) {
-        super(new TranslatableComponent("x13.mod.modes"), parent);
+    protected XrayESPModesConfig(Screen parent, Stream<ESPConfig> stream) {
+        super(new TranslatableComponent("x13.mod.modes"), parent, 24, stream);
     }
 
     @Override
-    protected void init() {
+    protected void initElements(Stream<ESPConfig> stream) {
         // TODO Auto-generated method stub
-        addRenderableWidget(
-                new Button(width / 2 - 100, height - 24, 200, 20, new TranslatableComponent("gui.done"),
-                        btn -> {
-                            minecraft.setScreen(parent);
-                        }));
-        super.init();
     }
 
-    @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        // TODO Auto-generated method stub
-        super.render(stack, mouseX, mouseY, delta);
-    }
 }

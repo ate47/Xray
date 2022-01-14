@@ -1,6 +1,7 @@
 package fr.atesab.xray;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +20,7 @@ import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.screen.XrayMenu;
 import fr.atesab.xray.utils.KeyInput;
+import fr.atesab.xray.utils.XrayUtils;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
@@ -46,6 +48,11 @@ import net.minecraftforge.fmlclient.registry.ClientRegistry;
 public class XrayMain {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
+	public static final String[] MOD_AUTHORS = { "ATE47", "ThaEin" };
+	public static final URL MOD_SOURCE = XrayUtils.soWhat(() -> new URL("https://github.com/ate47/Xray"));
+	public static final URL MOD_ISSUE = XrayUtils.soWhat(() -> new URL("https://github.com/ate47/Xray/issues"));
+	public static final URL MOD_LINK = XrayUtils
+			.soWhat(() -> new URL("https://www.curseforge.com/minecraft/mc-mods/xray-1-13-rift-modloader"));
 	private static int maxFullbrightStates = 20;
 	private static final Logger log = LogManager.getLogger(MOD_ID);
 

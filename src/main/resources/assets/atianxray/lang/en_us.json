@@ -14,5 +14,8 @@
   "x13.mod.menu.extract": "Extract",
   "x13.mod.menu.replace": "Left click to replace",
   "x13.mod.menu.delete": "Right click to delete",
+  "x13.mod.link.mod": "Mod page",
+  "x13.mod.link.source": "Source",
+  "x13.mod.link.issue": "Issue",
   "key.categories.xray": "Xray"
 }

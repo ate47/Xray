@@ -93,6 +93,14 @@ public class XrayConfig implements Cloneable {
         return espConfigs;
     }
 
+    public void setEspConfigs(List<ESPConfig> espConfigs) {
+        this.espConfigs = espConfigs;
+    }
+
+    public void setBlockConfigs(List<BlockConfig> blockConfigs) {
+        this.blockConfigs = blockConfigs;
+    }
+
     public LocationConfig getLocationConfig() {
         return locationConfig;
     }
