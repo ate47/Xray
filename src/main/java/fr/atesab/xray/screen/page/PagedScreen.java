@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.screen.XrayScreen;
+import fr.atesab.xray.utils.TagOnWriteList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -20,17 +21,17 @@ import net.minecraft.network.chat.TranslatableComponent;
 public abstract class PagedScreen<E> extends XrayScreen {
     @FunctionalInterface
     private interface ApplyFunction<E> {
-        void apply(PagedElement<E> element, int deltaY);
+        boolean apply(PagedElement<E> element, int deltaY);
     }
 
     private int page;
     private int maxPage;
     private int elementHeight;
     private int elementByPage;
+    private boolean doneButton = true;
 
     private ListIterator<PagedElement<E>> iterator;
-    private final List<PagedElement<E>> elements = new ArrayList<>();
-    private boolean shouldRecomputePages;
+    private final TagOnWriteList<PagedElement<E>> elements = new TagOnWriteList<>(new ArrayList<>());
     private Button nextButton;
     private Button lastButton;
 
@@ -38,22 +39,32 @@ public abstract class PagedScreen<E> extends XrayScreen {
         super(title, parent);
         this.elementHeight = elementHeight;
 
-        this.shouldRecomputePages = false;
+        elements.setTagEnabled(false);
         initElements(stream);
-        this.shouldRecomputePages = true;
+        elements.setTagEnabled(true);
         lastButton = new Button(0, 0, 20, 20, new TextComponent("<-"), b -> lastPage());
         nextButton = new Button(0, 0, 20, 20, new TextComponent("->"), b -> nextPage());
     }
 
+    protected void removeDoneButton() {
+        doneButton = false;
+    }
+
     private void applyToAllElement(ApplyFunction<E> action) {
-        int deltaY = 24;
-        iterator = getVisibleElements0().listIterator();
+        applyToAllElement(getVisibleElements0(), action);
+    }
+
+    private void applyToAllElement(List<PagedElement<E>> list, ApplyFunction<E> action) {
+        iterator = list.listIterator();
         while (iterator.hasNext()) {
             PagedElement<E> el = iterator.next();
-            action.apply(el, deltaY);
-            deltaY += elementHeight;
+            if (action.apply(el, 24 + (iterator.nextIndex() % elementByPage) * elementHeight))
+                break;
         }
         iterator = null;
+
+        if (elements.isUpdated())
+            computePages(true);
     }
 
     /**
@@ -94,10 +105,10 @@ public abstract class PagedScreen<E> extends XrayScreen {
         if (page != 0) {
             --page;
             if (page == 0)
-                lastButton.active = false;
-            nextButton.active = true;
+                lastButton.visible = false;
+            nextButton.visible = true;
         } else {
-            lastButton.active = false;
+            lastButton.visible = false;
         }
     }
 
@@ -108,53 +119,70 @@ public abstract class PagedScreen<E> extends XrayScreen {
         if (page + 1 != maxPage) {
             ++page;
             if (page + 1 == maxPage)
-                nextButton.active = false;
+                nextButton.visible = false;
 
-            lastButton.active = true;
+            lastButton.visible = true;
         } else {
-            nextButton.active = false;
+            nextButton.visible = false;
         }
     }
 
     @Override
     protected void init() {
-        lastButton.x = width / 2 - 200;
-        nextButton.x = width / 2 + 180;
+        int btn = 172;
+        int buttonSize = doneButton ? btn * 2 + 4 : btn;
+        lastButton.x = width / 2 - buttonSize / 2 - 26;
+        nextButton.x = width / 2 + buttonSize / 2 + 4;
         lastButton.y = nextButton.y = height - 24;
 
         addRenderableWidget(lastButton);
+        if (doneButton)
+            addRenderableWidget(
+                    new Button(width / 2 - 176, height - 24, 172, 20, new TranslatableComponent("gui.done"), b -> {
+                        save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
+                                .collect(Collectors.toCollection(() -> new ArrayList<>())));
+                        minecraft.setScreen(parent);
+                    }));
 
         addRenderableWidget(
-                new Button(width / 2 - 176, height - 24, 172, 20, new TranslatableComponent("gui.done"), b -> {
-                    save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
-                            .collect(Collectors.toCollection(() -> new ArrayList<>())));
-                    minecraft.setScreen(parent);
-                }));
-
-        addRenderableWidget(
-                new Button(width / 2 + 2, height - 24, 172, 20, new TranslatableComponent("gui.cancel"), b -> {
-                    cancel();
-                    minecraft.setScreen(parent);
-                }));
+                new Button(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20,
+                        new TranslatableComponent("gui.cancel"),
+                        b -> {
+                            cancel();
+                            minecraft.setScreen(parent);
+                        }));
 
         addRenderableWidget(nextButton);
 
-        computePages();
-
-        applyToAllElement((element, delta) -> {
-            element.init(delta);
+        computePages(false);
+        applyToAllElement(elements, (element, delta) -> {
+            element.setup(delta);
+            return false;
         });
         super.init();
     }
 
     public <P extends PagedElement<E>> P addElement(P element) {
         element.parentScreen = this;
-        if (iterator != null)
+        if (iterator != null) {
+            boolean goBack = iterator.hasPrevious();
+
+            if (goBack)
+                iterator.previous();
             iterator.add(element);
-        else
+
+            int index = iterator.nextIndex() % elementByPage;
+            int delta = index * elementHeight;
+            element.setup(delta);
+
+            if (goBack)
+                iterator.next();
+        } else
             elements.add(element);
-        if (shouldRecomputePages)
-            computePages();
+
+        if (elements.isUpdated())
+            computePages(true);
+
         return element;
     }
 
@@ -163,14 +191,23 @@ public abstract class PagedScreen<E> extends XrayScreen {
             iterator.remove();
     }
 
-    private void computePages() {
-        elementByPage = (height - 24 + 30) / elementHeight;
+    private void computePages(boolean updateDelta) {
+        elements.removeUpdated();
+        elementByPage = (height - 24 - 30) / elementHeight;
         // set a minimum of 1 page if elements.size() == 0
         maxPage = Math.max(1, elements.size() / elementByPage + (elements.size() % elementByPage != 0 ? 1 : 0));
 
         page = Math.min(maxPage - 1, page);
-        lastButton.active = page != 0;
-        nextButton.active = page + 1 != maxPage;
+        lastButton.visible = page != 0;
+        nextButton.visible = page + 1 != maxPage;
+
+        if (updateDelta) {
+            ListIterator<PagedElement<E>> it = elements.listIterator();
+            while (it.hasNext()) {
+                PagedElement<E> el = it.next();
+                el.updateDelta(24 + (it.nextIndex() % elementByPage) * elementHeight);
+            }
+        }
     }
 
     @Override
@@ -180,18 +217,23 @@ public abstract class PagedScreen<E> extends XrayScreen {
             stack.translate(0, deltaY, 0);
             element.render(stack, mouseX, mouseY - deltaY, delta);
             stack.translate(0, -deltaY, 0);
+            return false;
         });
         fill(stack, 0, 0, width, 22, 0xff444444);
         fill(stack, 0, height - 28, width, height, 0xff444444);
         String title = getTitle().getString();
-        title += " (" + (page + 1) + "/" + maxPage + ")";
+        if (maxPage != 1)
+            title += " (" + (page + 1) + "/" + maxPage + ")";
         drawCenteredString(stack, font, title, width / 2, 11 - font.lineHeight / 2, 0xffffffff);
         super.render(stack, mouseX, mouseY, delta);
     }
 
     @Override
     public void tick() {
-        applyToAllElement((element, deltaY) -> element.tick());
+        applyToAllElement((element, deltaY) -> {
+            element.tick();
+            return false;
+        });
         super.tick();
     }
 
@@ -230,13 +272,21 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+        if (scroll < 0) {
+            nextPage();
+        } else {
+            lastPage();
+        }
         applyToAllElement((element, deltaY) -> element.mouseScrolled(mouseX, mouseY - deltaY, scroll));
         return super.mouseScrolled(mouseX, mouseY, scroll);
     }
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        applyToAllElement((element, deltaY) -> element.mouseMoved(mouseX, mouseY - deltaY));
+        applyToAllElement((element, deltaY) -> {
+            element.mouseMoved(mouseX, mouseY - deltaY);
+            return false;
+        });
         super.mouseMoved(mouseX, mouseY);
     }
 

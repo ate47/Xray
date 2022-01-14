@@ -1,5 +1,8 @@
 {
   "x13.mod.mode": "Xray",
+  "x13.mod.mode.view.title": "View mode",
+  "x13.mod.mode.view.inclusive": "Inclusive",
+  "x13.mod.mode.view.exclusive": "Exclusive",
   "x13.mod.esp": "ESP",
   "x13.mod.xray": "Xray Mode",
   "x13.mod.cave": "Cave Mode",

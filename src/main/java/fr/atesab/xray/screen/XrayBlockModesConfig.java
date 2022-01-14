@@ -1,5 +1,6 @@
 package fr.atesab.xray.screen;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -12,14 +13,19 @@ import fr.atesab.xray.screen.page.PagedScreen;
 import fr.atesab.xray.screen.page.RemovePagedButton;
 import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.utils.XrayUtils;
+import fr.atesab.xray.view.ViewMode;
 import fr.atesab.xray.widget.BlockConfigWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.Tuple;
 
 public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
     private class PagedBlockMode extends PagedElement<BlockConfig> {
         private BlockConfig cfg;
+        private boolean textHover = false;
+        private BlockConfigWidget blocks;
 
         public PagedBlockMode(BlockConfig cfg) {
             super(XrayBlockModesConfig.this);
@@ -31,38 +37,63 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
         }
 
         @Override
-        public void init(int deltaY) {
-            int x = width / 2 - 200 + 24;
-            addWidget(new BlockConfigWidget(x, 0, 200, 20, cfg, XrayBlockModesConfig.this));
-            x += 204;
-            addWidget(new Button(x, 0, 80, 20, KeyData.getName(cfg.getKey()), btn -> {
+        public void init() {
+            int x = width / 2 - 125;
+            blocks = addSubWidget(new BlockConfigWidget(x, 0, 125, 20, cfg, XrayBlockModesConfig.this));
+            x += 129;
+            addSubWidget(new Button(x, 0, 80, 20, KeyData.getName(cfg.getKey()), btn -> {
                 minecraft.setScreen(new KeySelector(XrayBlockModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
                     btn.setMessage(KeyData.getName(cfg.getKey()));
                 }));
             }));
             x += 84;
-            // TODO: exl/inc button
-            x += 40;
-            addWidget(new AddPagedButton<>(XrayBlockModesConfig.this,
+            addSubWidget(new Button(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
+                minecraft.setScreen(new EnumSelector<ViewMode>(
+                        new TranslatableComponent("x13.mod.mode.view.title"),
+                        getParentScreen(),
+                        Arrays.stream(ViewMode.values()).map(v -> new Tuple<>(v.getTitle(), v))) {
+
+                    @Override
+                    protected void select(ViewMode element) {
+                        cfg.setViewMode(element);
+                        btn.setMessage(cfg.getViewMode().getTitle());
+                    }
+
+                });
+            }));
+            x += 68;
+
+            addSubWidget(new AddPagedButton<>(XrayBlockModesConfig.this,
                     x, 0, 20, 20, PagedBlockMode::new));
             x += 24;
-            addWidget(new RemovePagedButton(XrayBlockModesConfig.this,
+            addSubWidget(new RemovePagedButton(XrayBlockModesConfig.this,
                     x, 0, 20, 20));
-            super.init(deltaY);
+            super.init();
+        }
+
+        @Override
+        public void updateDelta(int delta) {
+            blocks.setDeltaY(delta);
         }
 
         @Override
         public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-            fill(stack, width / 2 - 200, 0, width / 2 - 180, 20, cfg.getColor());
+            textHover = XrayUtils.isHover(mouseX, mouseY, width / 2 - 200, 0, width / 2 - 125 - 4, 20);
+            fill(stack, width / 2 - 200, 0, width / 2 - 125 - 4, 20, textHover ? 0x33ffaa00 : 0x33ffffff);
+            int w = font.width(cfg.getModeName());
+            font.draw(stack, cfg.getModeName(), width / 2 - (200 - 125 - 4) / 2 - 125 - 4 - w / 2,
+                    10 - font.lineHeight / 2,
+                    cfg.getColor());
             super.render(stack, mouseX, mouseY, delta);
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (XrayUtils.isHover(mouseX, mouseY, width / 2 - 200, 0, width / 2 - 180, 20)) {
+            if (textHover) {
                 playDownSound();
                 // TODO: Set color
+                System.out.println("XrayBlockModesConfig.PagedBlockMode.mouseClicked()");
             }
             return super.mouseClicked(mouseX, mouseY, button);
         }

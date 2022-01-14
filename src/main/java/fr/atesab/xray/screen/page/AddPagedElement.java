@@ -11,8 +11,8 @@ public class AddPagedElement<E> extends PagedElement<E> {
     }
 
     @Override
-    public void init(int deltaY) {
+    public void init() {
         PagedScreen<E> parent = getParentScreen();
-        addWidget(new AddPagedButton<>(parent, parent.width / 2 - 100, 0, 200, 20, eSupplier));
+        addSubWidget(new AddPagedButton<>(parent, parent.width / 2 - 100, 0, 200, 20, eSupplier));
     }
 }

@@ -12,6 +12,7 @@ import fr.atesab.xray.view.ViewMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,10 +53,19 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
     @Override
     public void shouldSideBeRendered(BlockState adjacentState, BlockGetter blockState, BlockPos blockAccess,
             Direction pos, CallbackInfoReturnable<Boolean> ci) {
-        if (isEnabled())
-            ci.setReturnValue(
-                    viewMode.getViewer().shouldRenderSide(blocks.contains(adjacentState.getBlock().getDescriptionId()),
-                            adjacentState, blockState, blockAccess, pos));
+        if (!isEnabled())
+            return;
+
+        String name = Registry.BLOCK.getKey(adjacentState.getBlock()).toString();
+        boolean present = blocks.contains(name);
+        boolean shouldRender = viewMode.getViewer().shouldRenderSide(present, adjacentState, blockState,
+                blockAccess, pos);
+        ci.setReturnValue(shouldRender);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        setEnabled(enabled, true);
     }
 
     public void setEnabled(boolean enable, boolean reloadRenderers) {
@@ -68,12 +78,20 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
                 old.setEnabled(false);
         }
 
-        setEnabled(enable);
+        super.setEnabled(enable);
 
         mod.internalFullbright();
 
         if (reloadRenderers)
             Minecraft.getInstance().levelRenderer.allChanged();
+    }
+
+    public ViewMode getViewMode() {
+        return viewMode;
+    }
+
+    public void setViewMode(ViewMode viewMode) {
+        this.viewMode = viewMode;
     }
 
     @Override

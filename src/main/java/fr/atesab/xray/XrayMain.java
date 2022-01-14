@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -172,7 +174,7 @@ public class XrayMain {
 
 	public int shouldSideBeRendered(BlockState adjacentState, BlockGetter blockState, BlockPos blockAccess,
 			Direction pos, CallbackInfoReturnable<Boolean> ci) {
-		if (ci != null)
+		if (ci == null)
 			ci = new CallbackInfoReturnable<>("shouldSideBeRendered", true);
 
 		for (BlockConfig mode : getConfig().getBlockConfigs()) {
@@ -240,9 +242,12 @@ public class XrayMain {
 		var client = Minecraft.getInstance();
 		if (client.screen != null)
 			return;
+
 		KeyInput input = new KeyInput(ev.getKey(), ev.getScanCode(), ev.getAction(), ev.getModifiers());
 
-		config.getModes().forEach(mode -> mode.onKeyInput(input));
+		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), input.key())) {
+			config.getModes().forEach(mode -> mode.onKeyInput(input));
+		}
 
 		if (fullbrightKey.consumeClick())
 			fullBright();

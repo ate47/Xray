@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.annotations.Expose;
 
+import org.lwjgl.glfw.GLFW;
+
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
 import fr.atesab.xray.utils.KeyData;
@@ -44,6 +46,9 @@ public abstract class AbstractModeConfig implements IColorObject {
 
     public void onKeyInput(KeyInput input) {
         // TODO: make this
+        if (key == input.key()) {
+            toggle();
+        }
     }
 
     public int getKeyCode() {

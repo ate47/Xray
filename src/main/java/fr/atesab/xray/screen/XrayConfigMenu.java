@@ -24,7 +24,7 @@ public class XrayConfigMenu extends XrayScreen {
     protected void init() {
         // TODO Auto-generated method stub
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 100, 200, 20, new TranslatableComponent("gui.done"),
+                new Button(width / 2 - 100, height / 2 + 76, 200, 20, new TranslatableComponent("gui.done"),
                         btn -> {
                             minecraft.setScreen(parent);
                         }));

@@ -123,7 +123,7 @@ public class XrayConfig implements Cloneable {
             new BlockConfig(
                 GLFW.GLFW_KEY_X,
                 0,
-                "xray",
+                "Xray",
                 ViewMode.EXCLUSIVE,
 
                 /* Ores */
@@ -169,7 +169,7 @@ public class XrayConfig implements Cloneable {
             new BlockConfig(
                 GLFW.GLFW_KEY_C,
                 0,
-                "cave",
+                "Cave",
                 ViewMode.INCLUSIVE,
 
                 Blocks.DIRT,              Blocks.GRASS,            Blocks.GRAVEL,          Blocks.GRASS_BLOCK,
@@ -180,7 +180,7 @@ public class XrayConfig implements Cloneable {
             new BlockConfig(
                 GLFW.GLFW_KEY_R,
                 0,
-                "redstone",
+                "Redstone",
                 ViewMode.EXCLUSIVE,
 
                 Blocks.REDSTONE_BLOCK,                             Blocks.REDSTONE_LAMP,

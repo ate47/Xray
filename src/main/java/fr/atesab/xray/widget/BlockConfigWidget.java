@@ -16,11 +16,28 @@ import net.minecraft.world.level.block.Block;
 
 public class BlockConfigWidget extends Button {
     private BlockConfig cfg;
+    private int deltaX;
+    private int deltaY;
 
     public BlockConfigWidget(int x, int y, int width, int height, BlockConfig cfg, Screen menu) {
+        this(x, y, width, height, cfg, menu, 0, 0);
+    }
+
+    public BlockConfigWidget(int x, int y, int width, int height, BlockConfig cfg, Screen menu, int deltaX,
+            int deltaY) {
         super(x, y, width, height, new TextComponent(""),
                 b -> Minecraft.getInstance().setScreen(new XrayBlockMenu(menu, cfg)));
         this.cfg = cfg;
+        this.deltaX = deltaX;
+        this.deltaY = deltaY;
+    }
+
+    public void setDeltaX(int deltaX) {
+        this.deltaX = deltaX;
+    }
+
+    public void setDeltaY(int deltaY) {
+        this.deltaY = deltaY;
     }
 
     @Override
@@ -41,7 +58,7 @@ public class BlockConfigWidget extends Button {
         int left = this.x + this.width / 2 - view.size() * 17 / 2;
         int top = this.y + this.height / 2 - 15 / 2;
         for (Block b : view) {
-            client.getItemRenderer().renderGuiItem(new ItemStack(b), left, top);
+            client.getItemRenderer().renderGuiItem(new ItemStack(b), left + deltaX, top + deltaY);
             left += 17;
         }
     }

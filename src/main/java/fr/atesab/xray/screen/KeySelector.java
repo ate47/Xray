@@ -44,6 +44,7 @@ public class KeySelector extends XrayScreen {
 
     private void setKey(Optional<KeyData> value) {
         this.value = value;
+        keyButton.setMessage(KeyData.getName(value));
 
         cancelButton.active = true;
         doneButton.active = true;
@@ -61,7 +62,7 @@ public class KeySelector extends XrayScreen {
                     keyConsumer.accept(value);
                     minecraft.setScreen(parent);
                 }));
-        doneButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 24, 200, 20,
+        cancelButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 24, 200, 20,
                 new TranslatableComponent("gui.cancel"), b -> {
                     minecraft.setScreen(parent);
                 }));
@@ -92,11 +93,11 @@ public class KeySelector extends XrayScreen {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
-        drawCenteredString(stack, font, getTitle(), width / 2, height / 2 - 28 - font.lineHeight, 0xffffffff);
+        drawCenteredString(stack, font, getTitle(), width / 2, height / 2 - 30 - font.lineHeight, 0xffffffff);
 
         if (isWaitingKey) {
             drawCenteredString(stack, font, new TranslatableComponent("x13.mod.selector.key.presskey"), width / 2,
-                    keyButton.y + keyButton.getWidth() / 2 - font.lineHeight, 0xffffff00);
+                    keyButton.y + keyButton.getHeight() / 2 - font.lineHeight, 0xffffff00);
         }
 
         super.render(stack, mouseX, mouseY, delta);
