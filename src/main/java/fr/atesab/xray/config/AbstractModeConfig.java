@@ -1,19 +1,25 @@
 package fr.atesab.xray.config;
 
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.annotations.Expose;
 
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
+import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.utils.KeyInput;
+import net.minecraft.network.chat.Component;
 
 public abstract class AbstractModeConfig implements IColorObject {
     private static final AtomicInteger IDS = new AtomicInteger();
     private boolean enabled = false;
     @Expose
     private int key;
+    @Expose
+    private int scanCode;
     @Expose
     private int color = ColorSupplier.DEFAULT.getColor();
 
@@ -27,11 +33,12 @@ public abstract class AbstractModeConfig implements IColorObject {
     }
 
     public AbstractModeConfig() {
-        this(0, "Mode #" + IDS.incrementAndGet());
+        this(0, 0, "Mode #" + IDS.incrementAndGet());
     }
 
-    public AbstractModeConfig(int key, String name) {
+    public AbstractModeConfig(int key, int scanCode, String name) {
         this.key = key;
+        this.scanCode = scanCode;
         this.name = Objects.requireNonNull(name, "name can't be null!");
     }
 
@@ -39,12 +46,22 @@ public abstract class AbstractModeConfig implements IColorObject {
         // TODO: make this
     }
 
-    public void setKey(int key) {
-        this.key = key;
+    public int getKeyCode() {
+        return key;
     }
 
-    public int getKey() {
-        return key;
+    public int getKeyScanCode() {
+        return scanCode;
+    }
+
+    public void setKey(Optional<KeyData> key) {
+        KeyData data = key.orElseGet(KeyData::new);
+        this.key = data.keyCode();
+        this.scanCode = data.keyScanCode();
+    }
+
+    public Optional<KeyData> getKey() {
+        return key == 0 ? Optional.empty() : Optional.of(new KeyData(key, scanCode));
     }
 
     public boolean isEnabled() {

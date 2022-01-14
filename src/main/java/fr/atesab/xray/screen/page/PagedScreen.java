@@ -47,7 +47,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     private void applyToAllElement(ApplyFunction<E> action) {
         int deltaY = 24;
-        iterator = getVisibleElements().listIterator();
+        iterator = getVisibleElements0().listIterator();
         while (iterator.hasNext()) {
             PagedElement<E> el = iterator.next();
             action.apply(el, deltaY);
@@ -64,8 +64,11 @@ public abstract class PagedScreen<E> extends XrayScreen {
     }
 
     public List<PagedElement<E>> getVisibleElements() {
-        return Collections.unmodifiableList(
-                elements.subList(elementByPage * page, Math.min(elementByPage * (page + 1), elements.size())));
+        return Collections.unmodifiableList(getVisibleElements0());
+    }
+
+    private List<PagedElement<E>> getVisibleElements0() {
+        return elements.subList(elementByPage * page, Math.min(elementByPage * (page + 1), elements.size()));
     }
 
     /**

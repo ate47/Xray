@@ -122,6 +122,7 @@ public class XrayConfig implements Cloneable {
             // Xray Mode
             new BlockConfig(
                 GLFW.GLFW_KEY_X,
+                0,
                 "xray",
                 ViewMode.EXCLUSIVE,
 
@@ -167,6 +168,7 @@ public class XrayConfig implements Cloneable {
             // Cave Mode
             new BlockConfig(
                 GLFW.GLFW_KEY_C,
+                0,
                 "cave",
                 ViewMode.INCLUSIVE,
 
@@ -177,6 +179,7 @@ public class XrayConfig implements Cloneable {
             // Redstone mode
             new BlockConfig(
                 GLFW.GLFW_KEY_R,
+                0,
                 "redstone",
                 ViewMode.EXCLUSIVE,
 

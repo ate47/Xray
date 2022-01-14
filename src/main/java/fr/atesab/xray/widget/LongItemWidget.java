@@ -1,6 +1,5 @@
 package fr.atesab.xray.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.widget.MenuWidget.OnPress;

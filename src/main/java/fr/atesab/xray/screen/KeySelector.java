@@ -1,10 +1,11 @@
 package fr.atesab.xray.screen;
 
-import java.util.OptionalInt;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import fr.atesab.xray.utils.KeyData;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -12,23 +13,23 @@ import net.minecraft.network.chat.TranslatableComponent;
 public class KeySelector extends XrayScreen {
     private static final TranslatableComponent NONE_KEY = new TranslatableComponent("x13.mod.selector.key.none");
 
-    private Consumer<OptionalInt> keyConsumer;
-    private OptionalInt value;
+    private Consumer<Optional<KeyData>> keyConsumer;
+    private Optional<KeyData> value;
     private boolean isWaitingKey = false;
 
     private Button cancelButton;
     private Button keyButton;
     private Button doneButton;
 
-    public KeySelector(Screen parent, int key, Consumer<OptionalInt> keyConsumer) {
-        this(parent, OptionalInt.of(key), keyConsumer);
+    public KeySelector(Screen parent, KeyData key, Consumer<Optional<KeyData>> keyConsumer) {
+        this(parent, Optional.of(key), keyConsumer);
     }
 
-    public KeySelector(Screen parent, Consumer<OptionalInt> keyConsumer) {
-        this(parent, OptionalInt.empty(), keyConsumer);
+    public KeySelector(Screen parent, Consumer<Optional<KeyData>> keyConsumer) {
+        this(parent, Optional.empty(), keyConsumer);
     }
 
-    public KeySelector(Screen parent, OptionalInt currentValue, Consumer<OptionalInt> keyConsumer) {
+    public KeySelector(Screen parent, Optional<KeyData> currentValue, Consumer<Optional<KeyData>> keyConsumer) {
         super(new TranslatableComponent("x13.mod.selector.key.title"), parent);
         value = currentValue;
         this.keyConsumer = keyConsumer;
@@ -41,7 +42,7 @@ public class KeySelector extends XrayScreen {
         keyButton.active = keyButton.visible = false;
     }
 
-    private void setKey(OptionalInt value) {
+    private void setKey(Optional<KeyData> value) {
         this.value = value;
 
         cancelButton.active = true;
@@ -69,18 +70,18 @@ public class KeySelector extends XrayScreen {
     }
 
     @Override
-    public boolean keyPressed(int key, int p_96553_, int p_96554_) {
+    public boolean keyPressed(int key, int scanCode, int modifier) {
         if (isWaitingKey) {
             if (key == 256) {
-                setKey(OptionalInt.empty());
+                setKey(Optional.empty());
                 return true;
             }
 
-            setKey(OptionalInt.of(key));
+            setKey(Optional.of(new KeyData(key, scanCode)));
             return true;
         }
 
-        return super.keyPressed(key, p_96553_, p_96554_);
+        return super.keyPressed(key, scanCode, modifier);
     }
 
     @Override

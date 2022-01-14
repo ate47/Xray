@@ -39,8 +39,8 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
         this.blocks = new SyncedBlockList(blocks);
     }
 
-    public BlockConfig(int key, String name, ViewMode viewMode, Block... blocks) {
-        super(key, name);
+    public BlockConfig(int key, int ScanCode, String name, ViewMode viewMode, Block... blocks) {
+        super(key, ScanCode, name);
         this.viewMode = Objects.requireNonNull(viewMode, "viewMode can't be null!");
         this.blocks = new SyncedBlockList(blocks);
     }

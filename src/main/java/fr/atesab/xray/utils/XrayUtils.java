@@ -9,6 +9,10 @@ public class XrayUtils {
     private XrayUtils() {
     }
 
+    public static boolean isHover(double mouseX, double mouseY, int x, int y, int x2, int y2) {
+        return mouseX >= x && mouseX <= x2 && mouseY >= y && mouseY <= y2;
+    }
+
     public static <T> T soWhat(SoWhat<T> action) {
         try {
             return action.run();
