@@ -16,7 +16,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class BlockConfig extends AbstractModeConfig implements SideRenderer {
+public class BlockConfig extends AbstractModeConfig implements SideRenderer, Cloneable {
     @Expose
     private SyncedBlockList blocks;
 
@@ -25,6 +25,12 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer {
 
     public BlockConfig() {
         this(ViewMode.EXCLUSIVE);
+    }
+
+    private BlockConfig(BlockConfig other) {
+        super(other);
+        this.viewMode = other.viewMode;
+        this.blocks = other.blocks.clone();
     }
 
     public BlockConfig(ViewMode viewMode, Block... blocks) {
@@ -69,4 +75,10 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer {
         if (reloadRenderers)
             Minecraft.getInstance().levelRenderer.allChanged();
     }
+
+    @Override
+    public BlockConfig clone() {
+        return new BlockConfig(this);
+    }
+
 }

@@ -10,12 +10,17 @@ import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
 
-public class SyncedBlockList extends TagOnWriteList<String> {
+public class SyncedBlockList extends TagOnWriteList<String> implements Cloneable {
 
     private List<Block> blocks = new ArrayList<>();
 
     public SyncedBlockList() {
         super(new ArrayList<>());
+    }
+
+    private SyncedBlockList(SyncedBlockList other) {
+        super(other);
+        this.blocks.addAll(other.blocks);
     }
 
     public SyncedBlockList(Block... blocks) {
@@ -42,6 +47,11 @@ public class SyncedBlockList extends TagOnWriteList<String> {
         blocks.clear();
         stream().map(ResourceLocation::new).map(Registry.BLOCK::get).filter(Objects::nonNull).forEach(blocks::add);
         removeUpdated();
+    }
+
+    @Override
+    public SyncedBlockList clone() {
+        return new SyncedBlockList(this);
     }
 
 }

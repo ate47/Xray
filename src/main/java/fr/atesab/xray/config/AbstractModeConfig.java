@@ -20,6 +20,12 @@ public abstract class AbstractModeConfig implements IColorObject {
     @Expose
     private String name;
 
+    protected AbstractModeConfig(AbstractModeConfig other) {
+        this.key = other.key;
+        this.enabled = other.enabled;
+        this.color = other.color;
+    }
+
     public AbstractModeConfig() {
         this(0, "Mode #" + IDS.incrementAndGet());
     }

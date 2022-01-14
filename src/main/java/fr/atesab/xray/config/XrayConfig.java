@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -20,7 +21,7 @@ import fr.atesab.xray.utils.MergedIterable;
 import fr.atesab.xray.view.ViewMode;
 import net.minecraft.world.level.block.Blocks;
 
-public class XrayConfig {
+public class XrayConfig implements Cloneable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization()
             .excludeFieldsWithoutExposeAnnotation().create();
 
@@ -58,6 +59,20 @@ public class XrayConfig {
     @Expose
     private LocationConfig locationConfig = new LocationConfig();
     private File saveFile;
+
+    public XrayConfig() {
+    }
+
+    private XrayConfig(XrayConfig other) {
+        this.espConfigs = other.espConfigs.stream().map(ESPConfig::clone)
+                .collect(Collectors.toCollection(() -> new ArrayList<>()));
+        this.blockConfigs = other.blockConfigs.stream().map(
+                BlockConfig::clone)
+                .collect(Collectors.toCollection(() -> new ArrayList<>()));
+        this.maxTracerRange = other.maxTracerRange;
+        this.locationConfig = other.locationConfig.clone();
+        this.saveFile = other.saveFile;
+    }
 
     public Iterable<AbstractModeConfig> getModes() {
         return new MergedIterable<AbstractModeConfig>(getBlockConfigs(), getEspConfigs());
@@ -211,5 +226,10 @@ public class XrayConfig {
 
     public void setMaxTracerRange(int maxTracerRange) {
         this.maxTracerRange = maxTracerRange;
+    }
+
+    @Override
+    public XrayConfig clone() {
+        return new XrayConfig(this);
     }
 }
