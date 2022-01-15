@@ -8,7 +8,6 @@ import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.screen.page.PagedElement;
 import fr.atesab.xray.screen.page.PagedScreen;
 import fr.atesab.xray.widget.LongItemWidget;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 

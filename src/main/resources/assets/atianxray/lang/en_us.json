@@ -25,6 +25,13 @@
   "x13.mod.mode.view.exclusive": "Exclusive",
 
   "x13.mod.esp": "ESP",
+  "x13.mod.esp.template.player": "Player",
+  "x13.mod.esp.template.wither": "Wither",
+  "x13.mod.esp.template.aggresive": "Aggresive",
+  "x13.mod.esp.template.passive": "Passive",
+  "x13.mod.esp.tracer": "Tracer",
+  "x13.mod.esp.selector": "Entity selector",
+
   "x13.mod.xray": "Xray Mode",
   "x13.mod.cave": "Cave Mode",
   "x13.mod.redstone": "Redstone Mode",
@@ -45,5 +52,8 @@
   "x13.mod.link.source": "Source",
   "x13.mod.link.issue": "Issue",
   "x13.mod.by": "By %s",
+
+  "x13.mod.on": "On",
+  "x13.mod.off": "Off",
   "key.categories.xray": "Xray"
 }

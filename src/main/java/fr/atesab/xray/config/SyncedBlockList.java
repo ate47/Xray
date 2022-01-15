@@ -35,7 +35,7 @@ public class SyncedBlockList extends TagOnWriteList<String> implements Cloneable
     @SuppressWarnings("deprecation")
     public void setBlocks(List<Block> blocks) {
         setTagEnabled(false);
-        this.blocks = blocks;
+        this.blocks = new ArrayList<>(blocks);
         clear();
         blocks.stream().filter(Objects::nonNull).map(Registry.BLOCK::getKey).map(Object::toString).forEach(this::add);
         setTagEnabled(true);

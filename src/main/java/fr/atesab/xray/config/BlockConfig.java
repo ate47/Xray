@@ -146,6 +146,12 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
             return cfg.clone();
         }
 
+        public BlockConfig create(int color) {
+            BlockConfig cfg = create();
+            cfg.setColor(color);
+            return cfg;
+        }
+
         public void cloneInto(BlockConfig cfg) {
             cfg.cloneInto(this.cfg);
         }
@@ -194,6 +200,7 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void shouldSideBeRendered(BlockState adjacentState, BlockGetter blockState, BlockPos blockAccess,
             Direction pos, CallbackInfoReturnable<Boolean> ci) {
         if (!isEnabled())

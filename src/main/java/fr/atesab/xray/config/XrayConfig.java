@@ -113,10 +113,13 @@ public class XrayConfig implements Cloneable {
      * reset the config
      */
     public void reset() {
-        blockConfigs.add(BlockConfig.Template.XRAY.create());
-        blockConfigs.add(BlockConfig.Template.CAVE.create());
-        blockConfigs.add(BlockConfig.Template.REDSTONE.create());
+        blockConfigs.clear();
+        blockConfigs.add(BlockConfig.Template.XRAY.create(-11607223));
+        blockConfigs.add(BlockConfig.Template.CAVE.create(-1779896));
+        blockConfigs.add(BlockConfig.Template.REDSTONE.create(-122077));
         espConfigs.clear();
+        espConfigs.add(ESPConfig.Template.PLAYER.create(-11607223));
+        espConfigs.add(ESPConfig.Template.WITHER.create(-1779896));
     }
 
     /**
