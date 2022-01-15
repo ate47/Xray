@@ -16,6 +16,7 @@ public abstract class EnumSelector<E extends EnumElement> extends PagedScreen<E>
 
     private class EnumSelectionElement extends PagedElement<E> {
         private E e;
+        private LongItemWidget btn;
 
         public EnumSelectionElement(E e) {
             super(EnumSelector.this);
@@ -24,11 +25,17 @@ public abstract class EnumSelector<E extends EnumElement> extends PagedScreen<E>
 
         @Override
         public void init() {
-            addSubWidget(new LongItemWidget(width / 2 - 100, 0, 200, 20, e.getTitle(), e.getIcon(), () -> {
+            btn = addSubWidget(new LongItemWidget(width / 2 - 100, 0, 200, 20, e.getTitle(), e.getIcon(), () -> {
                 select(e);
                 minecraft.setScreen(parent);
             }));
             super.init();
+        }
+
+        @Override
+        public void updateDelta(int delta, int index) {
+            super.updateDelta(delta, index);
+            btn.setDeltaY(delta);
         }
     }
 

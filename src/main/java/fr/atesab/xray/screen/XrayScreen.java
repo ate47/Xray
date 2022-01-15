@@ -16,4 +16,9 @@ public class XrayScreen extends Screen {
     public void playDownSound() {
         minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
 }

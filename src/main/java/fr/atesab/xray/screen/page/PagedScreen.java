@@ -198,7 +198,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
         } else
             elements.add(to, element);
 
-        computePages(true);
+        if (elements.isUpdated())
+            computePages(true);
 
         return element;
     }

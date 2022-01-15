@@ -16,11 +16,21 @@ public class LongItemWidget extends AbstractButton {
 
     private ItemStack itemStack;
     private OnPress oPress;
+    private int deltaX;
+    private int deltaY;
 
     public LongItemWidget(int x, int y, int w, int h, Component text, ItemStack stack, OnPress oPress) {
         super(x, y, w, h, text);
         this.itemStack = stack;
         this.oPress = oPress;
+    }
+
+    public void setDeltaX(int deltaX) {
+        this.deltaX = deltaX;
+    }
+
+    public void setDeltaY(int deltaY) {
+        this.deltaY = deltaY;
     }
 
     @Override
@@ -47,7 +57,7 @@ public class LongItemWidget extends AbstractButton {
 
         int deltaH = (getHeight() - 16);
 
-        renderer.renderGuiItem(itemStack, x + deltaH / 2, y + deltaH / 2);
+        renderer.renderGuiItem(itemStack, x + deltaH / 2 + deltaX, y + deltaH / 2 + deltaY);
         font.draw(stack,
                 message, x + deltaH + 16 + 2, y + getHeight() / 2 - font.lineHeight / 2,
                 packedFGColor);

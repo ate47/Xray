@@ -1,5 +1,6 @@
 package fr.atesab.xray.screen;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -38,13 +39,13 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             int x = width / 2 - 125;
             blocks = addSubWidget(new BlockConfigWidget(x, 0, 125, 20, cfg, XrayBlockModesConfig.this));
             x += 129;
-            addSubWidget(new Button(x, 0, 80, 20, KeyData.getName(cfg.getKey()), btn -> {
+            addSubWidget(new Button(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
                 minecraft.setScreen(new KeySelector(XrayBlockModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
                     btn.setMessage(KeyData.getName(cfg.getKey()));
                 }));
             }));
-            x += 84;
+            x += 60;
             addSubWidget(new Button(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
                 minecraft.setScreen(new EnumSelector<ViewMode>(
                         new TranslatableComponent("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
@@ -58,6 +59,25 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
                 });
             }));
             x += 68;
+            addSubWidget(new Button(x, 0, 20, 20, new TranslatableComponent("x13.mod.template.little"), btn -> {
+                minecraft.setScreen(new EnumSelector<BlockConfig.Template>(
+                        new TranslatableComponent("x13.mod.template"), XrayBlockModesConfig.this,
+                        BlockConfig.Template.values()) {
+
+                    @Override
+                    protected void select(BlockConfig.Template template) {
+                        String oldName = cfg.getModeName();
+                        int color = cfg.getColor();
+                        Optional<KeyData> key = cfg.getKey();
+                        template.cloneInto(cfg);
+                        cfg.setName(oldName);
+                        cfg.setColor(color);
+                        cfg.setKey(key);
+                    }
+
+                });
+            }));
+            x += 24;
 
             addSubWidget(new AddPagedButton<>(XrayBlockModesConfig.this,
                     x, 0, 20, 20, PagedBlockMode::new));

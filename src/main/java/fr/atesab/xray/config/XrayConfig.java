@@ -15,11 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
-import org.lwjgl.glfw.GLFW;
-
 import fr.atesab.xray.utils.MergedIterable;
-import fr.atesab.xray.view.ViewMode;
-import net.minecraft.world.level.block.Blocks;
 
 public class XrayConfig implements Cloneable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization()

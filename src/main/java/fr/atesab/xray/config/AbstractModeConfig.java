@@ -25,9 +25,7 @@ public abstract class AbstractModeConfig implements IColorObject {
     private String name;
 
     protected AbstractModeConfig(AbstractModeConfig other) {
-        this.key = other.key;
-        this.enabled = other.enabled;
-        this.color = other.color;
+        cloneInto(other);
     }
 
     public AbstractModeConfig() {
@@ -38,6 +36,13 @@ public abstract class AbstractModeConfig implements IColorObject {
         this.key = key;
         this.scanCode = scanCode;
         this.name = Objects.requireNonNull(name, "name can't be null!");
+    }
+
+    public void cloneInto(AbstractModeConfig cfg) {
+        this.key = cfg.key;
+        this.enabled = cfg.enabled;
+        this.color = cfg.color;
+        this.name = cfg.name;
     }
 
     public void onKeyInput(KeyInput input) {

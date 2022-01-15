@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fr.atesab.xray.SideRenderer;
 import fr.atesab.xray.XrayMain;
+import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.view.ViewMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -24,7 +25,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockConfig extends AbstractModeConfig implements SideRenderer, Cloneable {
-    public enum Template {
+    public enum Template implements EnumElement {
         // @formatter:off
         BLANK("x13.mod.template.blank", new ItemStack(Items.PAPER), new BlockConfig()),
         XRAY("x13.mod.template.xray", new ItemStack(Blocks.DIAMOND_ORE), new BlockConfig(
@@ -131,16 +132,22 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
             this.cfg = cfg;
         }
 
+        @Override
         public Component getTitle() {
             return title;
         }
 
+        @Override
         public ItemStack getIcon() {
             return icon;
         }
 
         public BlockConfig create() {
             return cfg.clone();
+        }
+
+        public void cloneInto(BlockConfig cfg) {
+            cfg.cloneInto(this.cfg);
         }
 
     }
@@ -157,8 +164,6 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
 
     private BlockConfig(BlockConfig other) {
         super(other);
-        this.viewMode = other.viewMode;
-        this.blocks = other.blocks.clone();
     }
 
     public BlockConfig(ViewMode viewMode, Block... blocks) {
@@ -171,6 +176,17 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
         super(key, ScanCode, name);
         this.viewMode = Objects.requireNonNull(viewMode, "viewMode can't be null!");
         this.blocks = new SyncedBlockList(blocks);
+    }
+
+    @Override
+    public void cloneInto(AbstractModeConfig cfg) {
+        if (!(cfg instanceof BlockConfig other))
+            throw new IllegalArgumentException("Can't clone config from another type!");
+
+        super.cloneInto(cfg);
+
+        this.viewMode = other.viewMode;
+        this.blocks = other.blocks.clone();
     }
 
     public SyncedBlockList getBlocks() {
