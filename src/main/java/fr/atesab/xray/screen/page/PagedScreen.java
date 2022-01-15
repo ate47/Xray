@@ -72,7 +72,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
         while (iterator.hasNext()) {
             PagedElement<E> el = iterator.next();
             int index = iterator.nextIndex() - 1;
-            if (action.apply(el, 24 + ((index) % elementByPage) * elementHeight, index))
+            if (action.apply(el, getDelta(index), index))
                 break;
         }
         iterator = null;
@@ -180,6 +180,14 @@ public abstract class PagedScreen<E> extends XrayScreen {
         return this.addElement(element, elements.size());
     }
 
+    public int getDelta(int index) {
+        int count = elements.size();
+        if (count > elementByPage)
+            count = elementByPage;
+
+        return height / 2 - count * elementHeight / 2 + index * elementHeight;
+    }
+
     public <P extends PagedElement<E>> P addElement(P element, int to) {
         element.parentScreen = this;
         if (iterator != null) {
@@ -189,9 +197,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
                 iterator.previous();
             iterator.add(element);
 
-            int index = iterator.nextIndex() % elementByPage;
-            int delta = index * elementHeight;
-            element.setup(delta, index);
+            int index = iterator.nextIndex();
+            element.setup(getDelta(index), index);
 
             if (goBack)
                 iterator.next();
@@ -224,7 +231,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
             while (it.hasNext()) {
                 PagedElement<E> el = it.next();
                 int index = it.nextIndex() - 1;
-                el.updateDelta(24 + (index % elementByPage) * elementHeight, index);
+                el.updateDelta(getDelta(index), index);
             }
         }
     }
