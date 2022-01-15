@@ -20,6 +20,11 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 public abstract class PagedScreen<E> extends XrayScreen {
     @FunctionalInterface
+    private interface ApplyFunctionIndex<E> {
+        boolean apply(PagedElement<E> element, int deltaY, int index);
+    }
+
+    @FunctionalInterface
     private interface ApplyFunction<E> {
         boolean apply(PagedElement<E> element, int deltaY);
     }
@@ -54,11 +59,20 @@ public abstract class PagedScreen<E> extends XrayScreen {
         applyToAllElement(getVisibleElements0(), action);
     }
 
+    private void applyToAllElement(ApplyFunctionIndex<E> action) {
+        applyToAllElement(getVisibleElements0(), action);
+    }
+
     private void applyToAllElement(List<PagedElement<E>> list, ApplyFunction<E> action) {
+        applyToAllElement(list, (element, deltaY, index) -> action.apply(element, deltaY));
+    }
+
+    private void applyToAllElement(List<PagedElement<E>> list, ApplyFunctionIndex<E> action) {
         iterator = list.listIterator();
         while (iterator.hasNext()) {
             PagedElement<E> el = iterator.next();
-            if (action.apply(el, 24 + (iterator.nextIndex() % elementByPage) * elementHeight))
+            int index = iterator.nextIndex() - 1;
+            if (action.apply(el, 24 + ((index) % elementByPage) * elementHeight, index))
                 break;
         }
         iterator = null;
@@ -155,14 +169,18 @@ public abstract class PagedScreen<E> extends XrayScreen {
         addRenderableWidget(nextButton);
 
         computePages(false);
-        applyToAllElement(elements, (element, delta) -> {
-            element.setup(delta);
+        applyToAllElement(elements, (element, deltaY, index) -> {
+            element.setup(deltaY, index);
             return false;
         });
         super.init();
     }
 
     public <P extends PagedElement<E>> P addElement(P element) {
+        return this.addElement(element, elements.size());
+    }
+
+    public <P extends PagedElement<E>> P addElement(P element, int to) {
         element.parentScreen = this;
         if (iterator != null) {
             boolean goBack = iterator.hasPrevious();
@@ -173,15 +191,14 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
             int index = iterator.nextIndex() % elementByPage;
             int delta = index * elementHeight;
-            element.setup(delta);
+            element.setup(delta, index);
 
             if (goBack)
                 iterator.next();
         } else
-            elements.add(element);
+            elements.add(to, element);
 
-        if (elements.isUpdated())
-            computePages(true);
+        computePages(true);
 
         return element;
     }
@@ -205,7 +222,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
             ListIterator<PagedElement<E>> it = elements.listIterator();
             while (it.hasNext()) {
                 PagedElement<E> el = it.next();
-                el.updateDelta(24 + (it.nextIndex() % elementByPage) * elementHeight);
+                int index = it.nextIndex() - 1;
+                el.updateDelta(24 + (index % elementByPage) * elementHeight, index);
             }
         }
     }

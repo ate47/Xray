@@ -20,6 +20,7 @@ import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.XrayConfig;
+import fr.atesab.xray.screen.ColorSelector;
 import fr.atesab.xray.screen.XrayMenu;
 import fr.atesab.xray.utils.KeyInput;
 import fr.atesab.xray.utils.XrayUtils;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -272,18 +274,30 @@ public class XrayMain {
 	public void onHudRender(RenderGameOverlayEvent ev) {
 		IColorObject color = findCurrentMode();
 		int c = color.getColor();
-		String s = color.getModeName();
+		String s = "";
 		var matrixStack = ev.getMatrixStack();
 		var mc = Minecraft.getInstance();
 		var render = mc.font;
 		var player = mc.player;
 
-		if (!s.isEmpty())
-			render.draw(matrixStack, s = "[" + s + "] ", 5, 5, c);
+		if (config.getLocationConfig().isShowMode() && !color.getModeName().isEmpty()) {
+			s = "[" + color.getModeName() + "] ";
+			render.draw(matrixStack, s, 5, 5, c);
+		}
+
 		if (config.getLocationConfig().isEnabled() && player != null) {
-			var pos = player.position();
-			render.draw(matrixStack, "XYZ: " + (significantNumbers(pos.x) + " / " + significantNumbers(pos.y) + " / "
-					+ significantNumbers(pos.z)), 5 + render.width(s), 5, 0xffffffff);
+			String format = getConfig().getLocationConfig().getFormat();
+
+			Vec3 pos = player.position();
+			format = format.replaceAll("%x", significantNumbers(pos.x));
+			format = format.replaceAll("%y", significantNumbers(pos.y));
+			format = format.replaceAll("%z", significantNumbers(pos.z));
+			format = format.replaceAll("%fx", String.valueOf((int) pos.x));
+			format = format.replaceAll("%fy", String.valueOf((int) pos.y));
+			format = format.replaceAll("%fz", String.valueOf((int) pos.z));
+			format = format.replaceAll("%name", player.getGameProfile().getName());
+
+			render.draw(matrixStack, format, 5 + render.width(s), 5, 0xffffffff);
 		}
 	}
 
@@ -310,5 +324,7 @@ public class XrayMain {
 			con.registerExtensionPoint(ConfigGuiFactory.class,
 					() -> new ConfigGuiFactory((mc, parent) -> new XrayMenu(parent)));
 		});
+
+		ColorSelector.registerPickerImage();
 	}
 }

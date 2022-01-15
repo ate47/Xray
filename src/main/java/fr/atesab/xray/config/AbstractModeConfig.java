@@ -2,18 +2,14 @@ package fr.atesab.xray.config;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.annotations.Expose;
-
-import org.lwjgl.glfw.GLFW;
 
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
 import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.utils.KeyInput;
-import net.minecraft.network.chat.Component;
 
 public abstract class AbstractModeConfig implements IColorObject {
     private static final AtomicInteger IDS = new AtomicInteger();

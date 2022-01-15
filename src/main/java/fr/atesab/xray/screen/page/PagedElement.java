@@ -39,11 +39,11 @@ public class PagedElement<E> implements GuiEventListener {
         return parentScreen.height;
     }
 
-    public void setup(int deltaY) {
+    public void setup(int deltaY, int index) {
         widgets.clear();
         guiListeners.clear();
         this.init();
-        this.updateDelta(deltaY);
+        this.updateDelta(deltaY, index);
     }
 
     public void init() {
@@ -134,7 +134,7 @@ public class PagedElement<E> implements GuiEventListener {
         return false;
     }
 
-    public void updateDelta(int delta) {
+    public void updateDelta(int delta, int index) {
     }
 
 }

@@ -1,6 +1,5 @@
 package fr.atesab.xray.screen;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -17,9 +16,7 @@ import fr.atesab.xray.view.ViewMode;
 import fr.atesab.xray.widget.BlockConfigWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.util.Tuple;
 
 public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
     private class PagedBlockMode extends PagedElement<BlockConfig> {
@@ -50,9 +47,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             x += 84;
             addSubWidget(new Button(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
                 minecraft.setScreen(new EnumSelector<ViewMode>(
-                        new TranslatableComponent("x13.mod.mode.view.title"),
-                        getParentScreen(),
-                        Arrays.stream(ViewMode.values()).map(v -> new Tuple<>(v.getTitle(), v))) {
+                        new TranslatableComponent("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
 
                     @Override
                     protected void select(ViewMode element) {
@@ -73,7 +68,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
         }
 
         @Override
-        public void updateDelta(int delta) {
+        public void updateDelta(int delta, int index) {
             blocks.setDeltaY(delta);
         }
 
@@ -92,8 +87,8 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (textHover) {
                 playDownSound();
-                // TODO: Set color
-                System.out.println("XrayBlockModesConfig.PagedBlockMode.mouseClicked()");
+                minecraft.setScreen(new XrayAbstractModeConfig(XrayBlockModesConfig.this, cfg));
+                return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);
         }
