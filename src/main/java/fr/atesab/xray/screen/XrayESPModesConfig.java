@@ -36,8 +36,8 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
         @Override
         public void init() {
             int x = width / 2 - 125;
-            entities = addSubWidget(new EntityConfigWidget(x, 0, 125, 20, cfg, XrayESPModesConfig.this));
-            x += 129;
+            entities = addSubWidget(new EntityConfigWidget(x, 0, 115, 20, cfg, XrayESPModesConfig.this));
+            x += 119;
             addSubWidget(new Button(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
                 minecraft.setScreen(new KeySelector(XrayESPModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
@@ -46,11 +46,11 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
             }));
             x += 60;
             addSubWidget(
-                    new Button(x, 0, 64, 20, XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"), btn -> {
+                    new Button(x, 0, 74, 20, XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"), btn -> {
                         cfg.setTracer(!cfg.hasTracer());
                         btn.setMessage(XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"));
                     }));
-            x += 68;
+            x += 78;
             addSubWidget(new Button(x, 0, 20, 20, new TranslatableComponent("x13.mod.template.little"), btn -> {
                 minecraft.setScreen(new EnumSelector<ESPConfig.Template>(
                         new TranslatableComponent("x13.mod.template"), XrayESPModesConfig.this,

@@ -185,7 +185,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
         if (count > elementByPage)
             count = elementByPage;
 
-        return height / 2 - count * elementHeight / 2 + index * elementHeight;
+        return height / 2 - count * elementHeight / 2 + (index % elementByPage) * elementHeight;
     }
 
     public <P extends PagedElement<E>> P addElement(P element, int to) {
