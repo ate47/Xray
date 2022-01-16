@@ -47,7 +47,7 @@ public class BlockConfigWidget extends Button {
         List<Block> blocks = cfg.getBlocks().getBlocks();
 
         List<Block> view = blocks.subList(0, Math.min(fit, blocks.size()));
-        var client = Minecraft.getInstance();
+        Minecraft client = Minecraft.getInstance();
 
         if (mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height) {
             Gui.fill(matrices, x, y, x + width, y + height, 0x33ffaa00);

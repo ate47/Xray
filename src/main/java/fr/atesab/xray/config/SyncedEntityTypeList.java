@@ -22,7 +22,7 @@ public class SyncedEntityTypeList extends TagOnWriteList<String> implements Clon
     }
 
     private SyncedEntityTypeList(SyncedEntityTypeList other) {
-        super(other);
+        super(new ArrayList<>(other));
         this.entities.addAll(other.entities);
     }
 

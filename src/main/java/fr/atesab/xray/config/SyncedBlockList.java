@@ -19,7 +19,7 @@ public class SyncedBlockList extends TagOnWriteList<String> implements Cloneable
     }
 
     private SyncedBlockList(SyncedBlockList other) {
-        super(other);
+        super(new ArrayList<>(other));
         this.blocks.addAll(other.blocks);
     }
 

@@ -6,37 +6,63 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.shaders.Shader;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
+import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.config.BlockConfig;
+import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.screen.ColorSelector;
 import fr.atesab.xray.screen.XrayMenu;
+import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.KeyInput;
+import fr.atesab.xray.utils.RenderUtils;
 import fr.atesab.xray.utils.XrayUtils;
+import fr.atesab.xray.utils.GuiUtils.RGBResult;
+import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -241,7 +267,7 @@ public class XrayMain {
 
 	@SubscribeEvent
 	public void onKeyEvent(KeyInputEvent ev) {
-		var client = Minecraft.getInstance();
+		Minecraft client = Minecraft.getInstance();
 		if (client.screen != null)
 			return;
 
@@ -272,17 +298,20 @@ public class XrayMain {
 
 	@SubscribeEvent
 	public void onHudRender(RenderGameOverlayEvent ev) {
-		IColorObject color = findCurrentMode();
-		int c = color.getColor();
-		String s = "";
-		var matrixStack = ev.getMatrixStack();
-		var mc = Minecraft.getInstance();
-		var render = mc.font;
-		var player = mc.player;
+		int w = 0;
+		PoseStack stack = ev.getMatrixStack();
+		Minecraft mc = Minecraft.getInstance();
+		Font render = mc.font;
+		LocalPlayer player = mc.player;
 
-		if (config.getLocationConfig().isShowMode() && !color.getModeName().isEmpty()) {
-			s = "[" + color.getModeName() + "] ";
-			render.draw(matrixStack, s, 5, 5, c);
+		if (config.getLocationConfig().isShowMode()) {
+			for (AbstractModeConfig cfg : config.getModes()) {
+				if (!cfg.isEnabled())
+					continue;
+				String s = "[" + cfg.getModeName() + "] ";
+				render.draw(stack, s, 5 + w, 5, cfg.getColor());
+				w += render.width(s);
+			}
 		}
 
 		if (config.getLocationConfig().isEnabled() && player != null) {
@@ -297,8 +326,73 @@ public class XrayMain {
 			format = format.replaceAll("%fz", String.valueOf((int) pos.z));
 			format = format.replaceAll("%name", player.getGameProfile().getName());
 
-			render.draw(matrixStack, format, 5 + render.width(s), 5, 0xffffffff);
+			render.draw(stack, format, 5 + w, 5, 0xffffffff);
 		}
+	}
+
+	@SubscribeEvent
+	public void onRenderWorld(RenderWorldLastEvent ev) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientLevel level = minecraft.level;
+		LocalPlayer player = minecraft.player;
+		PoseStack stack = ev.getMatrixStack();
+		float delta = ev.getPartialTicks();
+		Camera mainCamera = minecraft.gameRenderer.getMainCamera();
+		Vec3 camera = mainCamera.getPosition();
+
+		if (!config.getEspConfigs().stream().filter(ESPConfig::isEnabled).findAny().isPresent())
+			return;
+
+		BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
+		VertexConsumer buffer = source.getBuffer(RenderType.LINES);
+
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_LINE_SMOOTH);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+		stack.pushPose();
+		stack.translate(-camera.x, -camera.y, -camera.z);
+		Vector3f look = mainCamera.getLookVector();
+		float px = (float) (player.xOld + (player.getX() - player.xOld) * delta) + look.x();
+		float py = (float) (player.yOld + (player.getY() - player.yOld) * delta) + player.getEyeHeight() + look.y();
+		float pz = (float) (player.zOld + (player.getZ() - player.zOld) * delta) + look.z();
+
+		int maxDistanceSquared = (config.getMaxTracerRange() * config.getMaxTracerRange());
+		level.entitiesForRendering().forEach(e -> {
+
+			if ((config.getMaxTracerRange() != 0 && e.distanceToSqr(player) > maxDistanceSquared) || player == e)
+				return;
+
+			EntityType<?> type = e.getType();
+
+			config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
+				double x = e.xOld + (e.getX() - e.xOld) * delta;
+				double y = e.yOld + (e.getY() - e.yOld) * delta;
+				double z = e.zOld + (e.getZ() - e.zOld) * delta;
+				RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
+				float r = c.red() / 255F;
+				float g = c.green() / 255F;
+				float b = c.blue() / 255F;
+				float a = c.alpha() / 255F;
+
+				AABB aabb = type.getAABB(x, y, z);
+
+				LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
+
+				if (esp.hasTracer()) {
+					Vec3 center = aabb.getCenter();
+					RenderUtils.renderSingleLine(stack, buffer, px, py, pz, (float) center.x,
+							(float) center.y, (float) center.z, r, g, b, a);
+				}
+			});
+		});
+		source.endBatch(RenderType.LINES);
+		stack.popPose();
+		RenderSystem.setShaderColor(1, 1, 1, 1);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_LINE_SMOOTH);
 	}
 
 	/**

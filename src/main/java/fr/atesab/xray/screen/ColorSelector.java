@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.utils.GuiUtils;
+import fr.atesab.xray.utils.GuiUtils.HSLResult;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -19,6 +20,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +50,7 @@ public class ColorSelector extends XrayScreen {
     private static final int RANDOM_PICKER_FREQUENCY = 3600;
 
     private static ItemStack updatePicker() {
-        var tag = RANDOM_PICKER.getTag();
+        CompoundTag tag = RANDOM_PICKER.getTag();
         tag.putInt("CustomPotionColor", GuiUtils.getTimeColor(RANDOM_PICKER_FREQUENCY, 100, 50));
         RANDOM_PICKER.setTag(tag);
         return RANDOM_PICKER;
@@ -64,11 +66,11 @@ public class ColorSelector extends XrayScreen {
             pickerHue = hue;
             pickerLightness = lightness;
 
-            var pixels = PICKER_IMAGE_S.getPixels();
+            NativeImage pixels = PICKER_IMAGE_S.getPixels();
 
-            for (var y = 0; y < pixels.getHeight(); y++) { // saturation
-                var color = GuiUtils.fromHSL(hue, y * 100 / pixels.getHeight(), lightness);
-                for (var x = 0; x < pixels.getWidth(); x++)
+            for (int y = 0; y < pixels.getHeight(); y++) { // saturation
+                int color = GuiUtils.fromHSL(hue, y * 100 / pixels.getHeight(), lightness);
+                for (int x = 0; x < pixels.getWidth(); x++)
                     pixels.setPixelRGBA(x, y, GuiUtils.blueToRed(color));
             }
 
@@ -79,10 +81,10 @@ public class ColorSelector extends XrayScreen {
         if (saturation != pickerSaturation) {
             pickerSaturation = saturation;
 
-            var pixels = PICKER_IMAGE_HL.getPixels();
+            NativeImage pixels = PICKER_IMAGE_HL.getPixels();
 
-            for (var x = 0; x < pixels.getWidth(); x++) // hue
-                for (var y = 0; y < pixels.getHeight(); y++) // lightness
+            for (int x = 0; x < pixels.getWidth(); x++) // hue
+                for (int y = 0; y < pixels.getHeight(); y++) // lightness
                     pixels.setPixelRGBA(x, y, GuiUtils.blueToRed(
                             GuiUtils.fromHSL(x * 360 / pixels.getWidth(), saturation, y * 100 / pixels.getHeight())));
 
@@ -127,15 +129,15 @@ public class ColorSelector extends XrayScreen {
     public ColorSelector(Screen parent, Consumer<OptionalInt> setter, OptionalInt color, int defaultColor,
             boolean transparentAsDefault) {
         super(new TranslatableComponent("x13.mod.color.title"), parent);
-        var rgba = color.orElse(defaultColor);
+        int rgba = color.orElse(defaultColor);
         this.color = rgba & 0xFFFFFF; // remove alpha
         this.oldAlphaLayer = rgba & 0xFF000000;
         if (transparentAsDefault && !color.isPresent())
             this.color |= 0xFF000000;
         this.defaultColor = defaultColor;
         this.transparentAsDefault = transparentAsDefault;
-        var hsl = GuiUtils.hslFromRGBA(rgba, pickerHue, pickerSaturation);
-        var fullblack = (rgba & 0xFFFFFF) == 0;
+        HSLResult hsl = GuiUtils.hslFromRGBA(rgba, pickerHue, pickerSaturation);
+        boolean fullblack = (rgba & 0xFFFFFF) == 0;
         localHue = hsl.hue();
         localSaturation = fullblack ? 100 : hsl.saturation();
         localLightness = hsl.lightness();
@@ -171,7 +173,7 @@ public class ColorSelector extends XrayScreen {
                     PICKER_SIZE_Y, 20, 76 * 2, PICKER_S_SIZE_X, PICKER_SIZE_Y);
 
             // - S Index
-            var saturationDelta = pickerSaturation * 76 * 2 / 100;
+            int saturationDelta = pickerSaturation * 76 * 2 / 100;
             GuiUtils.drawRect(matrixStack, width / 2 + 178, height / 2 - 76 + saturationDelta - 2, width / 2 + 178 + 22,
                     height / 2 - 76 + saturationDelta + 2, 0xff222222);
             GuiUtils.drawRect(matrixStack, width / 2 + 180, height / 2 - 76 + saturationDelta - 1, width / 2 + 180 + 20,
@@ -185,8 +187,8 @@ public class ColorSelector extends XrayScreen {
                     PICKER_SIZE_Y, 158 + 176, 76 * 2, PICKER_HL_SIZE_X, PICKER_SIZE_Y);
 
             // - HL Index
-            var hueDelta = pickerHue * (158 + 176) / 360;
-            var lightnessDelta = pickerLightness * (76 * 2) / 100;
+            int hueDelta = pickerHue * (158 + 176) / 360;
+            int lightnessDelta = pickerLightness * (76 * 2) / 100;
             GuiUtils.drawRect(matrixStack, width / 2 - 158 + hueDelta - 5, height / 2 - 76 + lightnessDelta - 2,
                     width / 2 - 158 + hueDelta - 5 + 10, height / 2 - 76 + lightnessDelta - 2 + 4, 0xff222222);
             GuiUtils.drawRect(matrixStack, width / 2 - 158 + hueDelta - 2, height / 2 - 76 + lightnessDelta - 5,
@@ -234,7 +236,7 @@ public class ColorSelector extends XrayScreen {
 
         Runnable show = () -> {
         };
-        for (var i = 0; i < DyeColor.values().length; ++i) {
+        for (int i = 0; i < DyeColor.values().length; ++i) {
             DyeColor color = DyeColor.values()[i];
             int x = width / 2 - 200 + (i % 2) * 19;
             int y = height / 2 - 76 + (i / 2) * 19;
@@ -290,18 +292,18 @@ public class ColorSelector extends XrayScreen {
                     getMinecraft().setScreen(parent);
                 }));
 
-        var advWidth = 158 + 200;
-        var midAdv = width / 2 + (-158 + 200) / 2;
+        int advWidth = 158 + 200;
+        int midAdv = width / 2 + (-158 + 200) / 2;
         tfr = new EditBox(font, midAdv - 56, height / 2 - 54, 56, 18, new TextComponent(""));
         tfg = new EditBox(font, midAdv - 56, height / 2 - 26, 56, 18, new TextComponent(""));
         tfb = new EditBox(font, midAdv - 56, height / 2 + 2, 56, 18, new TextComponent(""));
 
-        var rightAdv = width / 2 + 200;
+        int rightAdv = width / 2 + 200;
         tfh = new EditBox(font, rightAdv - 56, height / 2 - 54, 56, 18, new TextComponent(""));
         tfl = new EditBox(font, rightAdv - 56, height / 2 - 26, 56, 18, new TextComponent(""));
         tfs = new EditBox(font, rightAdv - 56, height / 2 + 2, 56, 18, new TextComponent(""));
 
-        var intHexWidth = (advWidth - 4 - 4) / 2;
+        int intHexWidth = (advWidth - 4 - 4) / 2;
         intColor = new EditBox(font, midAdv - intHexWidth, height / 2 + 40, intHexWidth, 18, new TextComponent(""));
         hexColor = new EditBox(font, midAdv + 4, height / 2 + 40, intHexWidth, 18, new TextComponent(""));
 
@@ -511,7 +513,7 @@ public class ColorSelector extends XrayScreen {
     }
 
     private void updateColor(int rgba) {
-        var hsl = GuiUtils.hslFromRGBA(rgba, localHue, localSaturation);
+        HSLResult hsl = GuiUtils.hslFromRGBA(rgba, localHue, localSaturation);
         updateColor(hsl.hue(), hsl.saturation(), hsl.lightness(), rgba);
     }
 
@@ -540,14 +542,14 @@ public class ColorSelector extends XrayScreen {
         switch (drag) {
             case HL: {
                 // hue
-                var hue = GuiUtils.clamp(mouseX - (width / 2 - 158), 0, 158 + 176) * 360 / (158 + 176 + 1);
+                int hue = GuiUtils.clamp(mouseX - (width / 2 - 158), 0, 158 + 176) * 360 / (158 + 176 + 1);
                 // lightness
-                var lightness = GuiUtils.clamp(mouseY - (height / 2 - 76), 0, 76 * 2) * 100 / (76 * 2);
+                int lightness = GuiUtils.clamp(mouseY - (height / 2 - 76), 0, 76 * 2) * 100 / (76 * 2);
                 updateColor(hue, pickerSaturation, lightness);
             }
                 break;
             case S: {
-                var saturation = GuiUtils.clamp(mouseY - (height / 2 - 76), 0, 76 * 2) * 100 / (76 * 2);
+                int saturation = GuiUtils.clamp(mouseY - (height / 2 - 76), 0, 76 * 2) * 100 / (76 * 2);
                 updateColor(pickerHue, saturation, pickerLightness);
             }
                 break;

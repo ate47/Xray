@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Matrix4f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -100,11 +101,11 @@ public class GuiUtils {
      * @return rgba value
      */
     public static int fromHSL(int h, float s, float l) {
-        var c = (1 - Math.abs(2 * l - 1)) * s;
-        var hh = h / 60f;
-        var x = c * (1 - Math.abs(hh % 2 - 1));
+        float c = (1 - Math.abs(2 * l - 1)) * s;
+        float hh = h / 60f;
+        float x = c * (1 - Math.abs(hh % 2 - 1));
 
-        var m = l - c / 2;
+        float m = l - c / 2;
 
         return switch ((int) hh) {
             case 0 -> asRGBA(c, x, 0, 1f);
@@ -132,10 +133,10 @@ public class GuiUtils {
      * @return RGB
      */
     public static RGBResult rgbaFromRGBA(int rgba) {
-        var alpha = (rgba >> 24) & 0xff;
-        var red = (rgba >> 16) & 0xff;
-        var green = (rgba >> 8) & 0xff;
-        var blue = rgba & 0xff;
+        int alpha = (rgba >> 24) & 0xff;
+        int red = (rgba >> 16) & 0xff;
+        int green = (rgba >> 8) & 0xff;
+        int blue = rgba & 0xff;
         return new RGBResult(red, green, blue, alpha);
     }
 
@@ -148,14 +149,14 @@ public class GuiUtils {
      * @return HSL
      */
     public static HSLResult hslFromRGBA(int rgba, int oldHue, int oldSaturation) {
-        var alpha = (rgba >> 24) & 0xff;
-        var red = ((rgba >> 16) & 0xff) / 255f;
-        var green = ((rgba >> 8) & 0xff) / 255f;
-        var blue = (rgba & 0xff) / 255f;
+        int alpha = (rgba >> 24) & 0xff;
+        float red = ((rgba >> 16) & 0xff) / 255f;
+        float green = ((rgba >> 8) & 0xff) / 255f;
+        float blue = (rgba & 0xff) / 255f;
 
-        var max = Math.max(Math.max(red, green), blue);
-        var min = Math.min(Math.min(red, green), blue);
-        var chroma = max - min;
+        float max = Math.max(Math.max(red, green), blue);
+        float min = Math.min(Math.min(red, green), blue);
+        float chroma = max - min;
 
         int hue;
 
@@ -173,8 +174,8 @@ public class GuiUtils {
             hue += 360;
         }
 
-        var lightness = (max + min) / 2;
-        var saturation = lightness == 1 ? oldSaturation : (chroma / (1 - Math.abs(2 * lightness - 1)));
+        float lightness = (max + min) / 2;
+        float saturation = lightness == 1 ? oldSaturation : (chroma / (1 - Math.abs(2 * lightness - 1)));
 
         return new HSLResult(hue, (int) (saturation * 100), (int) (lightness * 100), alpha);
     }
@@ -220,7 +221,7 @@ public class GuiUtils {
      */
     public static void drawHoverableRect(PoseStack stack, int left, int top, int right, int bottom, int color,
             int colorHovered, int mouseX, int mouseY) {
-        var c = (isHover(left, top, right - left, bottom - top, mouseX, mouseY) ? colorHovered : color);
+        int c = (isHover(left, top, right - left, bottom - top, mouseX, mouseY) ? colorHovered : color);
         Gui.fill(stack, left, top, right, bottom, c);
     }
 
@@ -625,7 +626,7 @@ public class GuiUtils {
         float redRightBottom = (float) (rightBottomColor >> 16 & 255) / 255.0F;
         float greenRightBottom = (float) (rightBottomColor >> 8 & 255) / 255.0F;
         float blueRightBottom = (float) (rightBottomColor & 255) / 255.0F;
-        var bufferbuilder = Tesselator.getInstance().getBuilder();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
@@ -634,7 +635,7 @@ public class GuiUtils {
                 GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
                 GlStateManager.DestFactor.ZERO);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        var mat = stack.last().pose();
+        Matrix4f mat = stack.last().pose();
         bufferbuilder.vertex(mat, right, top, zLevel).color(redRightTop, greenRightTop, blueRightTop, alphaRightTop)
                 .endVertex();
         bufferbuilder.vertex(mat, left, top, zLevel).color(redLeftTop, greenLeftTop, blueLeftTop, alphaLeftTop)
