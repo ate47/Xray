@@ -2,7 +2,9 @@ package fr.atesab.xray;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -23,9 +25,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
+import fr.atesab.xray.color.SideRendering;
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
+import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.screen.ColorSelector;
 import fr.atesab.xray.screen.XrayMenu;
@@ -207,7 +211,7 @@ public class XrayMain {
 		return 2;
 	}
 
-	private static String significantNumbers(double d) {
+	public static String significantNumbers(double d) {
 		boolean a = d < 0;
 		if (a) {
 			d *= -1;
@@ -315,17 +319,7 @@ public class XrayMain {
 
 		if (config.getLocationConfig().isEnabled() && player != null) {
 			String format = getConfig().getLocationConfig().getFormat();
-
-			Vec3 pos = player.position();
-			format = format.replaceAll("%x", significantNumbers(pos.x));
-			format = format.replaceAll("%y", significantNumbers(pos.y));
-			format = format.replaceAll("%z", significantNumbers(pos.z));
-			format = format.replaceAll("%fx", String.valueOf((int) pos.x));
-			format = format.replaceAll("%fy", String.valueOf((int) pos.y));
-			format = format.replaceAll("%fz", String.valueOf((int) pos.z));
-			format = format.replaceAll("%name", player.getGameProfile().getName());
-
-			render.draw(stack, format, 5 + w, 5, 0xffffffff);
+			render.draw(stack, LocationFormatTool.applyAll(format, mc), 5 + w, 5, 0xffffffff);
 		}
 	}
 
@@ -339,10 +333,11 @@ public class XrayMain {
 		Camera mainCamera = minecraft.gameRenderer.getMainCamera();
 		Vec3 camera = mainCamera.getPosition();
 
-		if (!config.getEspConfigs().stream().filter(ESPConfig::isEnabled).findAny().isPresent())
+		if (!config.getEspConfigs().stream().filter(ESPConfig::isEnabled).findAny().isPresent()) {
 			return;
-
+		}
 		BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
+
 		VertexConsumer buffer = source.getBuffer(RenderType.LINES);
 
 		GL11.glEnable(GL11.GL_BLEND);
