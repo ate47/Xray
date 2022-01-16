@@ -56,8 +56,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -66,8 +68,6 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlclient.ConfigGuiHandler.ConfigGuiFactory;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
 
 @Mod(XrayMain.MOD_ID)
 public class XrayMain {
@@ -309,12 +309,12 @@ public class XrayMain {
 	}
 
 	@SubscribeEvent
-	public void onRenderWorld(RenderWorldLastEvent ev) {
+	public void onRenderWorld(RenderLevelLastEvent ev) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientLevel level = minecraft.level;
 		LocalPlayer player = minecraft.player;
-		PoseStack stack = ev.getMatrixStack();
-		float delta = ev.getPartialTicks();
+		PoseStack stack = ev.getPoseStack();
+		float delta = ev.getPartialTick();
 		Camera mainCamera = minecraft.gameRenderer.getMainCamera();
 		Vec3 camera = mainCamera.getPosition();
 

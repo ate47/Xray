@@ -29,7 +29,7 @@ public class MenuWidget extends AbstractButton {
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         Minecraft client = Minecraft.getInstance();
-        boolean hovered = isHovered();
+        boolean hovered = isHoveredOrFocused();
         int centerX = x + width / 2;
         int color;
         if (hovered) {

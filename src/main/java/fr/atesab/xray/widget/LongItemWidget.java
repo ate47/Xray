@@ -41,7 +41,7 @@ public class LongItemWidget extends AbstractButton {
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         Minecraft client = Minecraft.getInstance();
-        boolean hovered = isHovered();
+        boolean hovered = isHoveredOrFocused();
         int color;
         if (hovered) {
             color = 0x33ffffff;
