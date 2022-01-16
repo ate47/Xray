@@ -44,7 +44,7 @@ public class BlockConfigWidget extends Button {
     public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
         int fit = (width - 2) / 17;
 
-        List<Block> blocks = cfg.getBlocks().getBlocks();
+        List<Block> blocks = cfg.getBlocks().getObjects();
 
         List<Block> view = blocks.subList(0, Math.min(fit, blocks.size()));
         Minecraft client = Minecraft.getInstance();

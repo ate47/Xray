@@ -23,7 +23,7 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
         PLAYER("x13.mod.esp.template.player", new ItemStack(Items.PLAYER_HEAD), 
             new ESPConfig(0, 0, "Player", EntityType.PLAYER)
         ),
-        WITHER("x13.mod.esp.template.wither", new ItemStack(Items.PLAYER_HEAD), 
+        WITHER("x13.mod.esp.template.wither", new ItemStack(Items.WITHER_SKELETON_SKULL), 
             new ESPConfig(0, 0, "Wither", EntityType.WITHER, EntityType.WITHER_SKELETON)
         ),
         AGGRESIVE("x13.mod.esp.template.aggresive", new ItemStack(Items.CREEPER_HEAD), () -> 

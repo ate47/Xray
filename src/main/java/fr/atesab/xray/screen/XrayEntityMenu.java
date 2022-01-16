@@ -43,7 +43,7 @@ public class XrayEntityMenu extends Screen {
         this.mode = mode;
         this.parent = parent;
         this.config = new ArrayList<>();
-        this.config.addAll(mode.getEntities().getEntities());
+        this.config.addAll(mode.getEntities().getObjects());
     }
 
     @Override
@@ -101,7 +101,7 @@ public class XrayEntityMenu extends Screen {
 
         Button doneBtn = new Button(width / 2 - 102, pageBottom, 100, 20,
                 new TranslatableComponent("gui.done"), b -> {
-                    mode.getEntities().setEntities(config);
+                    mode.getEntities().setObjects(config);
                     getMinecraft().setScreen(parent);
                 });
 

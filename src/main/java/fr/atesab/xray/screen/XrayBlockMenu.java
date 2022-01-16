@@ -41,7 +41,7 @@ public class XrayBlockMenu extends Screen {
         this.mode = mode;
         this.parent = parent;
         this.config = new ArrayList<>();
-        this.config.addAll(mode.getBlocks().getBlocks());
+        this.config.addAll(mode.getBlocks().getObjects());
     }
 
     @Override
@@ -99,7 +99,7 @@ public class XrayBlockMenu extends Screen {
 
         Button doneBtn = new Button(width / 2 - 102, pageBottom, 100, 20,
                 new TranslatableComponent("gui.done"), b -> {
-                    mode.getBlocks().setBlocks(config);
+                    mode.getBlocks().setObjects(config);
                     getMinecraft().setScreen(parent);
                 });
 

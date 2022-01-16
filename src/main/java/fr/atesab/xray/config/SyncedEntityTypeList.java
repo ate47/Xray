@@ -1,69 +1,38 @@
 package fr.atesab.xray.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import fr.atesab.xray.color.EntityTypeIcon;
-import fr.atesab.xray.utils.TagOnWriteList;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 
-public class SyncedEntityTypeList extends TagOnWriteList<String> implements Cloneable {
+@SuppressWarnings("deprecation")
+public class SyncedEntityTypeList extends SyncedRegistryList<EntityType<?>> {
 
-    private List<EntityType<?>> entities = new ArrayList<>();
+    private SyncedEntityTypeList(SyncedRegistryList<EntityType<?>> other) {
+        super(other);
+    }
 
     public SyncedEntityTypeList() {
-        super(new ArrayList<>());
+        super(Registry.ENTITY_TYPE);
     }
 
-    private SyncedEntityTypeList(SyncedEntityTypeList other) {
-        super(new ArrayList<>(other));
-        this.entities.addAll(other.entities);
+    public SyncedEntityTypeList(EntityType<?>... objects) {
+        super(objects, Registry.ENTITY_TYPE);
     }
 
-    public SyncedEntityTypeList(EntityType<?>... entities) {
-        this(Arrays.asList(entities));
+    public SyncedEntityTypeList(List<EntityType<?>> objects) {
+        super(objects, Registry.ENTITY_TYPE);
     }
 
-    public SyncedEntityTypeList(List<EntityType<?>> entities) {
-        super(new ArrayList<>());
-        setEntities(entities);
-    }
-
-    public List<EntityType<?>> getEntities() {
-        return entities;
-    }
-
-    @SuppressWarnings("deprecation")
-    public void setEntities(List<EntityType<?>> entities) {
-        setTagEnabled(false);
-        this.entities = new ArrayList<>(entities);
-        clear();
-        entities.stream().filter(Objects::nonNull).map(Registry.ENTITY_TYPE::getKey).map(Object::toString)
-                .forEach(this::add);
-        setTagEnabled(true);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    protected void onUpdate() {
-        entities.clear();
-        stream().map(ResourceLocation::new).map(Registry.ENTITY_TYPE::get).filter(Objects::nonNull)
-                .forEach(entities::add);
-        removeUpdated();
+    public Stream<ItemStack> getIcons() {
+        return getObjects().stream().map(EntityTypeIcon::getIcon);
     }
 
     @Override
     public SyncedEntityTypeList clone() {
         return new SyncedEntityTypeList(this);
-    }
-
-    public Stream<ItemStack> getIcons() {
-        return getEntities().stream().map(EntityTypeIcon::getIcon);
     }
 }
