@@ -25,6 +25,9 @@
   "x13.mod.mode.view.exclusive": "Exclusive",
 
   "x13.mod.esp": "ESP",
+  "x13.mod.esp.maxdistance": "Tracer Distance",
+  "x13.mod.esp.maxdistance.infinite": "Infinite",
+  "x13.mod.esp.maxdistance.block": "%s Block(s)",
   "x13.mod.esp.template.player": "Player",
   "x13.mod.esp.template.wither": "Wither",
   "x13.mod.esp.template.aggresive": "Aggresive",

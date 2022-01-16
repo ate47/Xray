@@ -15,11 +15,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
+import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.MergedIterable;
+import fr.atesab.xray.utils.XrayUtils;
 
 public class XrayConfig implements Cloneable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization()
             .excludeFieldsWithoutExposeAnnotation().create();
+
+    public static final int MAX_TRACER_RANGE = 256;
 
     /**
      * load a config file and save it
@@ -103,6 +107,14 @@ public class XrayConfig implements Cloneable {
 
     public int getMaxTracerRange() {
         return maxTracerRange;
+    }
+
+    public double getMaxTracerRangeNormalized() {
+        return GuiUtils.clamp(maxTracerRange / (double) MAX_TRACER_RANGE, 0, 1.0);
+    }
+
+    public void setMaxTracerRangeNormalized(double maxTracerRange) {
+        this.maxTracerRange = GuiUtils.clamp((int) (maxTracerRange * MAX_TRACER_RANGE), 0, MAX_TRACER_RANGE);
     }
 
     public File getSaveFile() {

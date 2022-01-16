@@ -33,7 +33,7 @@ public class XrayMenu extends XrayScreen {
         XrayMain mod = XrayMain.getMod();
 
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + size / 2 + 20, 200, 20, new TranslatableComponent("gui.done"),
+                new Button(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableComponent("gui.done"),
                         btn -> {
                             minecraft.setScreen(parent);
                         }));

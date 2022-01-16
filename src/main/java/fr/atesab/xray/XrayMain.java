@@ -2,9 +2,7 @@ package fr.atesab.xray;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -25,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
-import fr.atesab.xray.color.SideRendering;
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
@@ -280,18 +277,6 @@ public class XrayMain {
 		if (configKey.consumeClick())
 			client.setScreen(new XrayMenu(null));
 
-	}
-
-	private IColorObject findCurrentMode() {
-		BlockConfig config = getConfig().getSelectedBlockMode();
-
-		if (config != null)
-			return config;
-
-		if (fullBrightEnable)
-			return fullbrightMode;
-
-		return IColorObject.EMPTY;
 	}
 
 	@SubscribeEvent
