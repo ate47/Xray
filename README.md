@@ -1,59 +1,142 @@
 # Xray
 
-## Description
+- [Xray](#xray)
+- [Description](#description)
+- [Modes](#modes)
+  - [Xray](#xray-1)
+    - [Example](#example)
+    - [Config](#config)
+    - [Block selection](#block-selection)
+    - [Templates](#templates)
+  - [ESP and Tracers](#esp-and-tracers)
+    - [Example](#example-1)
+    - [Config](#config-1)
+    - [Entity selection](#entity-selection)
+    - [Templates](#templates-1)
+  - [Fullbright](#fullbright)
+  - [Location](#location)
+    - [Example](#example-2)
+    - [Config](#config-2)
+  - [Global config](#global-config)
+
+# Description
 
 Bored by finding your diamonds legitimately? This mod is for you!
 
-### Configs
-5 keys (can be changed in config)
+This mod includes a Xray, an entity tracer and an entity ESP.
 
-- X: **toggle Xray**<br/>
-    <img src="docs/assets/screens/1.png" width="300px">
+# Modes
 
-- C: **toggle Cave Mode**<br/>
-    <img src="docs/assets/screens/2.png" width="300px">
+Here is the main menu, you can select configs.
 
-- R: **toggle Redstone Mode**<br/>
-    <img src="docs/assets/screens/3.png" width="300px">
+![menu](docs/assets/screens/mainmenu.png)
 
-- H: **toggle Fullbright** (No light needed)<br/>
-    <img src="docs/assets/screens/4.png" width="300px">
+## Xray
 
-- N: **Open Xray menu**<br/>
-    Here you can enable/disable Xray, Cave Mode, Redstone Mode, Fullbright and 
-    location on the HUD and add/remove to /reset Blocks lists of cave, redstone and Xray mode<br/>
-    <img src="docs/assets/screens/5.png" width="300px">
+### Example
 
-    You can change the blocks one by one<br/>
-    <img src="docs/assets/screens/8.png" width="300px">
-    
-    From the list of blocks in the game (even from other mods)<br/>
-    <img src="docs/assets/screens/9.png" width="300px">
+**Xray**
 
+![demo_xray](docs/assets/screens/demo_xray.png)
 
-### Custom modes
-You can create you own mode in Xray by adding in the `xray.json` in `customModes` names of new `<modeName>:<type>`
+**Cave**
 
-Types are:
-- EXCLUSIVE: like in Xray and Redstone mode
-- INCLUSIVE: like in Cave Mode
+![demo_xray](docs/assets/screens/demo_cave.png)
 
-For example:
-```json
-{
-  "customModes": ["myModeEx:EXCLUSIVE", "myModeIn:INCLUSIVE"],
-  "Custom_myModeExBlocks": ["minecraft:tnt"],
-  "Custom_myModeInBlocks": ["minecraft:dirt"]
-}
-```
+**Redstone**
 
-Will create a custom modes named "myModeEx"(exclusive. shows only tnt) and "myModeIn"(inclusive. shows only dirt sides)
+![demo_xray](docs/assets/screens/demo_redstone.png)
 
-| Custom Mode | Screenshot                     |
-|-------------|--------------------------------|
-| myModeEx    | <img src="docs/assets/screens/6.png" width="300px"> |
-| myModeIn    | <img src="docs/assets/screens/7.png" width="300px"> |
+### Config
 
-> Note: block list must be named like `Custom_<modeName>Blocks`
+In the Xray menu you can set you Xray modes.
 
+![menu](docs/assets/screens/xray_list.png)
 
+The Menu is composed of buttons:
+
+- `"name"` - Update the color and the name of the mode
+- `blocks` - Set the blocks of this mode
+- `"key"` - Set the key of the mode
+- `Inclusive/Exclusive` - Set how the mode should handle the blocks:
+  - Exclusive : Like with the Xray Mode
+  - Inclusive : Like with the Cave Mode
+- `T` - Select a template
+- `+` - New mode
+- `-` - Delete this mode
+
+### Block selection
+
+![templates](docs/assets/screens/xray_list_block_selection.png)
+
+### Templates
+
+![templates](docs/assets/screens/xray_list_templates.png)
+
+## ESP and Tracers
+
+### Example
+
+**ESP**
+
+![demo_xray](docs/assets/screens/demo_esp.png)
+
+**Tracers**
+
+![demo_xray](docs/assets/screens/demo_tracers.png)
+
+### Config
+
+In the ESP menu you can set you ESP modes.
+
+![menu](docs/assets/screens/esp_list.png)
+
+The Menu is composed of buttons:
+
+- `"name"` - Update the color and the name of the mode
+- `entities` - Set the entities of this mode
+- `"key"` - Set the key of the mode
+- `Tracer (On/Off)` - Toggle the tracers for this mode
+- `T` - Select a template
+- `+` - New mode
+- `-` - Delete this mode
+
+### Entity selection
+
+![templates](docs/assets/screens/esp_list_entity_selection.png)
+
+### Templates
+
+![templates](docs/assets/screens/esp_list_templates.png)
+
+## Fullbright
+
+The fullbright remove the light in the game.
+
+![fullbright](docs/assets/screens/demo_fullbright.png)
+
+## Location
+
+### Example
+
+![Location](docs/assets/screens/demo_fullbright.png)
+
+### Config
+
+![Config](docs/assets/screens/location.png)
+
+You can config:
+
+- `Location` - Enable or not the location
+- `Show modes` - Show or not the current modes (ESP+Xray+Fullbright)
+- `Format` - Set the location format
+- `Options` - Add custom options to the format
+- `Reset` - Reset the format
+
+## Global config
+
+![Config](docs/assets/screens/config.png)
+
+You can config:
+
+- `Tracer Distance` - Set the maximum range of the tracer
