@@ -206,7 +206,7 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
         if (!isEnabled())
             return;
 
-        String name = Registry.BLOCK.getKey(adjacentState.getBlock()).toString();
+        String name = Registry.BLOCK.getId(adjacentState.getBlock()).toString();
         boolean present = blocks.contains(name);
         boolean shouldRender = viewMode.getViewer().shouldRenderSide(present, adjacentState, blockState,
                 blockAccess, pos);

@@ -3,11 +3,10 @@ package fr.atesab.xray.screen;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import net.minecraft.client.util.math.MatrixStack;
-
 import fr.atesab.xray.utils.KeyData;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 
 public class KeySelector extends XrayScreen {
@@ -17,9 +16,9 @@ public class KeySelector extends XrayScreen {
     private Optional<KeyData> value;
     private boolean isWaitingKey = false;
 
-    private Button cancelButton;
-    private Button keyButton;
-    private Button doneButton;
+    private ButtonWidget cancelButton;
+    private ButtonWidget keyButton;
+    private ButtonWidget doneButton;
 
     public KeySelector(Screen parent, KeyData key, Consumer<Optional<KeyData>> keyConsumer) {
         this(parent, Optional.of(key), keyConsumer);
@@ -55,16 +54,16 @@ public class KeySelector extends XrayScreen {
 
     @Override
     protected void init() {
-        keyButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 - 24, 200, 20,
+        keyButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 - 24, 200, 20,
                 NONE_KEY, b -> waitKey()));
-        doneButton = addRenderableWidget(new Button(width / 2 - 100, height / 2, 200, 20,
+        doneButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2, 200, 20,
                 new TranslatableText("gui.done"), b -> {
                     keyConsumer.accept(value);
-                    minecraft.setScreen(parent);
+                    client.openScreen(parent);
                 }));
-        cancelButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 24, 200, 20,
+        cancelButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 24, 200, 20,
                 new TranslatableText("gui.cancel"), b -> {
-                    minecraft.setScreen(parent);
+                    client.openScreen(parent);
                 }));
         setKey(value);
         super.init();
@@ -93,11 +92,12 @@ public class KeySelector extends XrayScreen {
     @Override
     public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
-        drawCenteredString(stack, font, getTitle(), width / 2, height / 2 - 30 - font.fontHeight, 0xffffffff);
+        drawCenteredText(stack, textRenderer, getTitle(), width / 2, height / 2 - 30 - textRenderer.fontHeight,
+                0xffffffff);
 
         if (isWaitingKey) {
-            drawCenteredString(stack, font, new TranslatableText("x13.mod.selector.key.presskey"), width / 2,
-                    keyButton.y + keyButton.getHeight() / 2 - font.fontHeight, 0xffffff00);
+            drawCenteredText(stack, textRenderer, new TranslatableText("x13.mod.selector.key.presskey"), width / 2,
+                    keyButton.y + keyButton.getHeight() / 2 - textRenderer.fontHeight, 0xffffff00);
         }
 
         super.render(stack, mouseX, mouseY, delta);

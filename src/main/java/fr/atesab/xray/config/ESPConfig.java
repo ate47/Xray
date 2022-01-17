@@ -133,7 +133,7 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
     public boolean shouldTag(EntityType<?> type) {
         if (!isEnabled())
             return false;
-        String name = Registry.ENTITY_TYPE.getKey(type).toString();
+        String name = Registry.ENTITY_TYPE.getId(type).toString();
         return entities.contains(name);
     }
 }

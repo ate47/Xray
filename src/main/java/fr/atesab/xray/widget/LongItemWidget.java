@@ -1,18 +1,17 @@
 package fr.atesab.xray.widget;
 
-import net.minecraft.client.util.math.MatrixStack;
-
 import fr.atesab.xray.widget.MenuWidget.OnPress;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.TextRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 
-public class LongItemWidget extends AbstractButton {
+public class LongItemWidget extends PressableWidget {
 
     private ItemStack itemStack;
     private OnPress oPress;
@@ -34,8 +33,8 @@ public class LongItemWidget extends AbstractButton {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
-        this.defaultButtonNarrationText(narrationElementOutput);
+    public void appendNarrations(NarrationMessageBuilder narrationElementOutput) {
+        this.method_37021(narrationElementOutput);
     }
 
     @Override
@@ -52,15 +51,16 @@ public class LongItemWidget extends AbstractButton {
         DrawableHelper.fill(stack, x, y, x + width, y + height, color);
 
         Text message = getMessage();
-        TextRenderer font = client.font;
+        TextRenderer textRenderer = client.textRenderer;
         ItemRenderer renderer = client.getItemRenderer();
 
         int deltaH = (getHeight() - 16);
 
-        renderer.renderGuiItem(itemStack, x + deltaH / 2 + deltaX, y + deltaH / 2 + deltaY);
-        font.draw(stack,
-                message, x + deltaH + 16 + 2, y + getHeight() / 2 - font.fontHeight / 2,
-                packedFGColor);
+        renderer.renderGuiItemIcon(itemStack, x + deltaH / 2 + deltaX, y + deltaH / 2 + deltaY);
+        int textColor = this.active ? 16777215 : 10526880;
+        textRenderer.draw(stack,
+                message, x + deltaH + 16 + 2, y + getHeight() / 2 - textRenderer.fontHeight / 2,
+                textColor);
     }
 
     @Override

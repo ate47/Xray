@@ -2,14 +2,14 @@ package fr.atesab.xray.screen.page;
 
 import java.util.function.Supplier;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextComponent;
+import net.minecraft.util.Formatting;
 
-public class AddPagedButton<E> extends Button {
-    private static final Text ADD_COMPONENT = new TextComponent("+").withStyle(ChatFormatting.GREEN);
-    private static final Button.OnPress EMPTY_PRESS = btn -> {
+public class AddPagedButton<E> extends ButtonWidget {
+    private static final Text ADD_COMPONENT = new LiteralText("+").formatted(Formatting.GREEN);
+    private static final ButtonWidget.PressAction EMPTY_PRESS = btn -> {
     };
 
     private PagedScreen<E> parent;

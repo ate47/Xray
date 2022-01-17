@@ -1,13 +1,13 @@
 package fr.atesab.xray.screen.page;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextComponent;
+import net.minecraft.util.Formatting;
 
-public class RemovePagedButton extends Button {
-    private static final Text REMOVE_COMPONENT = new TextComponent("-").withStyle(ChatFormatting.RED);
-    private static final Button.OnPress EMPTY_PRESS = btn -> {
+public class RemovePagedButton extends ButtonWidget {
+    private static final Text REMOVE_COMPONENT = new LiteralText("-").formatted(Formatting.RED);
+    private static final ButtonWidget.PressAction EMPTY_PRESS = btn -> {
     };
 
     private PagedScreen<?> parent;

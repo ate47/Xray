@@ -1,23 +1,22 @@
 package fr.atesab.xray.screen;
 
-import net.minecraft.client.util.math.MatrixStack;
-
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.XrayUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.text.TextComponent;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
 public class XrayLocationConfig extends XrayScreen {
 
-    private EditBox format;
+    private TextFieldWidget format;
 
     public XrayLocationConfig(Screen parent) {
         super(new TranslatableText("x13.mod.showloc"), parent);
@@ -26,14 +25,14 @@ public class XrayLocationConfig extends XrayScreen {
     @Override
     protected void init() {
         XrayMain mod = XrayMain.getMod();
-        addRenderableWidget(new Button(width / 2 - 100, height / 2 - 48, 200, 20,
+        addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 - 48, 200, 20,
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(), "x13.mod.location"), b -> {
                     mod.getConfig().getLocationConfig().setEnabled(!mod.getConfig().getLocationConfig().isEnabled());
                     b.setMessage(XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(),
                             "x13.mod.location"));
                 }));
 
-        addRenderableWidget(new Button(width / 2 - 100, height / 2 - 24, 200, 20,
+        addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 - 24, 200, 20,
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isShowMode(), "x13.mod.location.showmodes"),
                 b -> {
                     mod.getConfig().getLocationConfig().setShowMode(!mod.getConfig().getLocationConfig().isShowMode());
@@ -41,39 +40,38 @@ public class XrayLocationConfig extends XrayScreen {
                             "x13.mod.location.showmodes"));
                 }));
 
-        format = new EditBox(font, width / 2 - 98, height / 2 + 2, 196, 16, new TextComponent(""));
+        format = new TextFieldWidget(textRenderer, width / 2 - 98, height / 2 + 2, 196, 16, new LiteralText(""));
         format.setMaxLength(128);
-        format.setValue(mod.getConfig().getLocationConfig().getFormat());
-        format.setResponder(mod.getConfig().getLocationConfig()::setFormat);
-        format.setFocus(true);
-        addWidget(format);
+        format.setText(mod.getConfig().getLocationConfig().getFormat());
+        format.setChangedListener(mod.getConfig().getLocationConfig()::setFormat);
+        addSelectableChild(format);
         setInitialFocus(format);
 
-        addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 24, 98, 20,
+        addDrawableChild(
+                new ButtonWidget(width / 2 - 100, height / 2 + 24, 98, 20,
                         new TranslatableText("x13.mod.location.option"),
                         btn -> {
-                            minecraft.setScreen(new EnumSelector<>(
+                            client.openScreen(new EnumSelector<>(
                                     new TranslatableText("x13.mod.location.option"), this,
                                     LocationFormatTool.values()) {
                                 @Override
                                 protected void select(LocationFormatTool e) {
-                                    format.insertText(e.getOption());
+                                    format.write(e.getOption());
                                 }
 
                             });
                         }));
-        addRenderableWidget(
-                new Button(width / 2 + 2, height / 2 + 24, 98, 20,
+        addDrawableChild(
+                new ButtonWidget(width / 2 + 2, height / 2 + 24, 98, 20,
                         new TranslatableText("x13.mod.location.reset"),
                         btn -> {
-                            format.setValue(LocationConfig.DEFAULT_FORMAT);
+                            format.setText(LocationConfig.DEFAULT_FORMAT);
                         }));
 
-        addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
+        addDrawableChild(
+                new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
                         btn -> {
-                            minecraft.setScreen(parent);
+                            client.openScreen(parent);
                         }));
 
         super.init();
@@ -81,9 +79,9 @@ public class XrayLocationConfig extends XrayScreen {
 
     @Override
     public void resize(MinecraftClient client, int w, int h) {
-        String s = format.getValue();
+        String s = format.getText();
         super.resize(client, w, h);
-        format.setValue(s);
+        format.setText(s);
     }
 
     @Override
@@ -95,9 +93,10 @@ public class XrayLocationConfig extends XrayScreen {
     @Override
     public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
-        drawCenteredString(stack, font, new TranslatableText("x13.mod.location"), width / 2,
-                height / 2 - 52 - font.fontHeight, 0xffffffff);
-        GuiUtils.drawRightString(stack, font, I18n.get("x13.mod.location.format") + ": ", format, 0xffffffff);
+        drawCenteredText(stack, textRenderer, new TranslatableText("x13.mod.location"), width / 2,
+                height / 2 - 52 - textRenderer.fontHeight, 0xffffffff);
+        GuiUtils.drawRightString(stack, textRenderer, I18n.translate("x13.mod.location.format") + ": ", format,
+                0xffffffff);
         format.render(stack, mouseX, mouseY, delta);
         super.render(stack, mouseX, mouseY, delta);
     }

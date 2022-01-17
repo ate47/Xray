@@ -8,7 +8,8 @@
   "client": [
     "MixinBlock",
     "MixinLightmapTextureManager",
-    "MixinMinecraftClient"
+    "MixinMinecraftClient",
+    "MixinInputUtil"
   ],
   "injectors": {
     "defaultRequire": 1

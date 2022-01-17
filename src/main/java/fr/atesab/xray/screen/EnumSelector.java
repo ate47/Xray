@@ -8,7 +8,7 @@ import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.screen.page.PagedElement;
 import fr.atesab.xray.screen.page.PagedScreen;
 import fr.atesab.xray.widget.LongItemWidget;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 public abstract class EnumSelector<E extends EnumElement> extends PagedScreen<E> {
@@ -26,7 +26,7 @@ public abstract class EnumSelector<E extends EnumElement> extends PagedScreen<E>
         public void init() {
             btn = addSubWidget(new LongItemWidget(width / 2 - 100, 0, 200, 20, e.getTitle(), e.getIcon(), () -> {
                 select(e);
-                minecraft.setScreen(parent);
+                client.openScreen(parent);
             }));
             super.init();
         }

@@ -4,30 +4,30 @@ import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.util.math.MatrixStack;
 
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.HSLResult;
-import net.minecraft.Util;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.DyeItem;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 public class ColorSelector extends XrayScreen {
 
@@ -38,22 +38,36 @@ public class ColorSelector extends XrayScreen {
     private static final int PICKER_SIZE_Y = 200;
     private static final int PICKER_S_SIZE_X = 20;
     private static final int PICKER_HL_SIZE_X = 200;
-    private static final ResourceLocation PICKER_S_RESOURCE = new ResourceLocation(XrayMain.MOD_ID, "picker_hl");
-    private static final ResourceLocation PICKER_HL_RESOURCE = new ResourceLocation(XrayMain.MOD_ID, "picker_s");
-    private static final DynamicTexture PICKER_IMAGE_S = new DynamicTexture(
-            new NativeImage(NativeImage.Format.RGBA, PICKER_S_SIZE_X, PICKER_SIZE_Y, false));
-    private static final DynamicTexture PICKER_IMAGE_HL = new DynamicTexture(
-            new NativeImage(NativeImage.Format.RGBA, PICKER_HL_SIZE_X, PICKER_SIZE_Y, false));
+    private static boolean pickerInit = false;
+    private static final Identifier PICKER_S_RESOURCE = new Identifier(XrayMain.MOD_ID, "picker_hl");
+    private static final Identifier PICKER_HL_RESOURCE = new Identifier(XrayMain.MOD_ID, "picker_s");
+    private static final NativeImageBackedTexture PICKER_IMAGE_S = new NativeImageBackedTexture(
+            new NativeImage(NativeImage.Format.ABGR, PICKER_S_SIZE_X, PICKER_SIZE_Y, false));
+    private static final NativeImageBackedTexture PICKER_IMAGE_HL = new NativeImageBackedTexture(
+            new NativeImage(NativeImage.Format.ABGR, PICKER_HL_SIZE_X, PICKER_SIZE_Y, false));
     private static final ItemStack RANDOM_PICKER = Util.make(new ItemStack(Items.POTION), it -> {
         it.getOrCreateTag();
     });
     private static final int RANDOM_PICKER_FREQUENCY = 3600;
 
     private static ItemStack updatePicker() {
-        CompoundTag tag = RANDOM_PICKER.getTag();
+        pickerInit = true;
+        NbtCompound tag = RANDOM_PICKER.getTag();
         tag.putInt("CustomPotionColor", GuiUtils.getTimeColor(RANDOM_PICKER_FREQUENCY, 100, 50));
         RANDOM_PICKER.setTag(tag);
         return RANDOM_PICKER;
+    }
+
+    public static Identifier getPickerHlResource() {
+        if (pickerInit)
+            updatePicker();
+        return PICKER_HL_RESOURCE;
+    }
+
+    public static Identifier getPickerSResource() {
+        if (pickerInit)
+            updatePicker();
+        return PICKER_S_RESOURCE;
     }
 
     private static int pickerHue;
@@ -66,12 +80,12 @@ public class ColorSelector extends XrayScreen {
             pickerHue = hue;
             pickerLightness = lightness;
 
-            NativeImage pixels = PICKER_IMAGE_S.getPixels();
+            NativeImage pixels = PICKER_IMAGE_S.getImage();
 
             for (int y = 0; y < pixels.getHeight(); y++) { // saturation
                 int color = GuiUtils.fromHSL(hue, y * 100 / pixels.getHeight(), lightness);
                 for (int x = 0; x < pixels.getWidth(); x++)
-                    pixels.setPixelRGBA(x, y, GuiUtils.blueToRed(color));
+                    pixels.setPixelColor(x, y, GuiUtils.blueToRed(color));
             }
 
             PICKER_IMAGE_S.upload();
@@ -81,11 +95,11 @@ public class ColorSelector extends XrayScreen {
         if (saturation != pickerSaturation) {
             pickerSaturation = saturation;
 
-            NativeImage pixels = PICKER_IMAGE_HL.getPixels();
+            NativeImage pixels = PICKER_IMAGE_HL.getImage();
 
             for (int x = 0; x < pixels.getWidth(); x++) // hue
                 for (int y = 0; y < pixels.getHeight(); y++) // lightness
-                    pixels.setPixelRGBA(x, y, GuiUtils.blueToRed(
+                    pixels.setPixelColor(x, y, GuiUtils.blueToRed(
                             GuiUtils.fromHSL(x * 360 / pixels.getWidth(), saturation, y * 100 / pixels.getHeight())));
 
             PICKER_IMAGE_HL.upload();
@@ -96,8 +110,8 @@ public class ColorSelector extends XrayScreen {
     public static void registerPickerImage() {
         TextureManager tm = MinecraftClient.getInstance().getTextureManager();
         setPickerState(0, 0, 100);
-        tm.register(PICKER_S_RESOURCE, PICKER_IMAGE_S);
-        tm.register(PICKER_HL_RESOURCE, PICKER_IMAGE_HL);
+        tm.registerTexture(PICKER_S_RESOURCE, PICKER_IMAGE_S);
+        tm.registerTexture(PICKER_HL_RESOURCE, PICKER_IMAGE_HL);
     }
 
     private int oldAlphaLayer;
@@ -105,8 +119,8 @@ public class ColorSelector extends XrayScreen {
     private int color;
     private DragState drag = DragState.NONE;
     private boolean advanced = false;
-    private Button advButton;
-    private EditBox tfr, tfg, tfb, tfh, tfs, tfl, intColor, hexColor;
+    private ButtonWidget advButton;
+    private TextFieldWidget tfr, tfg, tfb, tfh, tfs, tfl, intColor, hexColor;
     private int defaultColor;
     private int localHue;
     private int localSaturation;
@@ -168,7 +182,7 @@ public class ColorSelector extends XrayScreen {
             // S PICKER
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShaderTexture(0, PICKER_S_RESOURCE);
+            RenderSystem.setShaderTexture(0, getPickerSResource());
             GuiUtils.drawScaledCustomSizeModalRect(width / 2 + 180, height / 2 - 76, 0, 0, PICKER_S_SIZE_X,
                     PICKER_SIZE_Y, 20, 76 * 2, PICKER_S_SIZE_X, PICKER_SIZE_Y);
 
@@ -182,7 +196,7 @@ public class ColorSelector extends XrayScreen {
             // HL Picker
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShaderTexture(0, PICKER_HL_RESOURCE);
+            RenderSystem.setShaderTexture(0, getPickerHlResource());
             GuiUtils.drawScaledCustomSizeModalRect(width / 2 - 158, height / 2 - 76, 0, 0, PICKER_HL_SIZE_X,
                     PICKER_SIZE_Y, 158 + 176, 76 * 2, PICKER_HL_SIZE_X, PICKER_SIZE_Y);
 
@@ -201,23 +215,26 @@ public class ColorSelector extends XrayScreen {
         } else {
             GuiUtils.drawRect(matrixStack, width / 2 - 158, height / 2 - 76, width / 2 + 200, height / 2 + 76,
                     0x88000000);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.red") + ": ", tfr, 0xffffffff);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.green") + ": ", tfg, 0xffffffff);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.blue") + ": ", tfb, 0xffffffff);
-
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.hue") + ": ", tfh,
+            GuiUtils.drawRightString(matrixStack, textRenderer, I18n.translate("x13.mod.color.red") + ": ", tfr,
                     0xffffffff);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.lightness") + ": ",
+            GuiUtils.drawRightString(matrixStack, textRenderer, I18n.translate("x13.mod.color.green") + ": ", tfg,
+                    0xffffffff);
+            GuiUtils.drawRightString(matrixStack, textRenderer, I18n.translate("x13.mod.color.blue") + ": ", tfb,
+                    0xffffffff);
+
+            GuiUtils.drawRightString(matrixStack, textRenderer, I18n.translate("x13.mod.color.hue") + ": ", tfh,
+                    0xffffffff);
+            GuiUtils.drawRightString(matrixStack, textRenderer, I18n.translate("x13.mod.color.lightness") + ": ",
                     tfl,
                     0xffffffff);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.saturation") + ": ",
+            GuiUtils.drawRightString(matrixStack, textRenderer, I18n.translate("x13.mod.color.saturation") + ": ",
                     tfs,
                     0xffffffff);
 
-            GuiUtils.drawString(matrixStack, font, I18n.get("x13.mod.color.intColor") + ":",
+            GuiUtils.drawString(matrixStack, textRenderer, I18n.translate("x13.mod.color.intColor") + ":",
                     intColor.x,
                     intColor.y - 4 - 10, 0xffffffff, 10);
-            GuiUtils.drawString(matrixStack, font, I18n.get("x13.mod.color.hexColor") + ":",
+            GuiUtils.drawString(matrixStack, textRenderer, I18n.translate("x13.mod.color.hexColor") + ":",
                     hexColor.x,
                     hexColor.y - 4 - 10, 0xffffffff, 10);
 
@@ -242,8 +259,9 @@ public class ColorSelector extends XrayScreen {
             int y = height / 2 - 76 + (i / 2) * 19;
             GuiUtils.drawRect(matrixStack, x, y, x + 19, y + 19, 0xff000000 | color.getFireworkColor());
             if (GuiUtils.isHover(x, y, 19, 19, mouseX, mouseY)) {
-                show = () -> GuiUtils.drawTextBox(matrixStack, font, mouseX, mouseY, width, height, getBlitOffset(),
-                        I18n.get("item.minecraft.firework_star." + color.getName()));
+                show = () -> GuiUtils.drawTextBox(matrixStack, textRenderer, mouseX, mouseY, width, height,
+                        getZOffset(),
+                        I18n.translate("item.minecraft.firework_star." + color.getName()));
             }
             GuiUtils.drawItemStack(itemRenderer, new ItemStack(DyeItem.byColor(color)), x + (19 - 16) / 2,
                     y + (19 - 16) / 2);
@@ -255,19 +273,19 @@ public class ColorSelector extends XrayScreen {
         GuiUtils.drawItemStack(itemRenderer, updatePicker(), width / 2 - 200 + 38 / 2 - 16 / 2,
                 height / 2 - 100 + 20 / 2 - 16 / 2);
         if (GuiUtils.isHover(width / 2 - 200, height / 2 - 100, 38, 20, mouseX, mouseY)) {
-            show = () -> GuiUtils.drawTextBox(matrixStack, font, mouseX, mouseY, width, height, getBlitOffset(),
-                    I18n.get("x13.mod.color.random"));
+            show = () -> GuiUtils.drawTextBox(matrixStack, textRenderer, mouseX, mouseY, width, height, getZOffset(),
+                    I18n.translate("x13.mod.color.random"));
         }
 
         // delete
         GuiUtils.drawHoverableRect(matrixStack, width / 2 + 180, height / 2 - 100, width / 2 + 200, height / 2 - 80,
                 0xFFDD4444, 0xFFFF4444, mouseX, mouseY);
-        GuiUtils.drawCenterString(matrixStack, font, "x", width / 2 + 190, height / 2 - 100, 0xFFFFFFFF, 20);
+        GuiUtils.drawCenterString(matrixStack, textRenderer, "x", width / 2 + 190, height / 2 - 100, 0xFFFFFFFF, 20);
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        setBlitOffset(getBlitOffset() + 75);
+        setZOffset(getZOffset() + 75);
         show.run();
-        setBlitOffset(getBlitOffset() - 75);
+        setZOffset(getZOffset() - 75);
     }
 
     private void complete() {
@@ -276,36 +294,37 @@ public class ColorSelector extends XrayScreen {
 
     @Override
     public void init() {
-        addRenderableWidget(
-                new Button(width / 2 - 200, height / 2 + 80, 130, 20, new TranslatableText("gui.done"), b -> {
+        addDrawableChild(
+                new ButtonWidget(width / 2 - 200, height / 2 + 80, 130, 20, new TranslatableText("gui.done"), b -> {
                     complete();
-                    getMinecraft().setScreen(parent);
+                    client.openScreen(parent);
                 }));
-        advButton = addRenderableWidget(new Button(width / 2 - 66, height / 2 + 80, 132, 20,
+        advButton = addDrawableChild(new ButtonWidget(width / 2 - 66, height / 2 + 80, 132, 20,
                 new TranslatableText("x13.mod.color.advanced"), b -> {
                     advanced ^= true;
                     advButton.setMessage(new TranslatableText(
                             advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
                 }));
-        addRenderableWidget(
-                new Button(width / 2 + 70, height / 2 + 80, 130, 20, new TranslatableText("gui.cancel"), b -> {
-                    getMinecraft().setScreen(parent);
+        addDrawableChild(
+                new ButtonWidget(width / 2 + 70, height / 2 + 80, 130, 20, new TranslatableText("gui.cancel"), b -> {
+                    client.openScreen(parent);
                 }));
 
         int advWidth = 158 + 200;
         int midAdv = width / 2 + (-158 + 200) / 2;
-        tfr = new EditBox(font, midAdv - 56, height / 2 - 54, 56, 18, new TextComponent(""));
-        tfg = new EditBox(font, midAdv - 56, height / 2 - 26, 56, 18, new TextComponent(""));
-        tfb = new EditBox(font, midAdv - 56, height / 2 + 2, 56, 18, new TextComponent(""));
+        tfr = new TextFieldWidget(textRenderer, midAdv - 56, height / 2 - 54, 56, 18, new LiteralText(""));
+        tfg = new TextFieldWidget(textRenderer, midAdv - 56, height / 2 - 26, 56, 18, new LiteralText(""));
+        tfb = new TextFieldWidget(textRenderer, midAdv - 56, height / 2 + 2, 56, 18, new LiteralText(""));
 
         int rightAdv = width / 2 + 200;
-        tfh = new EditBox(font, rightAdv - 56, height / 2 - 54, 56, 18, new TextComponent(""));
-        tfl = new EditBox(font, rightAdv - 56, height / 2 - 26, 56, 18, new TextComponent(""));
-        tfs = new EditBox(font, rightAdv - 56, height / 2 + 2, 56, 18, new TextComponent(""));
+        tfh = new TextFieldWidget(textRenderer, rightAdv - 56, height / 2 - 54, 56, 18, new LiteralText(""));
+        tfl = new TextFieldWidget(textRenderer, rightAdv - 56, height / 2 - 26, 56, 18, new LiteralText(""));
+        tfs = new TextFieldWidget(textRenderer, rightAdv - 56, height / 2 + 2, 56, 18, new LiteralText(""));
 
         int intHexWidth = (advWidth - 4 - 4) / 2;
-        intColor = new EditBox(font, midAdv - intHexWidth, height / 2 + 40, intHexWidth, 18, new TextComponent(""));
-        hexColor = new EditBox(font, midAdv + 4, height / 2 + 40, intHexWidth, 18, new TextComponent(""));
+        intColor = new TextFieldWidget(textRenderer, midAdv - intHexWidth, height / 2 + 40, intHexWidth, 18,
+                new LiteralText(""));
+        hexColor = new TextFieldWidget(textRenderer, midAdv + 4, height / 2 + 40, intHexWidth, 18, new LiteralText(""));
 
         tfr.setMaxLength(4);
         tfg.setMaxLength(4);
@@ -331,43 +350,43 @@ public class ColorSelector extends XrayScreen {
             intColor.charTyped(key, modifiers);
             if (tfr.isFocused())
                 try {
-                    updateRed(tfr.getValue().isEmpty() ? 0 : Integer.valueOf(tfr.getValue()));
+                    updateRed(tfr.getText().isEmpty() ? 0 : Integer.valueOf(tfr.getText()));
                 } catch (Exception e) {
                 }
             else if (tfg.isFocused())
                 try {
-                    updateGreen(tfg.getValue().isEmpty() ? 0 : Integer.valueOf(tfg.getValue()));
+                    updateGreen(tfg.getText().isEmpty() ? 0 : Integer.valueOf(tfg.getText()));
                 } catch (Exception e) {
                 }
             else if (tfb.isFocused())
                 try {
-                    updateBlue(tfb.getValue().isEmpty() ? 0 : Integer.valueOf(tfb.getValue()));
+                    updateBlue(tfb.getText().isEmpty() ? 0 : Integer.valueOf(tfb.getText()));
                 } catch (Exception e) {
                 }
             else if (tfh.isFocused())
                 try {
-                    updateHue(tfh.getValue().isEmpty() ? 0 : Integer.valueOf(tfh.getValue()));
+                    updateHue(tfh.getText().isEmpty() ? 0 : Integer.valueOf(tfh.getText()));
                 } catch (Exception e) {
                 }
             else if (tfs.isFocused())
                 try {
-                    updateSaturation(tfs.getValue().isEmpty() ? 0 : Integer.valueOf(tfs.getValue()));
+                    updateSaturation(tfs.getText().isEmpty() ? 0 : Integer.valueOf(tfs.getText()));
                 } catch (Exception e) {
                 }
             else if (tfl.isFocused())
                 try {
-                    updateLightness(tfl.getValue().isEmpty() ? 0 : Integer.valueOf(tfl.getValue()));
+                    updateLightness(tfl.getText().isEmpty() ? 0 : Integer.valueOf(tfl.getText()));
                 } catch (Exception e) {
                 }
             else if (hexColor.isFocused())
                 try {
-                    String s = hexColor.getValue().substring(1);
+                    String s = hexColor.getText().substring(1);
                     updateColor(s.isEmpty() ? 0 : Integer.valueOf(s, 16));
                 } catch (Exception e) {
                 }
             else if (intColor.isFocused())
                 try {
-                    updateColor(intColor.getValue().isEmpty() ? 0 : Integer.valueOf(intColor.getValue()));
+                    updateColor(intColor.getText().isEmpty() ? 0 : Integer.valueOf(intColor.getText()));
                 } catch (Exception e) {
                 }
         }
@@ -387,43 +406,43 @@ public class ColorSelector extends XrayScreen {
             intColor.keyPressed(key, scanCode, modifiers);
             if (tfr.isFocused())
                 try {
-                    updateRed(tfr.getValue().isEmpty() ? 0 : Integer.valueOf(tfr.getValue()));
+                    updateRed(tfr.getText().isEmpty() ? 0 : Integer.valueOf(tfr.getText()));
                 } catch (Exception e) {
                 }
             else if (tfg.isFocused())
                 try {
-                    updateGreen(tfg.getValue().isEmpty() ? 0 : Integer.valueOf(tfg.getValue()));
+                    updateGreen(tfg.getText().isEmpty() ? 0 : Integer.valueOf(tfg.getText()));
                 } catch (Exception e) {
                 }
             else if (tfb.isFocused())
                 try {
-                    updateBlue(tfb.getValue().isEmpty() ? 0 : Integer.valueOf(tfb.getValue()));
+                    updateBlue(tfb.getText().isEmpty() ? 0 : Integer.valueOf(tfb.getText()));
                 } catch (Exception e) {
                 }
             else if (tfh.isFocused())
                 try {
-                    updateHue(tfh.getValue().isEmpty() ? 0 : Integer.valueOf(tfh.getValue()));
+                    updateHue(tfh.getText().isEmpty() ? 0 : Integer.valueOf(tfh.getText()));
                 } catch (Exception e) {
                 }
             else if (tfs.isFocused())
                 try {
-                    updateSaturation(tfs.getValue().isEmpty() ? 0 : Integer.valueOf(tfs.getValue()));
+                    updateSaturation(tfs.getText().isEmpty() ? 0 : Integer.valueOf(tfs.getText()));
                 } catch (Exception e) {
                 }
             else if (tfl.isFocused())
                 try {
-                    updateLightness(tfl.getValue().isEmpty() ? 0 : Integer.valueOf(tfl.getValue()));
+                    updateLightness(tfl.getText().isEmpty() ? 0 : Integer.valueOf(tfl.getText()));
                 } catch (Exception e) {
                 }
             else if (hexColor.isFocused())
                 try {
-                    String s = hexColor.getValue().substring(1);
+                    String s = hexColor.getText().substring(1);
                     updateColor(s.isEmpty() ? 0 : Integer.valueOf(s, 16));
                 } catch (Exception e) {
                 }
             else if (intColor.isFocused())
                 try {
-                    updateColor(intColor.getValue().isEmpty() ? 0 : Integer.valueOf(intColor.getValue()));
+                    updateColor(intColor.getText().isEmpty() ? 0 : Integer.valueOf(intColor.getText()));
                 } catch (Exception e) {
                 }
         }
@@ -435,28 +454,28 @@ public class ColorSelector extends XrayScreen {
         if (advanced) {
             if (mouseButton == 1) {
                 if (GuiUtils.isHover(tfr, (int) mouseX, (int) mouseY)) {
-                    tfr.setValue("");
+                    tfr.setText("");
                     return true;
                 } else if (GuiUtils.isHover(tfg, (int) mouseX, (int) mouseY)) {
-                    tfg.setValue("");
+                    tfg.setText("");
                     return true;
                 } else if (GuiUtils.isHover(tfb, (int) mouseX, (int) mouseY)) {
-                    tfb.setValue("");
+                    tfb.setText("");
                     return true;
                 } else if (GuiUtils.isHover(tfh, (int) mouseX, (int) mouseY)) {
-                    tfh.setValue("");
+                    tfh.setText("");
                     return true;
                 } else if (GuiUtils.isHover(tfl, (int) mouseX, (int) mouseY)) {
-                    tfl.setValue("");
+                    tfl.setText("");
                     return true;
                 } else if (GuiUtils.isHover(tfs, (int) mouseX, (int) mouseY)) {
-                    tfs.setValue("");
+                    tfs.setText("");
                     return true;
                 } else if (GuiUtils.isHover(intColor, (int) mouseX, (int) mouseY)) {
-                    intColor.setValue("");
+                    intColor.setText("");
                     return true;
                 } else if (GuiUtils.isHover(hexColor, (int) mouseX, (int) mouseY)) {
-                    hexColor.setValue("#");
+                    hexColor.setText("#");
                     return true;
                 }
             }
@@ -521,17 +540,17 @@ public class ColorSelector extends XrayScreen {
         localHue = h;
         localSaturation = s;
         localLightness = l;
-        tfh.setValue("" + localHue);
-        tfs.setValue("" + localSaturation);
-        tfl.setValue("" + localLightness);
+        tfh.setText("" + localHue);
+        tfs.setText("" + localSaturation);
+        tfl.setText("" + localLightness);
         setPickerState(localHue, localSaturation, localLightness);
 
         color = rgba & 0xffffff;
-        tfr.setValue("" + (color >> 16 & 0xFF));
-        tfg.setValue("" + (color >> 8 & 0xFF));
-        tfb.setValue("" + (color >> 0 & 0xFF));
-        this.intColor.setValue("" + color);
-        this.hexColor.setValue("#" + Integer.toHexString(color));
+        tfr.setText("" + (color >> 16 & 0xFF));
+        tfg.setText("" + (color >> 8 & 0xFF));
+        tfb.setText("" + (color >> 0 & 0xFF));
+        this.intColor.setText("" + color);
+        this.hexColor.setText("#" + Integer.toHexString(color));
     }
 
     private void setColor(int mouseX, int mouseY, DragState dragState) {
