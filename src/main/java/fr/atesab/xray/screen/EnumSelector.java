@@ -26,7 +26,7 @@ public abstract class EnumSelector<E extends EnumElement> extends PagedScreen<E>
         public void init() {
             btn = addSubWidget(new LongItemWidget(width / 2 - 100, 0, 200, 20, e.getTitle(), e.getIcon(), () -> {
                 select(e);
-                client.openScreen(parent);
+                client.setScreen(parent);
             }));
             super.init();
         }

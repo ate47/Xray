@@ -70,7 +70,7 @@ public class MenuWidget extends PressableWidget {
 
     @Override
     public void appendNarrations(NarrationMessageBuilder narrationElementOutput) {
-        this.method_37021(narrationElementOutput);
+        this.appendDefaultNarrations(narrationElementOutput);
     }
 
     @Override

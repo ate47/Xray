@@ -25,7 +25,7 @@ public class BlockConfigWidget extends ButtonWidget {
     public BlockConfigWidget(int x, int y, int width, int height, BlockConfig cfg, Screen menu, int deltaX,
             int deltaY) {
         super(x, y, width, height, new LiteralText(""),
-                b -> MinecraftClient.getInstance().openScreen(new XrayBlockMenu(menu, cfg)));
+                b -> MinecraftClient.getInstance().setScreen(new XrayBlockMenu(menu, cfg)));
         this.cfg = cfg;
         this.deltaX = deltaX;
         this.deltaY = deltaY;

@@ -31,7 +31,7 @@ public class ColorSelectorWidget extends PressableWidget {
 
     @Override
     public void appendNarrations(NarrationMessageBuilder builder) {
-        this.method_37021(builder);
+        this.appendDefaultNarrations(builder);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ColorSelectorWidget extends PressableWidget {
 
     @Override
     public void onPress() {
-        client.openScreen(new ColorSelector(parent, setter, getter.getAsInt()));
+        client.setScreen(new ColorSelector(parent, setter, getter.getAsInt()));
     }
 
 }

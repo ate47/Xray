@@ -561,7 +561,7 @@ public class GuiUtils {
                 GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE,
                 GlStateManager.DstFactor.ZERO);
         bufferbuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        Matrix4f mat = stack.peek().getModel();
+        Matrix4f mat = stack.peek().getPositionMatrix();
         bufferbuilder.vertex(mat, right, top, zLevel).color(redRightTop, greenRightTop, blueRightTop, alphaRightTop)
                 .next();
         bufferbuilder.vertex(mat, left, top, zLevel).color(redLeftTop, greenLeftTop, blueLeftTop, alphaLeftTop)

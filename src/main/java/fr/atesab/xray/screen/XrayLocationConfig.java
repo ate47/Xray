@@ -51,7 +51,7 @@ public class XrayLocationConfig extends XrayScreen {
                 new ButtonWidget(width / 2 - 100, height / 2 + 24, 98, 20,
                         new TranslatableText("x13.mod.location.option"),
                         btn -> {
-                            client.openScreen(new EnumSelector<>(
+                            client.setScreen(new EnumSelector<>(
                                     new TranslatableText("x13.mod.location.option"), this,
                                     LocationFormatTool.values()) {
                                 @Override
@@ -71,7 +71,7 @@ public class XrayLocationConfig extends XrayScreen {
         addDrawableChild(
                 new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
                         btn -> {
-                            client.openScreen(parent);
+                            client.setScreen(parent);
                         }));
 
         super.init();

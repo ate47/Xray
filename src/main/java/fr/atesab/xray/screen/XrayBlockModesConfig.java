@@ -39,14 +39,14 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             blocks = addSubWidget(new BlockConfigWidget(x, 0, 125, 20, cfg, XrayBlockModesConfig.this));
             x += 129;
             addSubWidget(new ButtonWidget(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
-                client.openScreen(new KeySelector(XrayBlockModesConfig.this, cfg.getKey(), oKey -> {
+                client.setScreen(new KeySelector(XrayBlockModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
                     btn.setMessage(KeyData.getName(cfg.getKey()));
                 }));
             }));
             x += 60;
             addSubWidget(new ButtonWidget(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
-                client.openScreen(new EnumSelector<ViewMode>(
+                client.setScreen(new EnumSelector<ViewMode>(
                         new TranslatableText("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
 
                     @Override
@@ -59,7 +59,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             }));
             x += 68;
             addSubWidget(new ButtonWidget(x, 0, 20, 20, new TranslatableText("x13.mod.template.little"), btn -> {
-                client.openScreen(new EnumSelector<BlockConfig.Template>(
+                client.setScreen(new EnumSelector<BlockConfig.Template>(
                         new TranslatableText("x13.mod.template"), XrayBlockModesConfig.this,
                         BlockConfig.Template.values()) {
 
@@ -106,7 +106,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (textHover) {
                 playDownSound();
-                client.openScreen(new XrayAbstractModeConfig(XrayBlockModesConfig.this, cfg));
+                client.setScreen(new XrayAbstractModeConfig(XrayBlockModesConfig.this, cfg));
                 return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);

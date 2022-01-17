@@ -100,12 +100,12 @@ public class XrayBlockMenu extends Screen {
         ButtonWidget doneBtn = new ButtonWidget(width / 2 - 102, pageBottom, 100, 20,
                 new TranslatableText("gui.done"), b -> {
                     mode.getBlocks().setObjects(config);
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 });
 
         ButtonWidget cancelBtn = new ButtonWidget(width / 2 + 2, pageBottom, 100, 20,
                 new TranslatableText("gui.cancel"), b -> {
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 });
         nextPage = new ButtonWidget(width / 2 + 106, pageBottom, 20, 20, new LiteralText("->"), b -> {
             page++;
@@ -215,7 +215,7 @@ public class XrayBlockMenu extends Screen {
             int y = top + (i / elementsX) * 18;
             if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
                 if (button == 0) { // left click: replace
-                    client.openScreen(new BlockSelector(this) {
+                    client.setScreen(new BlockSelector(this) {
                         @Override
                         protected void save(Block selection) {
                             int index = config.indexOf(b);
@@ -240,7 +240,7 @@ public class XrayBlockMenu extends Screen {
         int y = top + (i / elementsX) * 18;
         if (button == 0 && mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
             // add
-            client.openScreen(new BlockSelector(this) {
+            client.setScreen(new BlockSelector(this) {
                 @Override
                 protected void save(Block selection) {
                     config.add(selection);

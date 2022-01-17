@@ -154,7 +154,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
                     new ButtonWidget(width / 2 - 176, height - 24, 172, 20, new TranslatableText("gui.done"), b -> {
                         save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
                                 .collect(Collectors.toCollection(() -> new ArrayList<>())));
-                        client.openScreen(parent);
+                        client.setScreen(parent);
                     }));
 
         addDrawableChild(
@@ -162,7 +162,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
                         new TranslatableText("gui.cancel"),
                         b -> {
                             cancel();
-                            client.openScreen(parent);
+                            client.setScreen(parent);
                         }));
 
         addDrawableChild(nextButton);

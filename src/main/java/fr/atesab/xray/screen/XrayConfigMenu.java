@@ -51,7 +51,7 @@ public class XrayConfigMenu extends XrayScreen {
         addDrawableChild(
                 new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
                         btn -> {
-                            client.openScreen(parent);
+                            client.setScreen(parent);
                         }));
 
         addDrawableChild(new LongItemWidget(width * 0 / 3, height - 20, width / 3, 20,

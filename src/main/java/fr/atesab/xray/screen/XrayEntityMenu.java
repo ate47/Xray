@@ -102,12 +102,12 @@ public class XrayEntityMenu extends Screen {
         ButtonWidget doneBtn = new ButtonWidget(width / 2 - 102, pageBottom, 100, 20,
                 new TranslatableText("gui.done"), b -> {
                     mode.getEntities().setObjects(config);
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 });
 
         ButtonWidget cancelBtn = new ButtonWidget(width / 2 + 2, pageBottom, 100, 20,
                 new TranslatableText("gui.cancel"), b -> {
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 });
         nextPage = new ButtonWidget(width / 2 + 106, pageBottom, 20, 20, new LiteralText("->"), b -> {
             page++;
@@ -216,7 +216,7 @@ public class XrayEntityMenu extends Screen {
             int y = top + (i / elementsX) * 18;
             if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
                 if (button == 0) { // left click: replace
-                    client.openScreen(new EntitySelector(this) {
+                    client.setScreen(new EntitySelector(this) {
                         @Override
                         protected void select(EntityTypeInfo selection) {
                             int index = config.indexOf(b);
@@ -241,7 +241,7 @@ public class XrayEntityMenu extends Screen {
         int y = top + (i / elementsX) * 18;
         if (button == 0 && mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
             // add
-            client.openScreen(new EntitySelector(this) {
+            client.setScreen(new EntitySelector(this) {
                 @Override
                 protected void select(EntityTypeInfo selection) {
                     config.add(selection.getType());

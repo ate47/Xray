@@ -59,11 +59,11 @@ public class KeySelector extends XrayScreen {
         doneButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2, 200, 20,
                 new TranslatableText("gui.done"), b -> {
                     keyConsumer.accept(value);
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 }));
         cancelButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 24, 200, 20,
                 new TranslatableText("gui.cancel"), b -> {
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 }));
         setKey(value);
         super.init();

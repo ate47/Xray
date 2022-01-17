@@ -25,7 +25,7 @@ public class EntityConfigWidget extends ButtonWidget {
     public EntityConfigWidget(int x, int y, int width, int height, ESPConfig cfg, Screen menu, int deltaX,
             int deltaY) {
         super(x, y, width, height, new LiteralText(""),
-                b -> MinecraftClient.getInstance().openScreen(new XrayEntityMenu(menu, cfg)));
+                b -> MinecraftClient.getInstance().setScreen(new XrayEntityMenu(menu, cfg)));
         this.cfg = cfg;
         this.deltaX = deltaX;
         this.deltaY = deltaY;

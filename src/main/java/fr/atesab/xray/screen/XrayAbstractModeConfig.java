@@ -34,11 +34,11 @@ public class XrayAbstractModeConfig extends XrayScreen {
                 new ButtonWidget(width / 2 - 100, height / 2 + 24, 200, 20, new TranslatableText("gui.done"), btn -> {
                     cfg.setName(nameBox.getText());
                     cfg.setColor(color);
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 }));
         addDrawableChild(
                 new ButtonWidget(width / 2 - 100, height / 2 + 48, 200, 20, new TranslatableText("gui.cancel"), btn -> {
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 }));
 
         nameBox = new TextFieldWidget(textRenderer, width / 2 - 98, height / 2 - 22, 196, 16, new LiteralText(""));

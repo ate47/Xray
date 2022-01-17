@@ -34,12 +34,12 @@ public class XrayMenu extends XrayScreen {
         addDrawableChild(
                 new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
                         btn -> {
-                            client.openScreen(parent);
+                            client.setScreen(parent);
                         }));
 
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableText("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), () -> {
-                    client.openScreen(new XrayBlockModesConfig(this, mod.getConfig().getBlockConfigs().stream()) {
+                    client.setScreen(new XrayBlockModesConfig(this, mod.getConfig().getBlockConfigs().stream()) {
                         @Override
                         protected void save(List<BlockConfig> list) {
                             mod.getConfig().setBlockConfigs(list);
@@ -49,7 +49,7 @@ public class XrayMenu extends XrayScreen {
                 }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableText("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), () -> {
-                    client.openScreen(new XrayESPModesConfig(this, mod.getConfig().getEspConfigs().stream()) {
+                    client.setScreen(new XrayESPModesConfig(this, mod.getConfig().getEspConfigs().stream()) {
                         @Override
                         protected void save(List<ESPConfig> list) {
                             mod.getConfig().setEspConfigs(list);
@@ -63,11 +63,11 @@ public class XrayMenu extends XrayScreen {
                 }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableText("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
-                    client.openScreen(new XrayLocationConfig(this));
+                    client.setScreen(new XrayLocationConfig(this));
                 }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableText("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
-                    client.openScreen(new XrayConfigMenu(this));
+                    client.setScreen(new XrayConfigMenu(this));
                 }));
 
         super.init();

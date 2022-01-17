@@ -42,31 +42,31 @@ public class ColorSelector extends XrayScreen {
     private static final Identifier PICKER_S_RESOURCE = new Identifier(XrayMain.MOD_ID, "picker_hl");
     private static final Identifier PICKER_HL_RESOURCE = new Identifier(XrayMain.MOD_ID, "picker_s");
     private static final NativeImageBackedTexture PICKER_IMAGE_S = new NativeImageBackedTexture(
-            new NativeImage(NativeImage.Format.ABGR, PICKER_S_SIZE_X, PICKER_SIZE_Y, false));
+            new NativeImage(NativeImage.Format.RGBA, PICKER_S_SIZE_X, PICKER_SIZE_Y, false));
     private static final NativeImageBackedTexture PICKER_IMAGE_HL = new NativeImageBackedTexture(
-            new NativeImage(NativeImage.Format.ABGR, PICKER_HL_SIZE_X, PICKER_SIZE_Y, false));
+            new NativeImage(NativeImage.Format.RGBA, PICKER_HL_SIZE_X, PICKER_SIZE_Y, false));
     private static final ItemStack RANDOM_PICKER = Util.make(new ItemStack(Items.POTION), it -> {
-        it.getOrCreateTag();
+        it.getOrCreateNbt();
     });
     private static final int RANDOM_PICKER_FREQUENCY = 3600;
 
     private static ItemStack updatePicker() {
         pickerInit = true;
-        NbtCompound tag = RANDOM_PICKER.getTag();
+        NbtCompound tag = RANDOM_PICKER.getNbt();
         tag.putInt("CustomPotionColor", GuiUtils.getTimeColor(RANDOM_PICKER_FREQUENCY, 100, 50));
-        RANDOM_PICKER.setTag(tag);
+        RANDOM_PICKER.setNbt(tag);
         return RANDOM_PICKER;
     }
 
     public static Identifier getPickerHlResource() {
         if (pickerInit)
-            updatePicker();
+            registerPickerImage();
         return PICKER_HL_RESOURCE;
     }
 
     public static Identifier getPickerSResource() {
         if (pickerInit)
-            updatePicker();
+            registerPickerImage();
         return PICKER_S_RESOURCE;
     }
 
@@ -85,7 +85,7 @@ public class ColorSelector extends XrayScreen {
             for (int y = 0; y < pixels.getHeight(); y++) { // saturation
                 int color = GuiUtils.fromHSL(hue, y * 100 / pixels.getHeight(), lightness);
                 for (int x = 0; x < pixels.getWidth(); x++)
-                    pixels.setPixelColor(x, y, GuiUtils.blueToRed(color));
+                    pixels.setColor(x, y, GuiUtils.blueToRed(color));
             }
 
             PICKER_IMAGE_S.upload();
@@ -99,7 +99,7 @@ public class ColorSelector extends XrayScreen {
 
             for (int x = 0; x < pixels.getWidth(); x++) // hue
                 for (int y = 0; y < pixels.getHeight(); y++) // lightness
-                    pixels.setPixelColor(x, y, GuiUtils.blueToRed(
+                    pixels.setColor(x, y, GuiUtils.blueToRed(
                             GuiUtils.fromHSL(x * 360 / pixels.getWidth(), saturation, y * 100 / pixels.getHeight())));
 
             PICKER_IMAGE_HL.upload();
@@ -297,7 +297,7 @@ public class ColorSelector extends XrayScreen {
         addDrawableChild(
                 new ButtonWidget(width / 2 - 200, height / 2 + 80, 130, 20, new TranslatableText("gui.done"), b -> {
                     complete();
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 }));
         advButton = addDrawableChild(new ButtonWidget(width / 2 - 66, height / 2 + 80, 132, 20,
                 new TranslatableText("x13.mod.color.advanced"), b -> {
@@ -307,7 +307,7 @@ public class ColorSelector extends XrayScreen {
                 }));
         addDrawableChild(
                 new ButtonWidget(width / 2 + 70, height / 2 + 80, 130, 20, new TranslatableText("gui.cancel"), b -> {
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                 }));
 
         int advWidth = 158 + 200;

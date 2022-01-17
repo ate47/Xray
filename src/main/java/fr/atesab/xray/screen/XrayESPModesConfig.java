@@ -38,7 +38,7 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
             entities = addSubWidget(new EntityConfigWidget(x, 0, 115, 20, cfg, XrayESPModesConfig.this));
             x += 119;
             addSubWidget(new ButtonWidget(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
-                client.openScreen(new KeySelector(XrayESPModesConfig.this, cfg.getKey(), oKey -> {
+                client.setScreen(new KeySelector(XrayESPModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
                     btn.setMessage(KeyData.getName(cfg.getKey()));
                 }));
@@ -52,7 +52,7 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
                             }));
             x += 78;
             addSubWidget(new ButtonWidget(x, 0, 20, 20, new TranslatableText("x13.mod.template.little"), btn -> {
-                client.openScreen(new EnumSelector<ESPConfig.Template>(
+                client.setScreen(new EnumSelector<ESPConfig.Template>(
                         new TranslatableText("x13.mod.template"), XrayESPModesConfig.this,
                         ESPConfig.Template.values()) {
 
@@ -99,7 +99,7 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (textHover) {
                 playDownSound();
-                client.openScreen(new XrayAbstractModeConfig(XrayESPModesConfig.this, cfg));
+                client.setScreen(new XrayAbstractModeConfig(XrayESPModesConfig.this, cfg));
                 return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);
