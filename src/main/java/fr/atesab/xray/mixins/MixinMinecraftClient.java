@@ -6,14 +6,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fr.atesab.xray.XrayMain;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 
-@Mixin(value = Minecraft.class)
+@Mixin(value = MinecraftClient.class)
 public class MixinMinecraftClient {
 
-	@Inject(at = @At(value = "HEAD"), method = "useAmbientOcclusion()Z", cancellable = true)
+	@Inject(at = @At(value = "HEAD"), method = "isAmbientOcclusionEnabled()Z", cancellable = true)
 	private static void isAmbientOcclusionEnabled(CallbackInfoReturnable<Boolean> ci) {
-		if (XrayMain.getMod().isInternalFullbrightEnable()) {
+		if (XrayMain.getMod().getConfig().getSelectedBlockMode() != null) {
 			ci.setReturnValue(false);
 			ci.cancel();
 		}

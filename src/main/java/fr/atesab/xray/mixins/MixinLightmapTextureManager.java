@@ -6,14 +6,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import fr.atesab.xray.XrayMain;
-import net.minecraft.client.Options;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.render.LightmapTextureManager;
 
-@Mixin(value = LightTexture.class)
+@Mixin(value = LightmapTextureManager.class)
 public class MixinLightmapTextureManager {
 
-	@Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;gamma*:D", opcode = Opcodes.GETFIELD), method = "updateLightTexture(F)V")
-	private double getFieldValue(Options options) {
+	@Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;gamma*:D", opcode = Opcodes.GETFIELD), method = "update(F)V")
+	private double getFieldValue(GameOptions options) {
 		if (XrayMain.getMod().isInternalFullbrightEnable()) {
 			return XrayMain.getMod().getInternalFullbrightState();
 		} else {

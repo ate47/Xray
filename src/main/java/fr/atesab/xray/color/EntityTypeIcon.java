@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.core.Registry;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.util.registry.Registry;
 
 public record EntityTypeIcon(EntityType<?> entity, ItemStack icon) {
 
@@ -61,22 +61,22 @@ public record EntityTypeIcon(EntityType<?> entity, ItemStack icon) {
     public static final EntityTypeIcon TNT = register(EntityType.TNT, Items.TNT);
     public static final EntityTypeIcon WOLF = register(EntityType.WOLF, Items.BONE);
 
-    public static EntityTypeIcon register(EntityType<?> type, ItemLike icon) {
+    public static EntityTypeIcon register(EntityType<?> type, ItemConvertible icon) {
         return register(type, new ItemStack(icon));
     }
 
     public static EntityTypeIcon register(EntityType<?> type, ItemStack icon) {
-        ICONS.put(type.getDescriptionId(), icon);
+        ICONS.put(type.getTranslationKey(), icon);
         return new EntityTypeIcon(type, icon);
     }
 
     @SuppressWarnings("deprecation")
     public static ItemStack getIcon(EntityType<?> type) {
-        ItemStack icon = ICONS.get(type.getDescriptionId());
+        ItemStack icon = ICONS.get(type.getTranslationKey());
         if (icon != null)
             return icon;
 
-        SpawnEggItem egg = SpawnEggItem.byId(type);
+        SpawnEggItem egg = SpawnEggItem.forEntity(type);
 
         if (egg != null)
             return new ItemStack(egg);
@@ -85,7 +85,7 @@ public record EntityTypeIcon(EntityType<?> entity, ItemStack icon) {
     }
 
     @SuppressWarnings("deprecation")
-    public static List<EntityType<?>> getEntityOfType(MobCategory cat) {
-        return Registry.ENTITY_TYPE.stream().filter(type -> type.getCategory() == cat).toList();
+    public static List<EntityType<?>> getEntityOfType(SpawnGroup cat) {
+        return Registry.ENTITY_TYPE.stream().filter(type -> type.getSpawnGroup() == cat).toList();
     }
 }

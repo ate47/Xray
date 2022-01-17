@@ -3,7 +3,7 @@ package fr.atesab.xray.screen.page;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -49,7 +49,7 @@ public class PagedElement<E> implements GuiEventListener {
     public void init() {
     }
 
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         widgets.forEach(w -> w.render(stack, mouseX, mouseY, delta));
     }
 

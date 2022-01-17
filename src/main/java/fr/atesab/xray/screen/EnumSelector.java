@@ -9,7 +9,7 @@ import fr.atesab.xray.screen.page.PagedElement;
 import fr.atesab.xray.screen.page.PagedScreen;
 import fr.atesab.xray.widget.LongItemWidget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 public abstract class EnumSelector<E extends EnumElement> extends PagedScreen<E> {
 
@@ -38,16 +38,16 @@ public abstract class EnumSelector<E extends EnumElement> extends PagedScreen<E>
         }
     }
 
-    public EnumSelector(Component title, Screen parent, Stream<E> stream) {
+    public EnumSelector(Text title, Screen parent, Stream<E> stream) {
         super(title, parent, 24, stream);
         removeDoneButton();
     }
 
-    public EnumSelector(Component title, Screen parent, E[] array) {
+    public EnumSelector(Text title, Screen parent, E[] array) {
         this(title, parent, Arrays.stream(array));
     }
 
-    public EnumSelector(Component title, Screen parent, List<E> list) {
+    public EnumSelector(Text title, Screen parent, List<E> list) {
         this(title, parent, list.stream());
     }
 

@@ -1,13 +1,13 @@
 package fr.atesab.xray.color;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.item.ItemStack;
 
 public abstract class AbstractEnumElement implements EnumElement {
     private ItemStack icon;
-    private Component title;
+    private Text title;
 
-    public AbstractEnumElement(ItemStack icon, Component title) {
+    public AbstractEnumElement(ItemStack icon, Text title) {
         this.icon = icon;
         this.title = title;
     }
@@ -18,7 +18,7 @@ public abstract class AbstractEnumElement implements EnumElement {
     }
 
     @Override
-    public Component getTitle() {
+    public Text getTitle() {
         return title;
     }
 

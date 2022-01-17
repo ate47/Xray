@@ -1,26 +1,26 @@
 package fr.atesab.xray.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.XrayUtils;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TextComponent;
+import net.minecraft.text.TranslatableText;
 
 public class XrayLocationConfig extends XrayScreen {
 
     private EditBox format;
 
     public XrayLocationConfig(Screen parent) {
-        super(new TranslatableComponent("x13.mod.showloc"), parent);
+        super(new TranslatableText("x13.mod.showloc"), parent);
     }
 
     @Override
@@ -51,10 +51,10 @@ public class XrayLocationConfig extends XrayScreen {
 
         addRenderableWidget(
                 new Button(width / 2 - 100, height / 2 + 24, 98, 20,
-                        new TranslatableComponent("x13.mod.location.option"),
+                        new TranslatableText("x13.mod.location.option"),
                         btn -> {
                             minecraft.setScreen(new EnumSelector<>(
-                                    new TranslatableComponent("x13.mod.location.option"), this,
+                                    new TranslatableText("x13.mod.location.option"), this,
                                     LocationFormatTool.values()) {
                                 @Override
                                 protected void select(LocationFormatTool e) {
@@ -65,13 +65,13 @@ public class XrayLocationConfig extends XrayScreen {
                         }));
         addRenderableWidget(
                 new Button(width / 2 + 2, height / 2 + 24, 98, 20,
-                        new TranslatableComponent("x13.mod.location.reset"),
+                        new TranslatableText("x13.mod.location.reset"),
                         btn -> {
                             format.setValue(LocationConfig.DEFAULT_FORMAT);
                         }));
 
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableComponent("gui.done"),
+                new Button(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
                         btn -> {
                             minecraft.setScreen(parent);
                         }));
@@ -80,7 +80,7 @@ public class XrayLocationConfig extends XrayScreen {
     }
 
     @Override
-    public void resize(Minecraft client, int w, int h) {
+    public void resize(MinecraftClient client, int w, int h) {
         String s = format.getValue();
         super.resize(client, w, h);
         format.setValue(s);
@@ -93,10 +93,10 @@ public class XrayLocationConfig extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
-        drawCenteredString(stack, font, new TranslatableComponent("x13.mod.location"), width / 2,
-                height / 2 - 52 - font.lineHeight, 0xffffffff);
+        drawCenteredString(stack, font, new TranslatableText("x13.mod.location"), width / 2,
+                height / 2 - 52 - font.fontHeight, 0xffffffff);
         GuiUtils.drawRightString(stack, font, I18n.get("x13.mod.location.format") + ": ", format, 0xffffffff);
         format.render(stack, mouseX, mouseY, delta);
         super.render(stack, mouseX, mouseY, delta);

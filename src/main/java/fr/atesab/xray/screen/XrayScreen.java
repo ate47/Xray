@@ -2,13 +2,13 @@ package fr.atesab.xray.screen;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.sounds.SoundEvents;
 
 public class XrayScreen extends Screen {
     public Screen parent;
 
-    protected XrayScreen(Component title, Screen parent) {
+    protected XrayScreen(Text title, Screen parent) {
         super(title);
         this.parent = parent;
     }

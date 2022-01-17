@@ -1,16 +1,16 @@
 package fr.atesab.xray.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.item.ItemStack;
 
 public class MenuWidget extends AbstractButton {
     public interface OnPress {
@@ -20,15 +20,15 @@ public class MenuWidget extends AbstractButton {
     private ItemStack itemStack;
     private OnPress onPress;
 
-    public MenuWidget(int x, int y, int w, int h, Component text, ItemStack stack, OnPress onPress) {
+    public MenuWidget(int x, int y, int w, int h, Text text, ItemStack stack, OnPress onPress) {
         super(x, y, w, h, text);
         this.onPress = onPress;
         this.itemStack = stack;
     }
 
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
-        Minecraft client = Minecraft.getInstance();
+    public void renderButton(MatrixStack stack, int mouseX, int mouseY, float delta) {
+        MinecraftClient client = MinecraftClient.getInstance();
         boolean hovered = isHovered();
         int centerX = x + width / 2;
         int color;
@@ -38,12 +38,12 @@ public class MenuWidget extends AbstractButton {
             color = 0x22ffffff;
         }
 
-        Gui.fill(stack, x, y, x + width, y + height, color);
+        DrawableHelper.fill(stack, x, y, x + width, y + height, color);
 
-        Component message = getMessage();
-        Font font = client.font;
+        Text message = getMessage();
+        TextRenderer font = client.font;
         ItemRenderer renderer = client.getItemRenderer();
-        PoseStack modelStack = RenderSystem.getModelViewStack();
+        MatrixStack modelStack = RenderSystem.getModelViewStack();
 
         int stackCenterX = x + width / 2;
         int stackCenterY = y + height * 2 / 5;
@@ -59,9 +59,9 @@ public class MenuWidget extends AbstractButton {
 
         stack.pushPose();
         stack.translate(centerX, y + getHeight(), 0);
-        float scale = getHeight() * 1 / 7f / font.lineHeight;
+        float scale = getHeight() * 1 / 7f / font.fontHeight;
         stack.scale(scale, scale, 1);
-        drawCenteredString(stack, font, message, 0, -font.lineHeight, packedFGColor);
+        drawCenteredString(stack, font, message, 0, -font.fontHeight, packedFGColor);
         stack.scale(1 / scale, 1 / scale, 1);
         stack.translate(-centerX, -y - getHeight(), 0);
         stack.popPose();

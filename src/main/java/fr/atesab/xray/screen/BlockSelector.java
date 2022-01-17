@@ -3,16 +3,16 @@ package fr.atesab.xray.screen;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.TextComponent;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
 public abstract class BlockSelector extends Screen {
@@ -29,7 +29,7 @@ public abstract class BlockSelector extends Screen {
 
     @SuppressWarnings("deprecation")
     public BlockSelector(Screen parent) {
-        super(new TranslatableComponent("x13.mod.menu.selector"));
+        super(new TranslatableText("x13.mod.menu.selector"));
         this.parent = parent;
         blocks = new ArrayList<>();
         Registry.BLOCK.forEach(blocks::add);
@@ -87,7 +87,7 @@ public abstract class BlockSelector extends Screen {
             page--;
             updateArrows();
         });
-        Button cancelBtn = new Button(width / 2 - 100, pageBottom, 200, 20, new TranslatableComponent("gui.cancel"),
+        Button cancelBtn = new Button(width / 2 - 100, pageBottom, 200, 20, new TranslatableText("gui.cancel"),
                 b -> {
                     getMinecraft().setScreen(parent);
                 });
@@ -126,7 +126,7 @@ public abstract class BlockSelector extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         renderBackground(matrixStack);
         searchBar.render(matrixStack, mouseX, mouseY, partialTick);
         int left = width / 2 - elementsX * 18 / 2;
@@ -156,7 +156,7 @@ public abstract class BlockSelector extends Screen {
         super.render(matrixStack, mouseX, mouseY, partialTick);
 
         if (hoveredBlock != null) {
-            renderTooltip(matrixStack, new TranslatableComponent(hoveredBlock.getDescriptionId()), mouseX, mouseY);
+            renderTooltip(matrixStack, new TranslatableText(hoveredBlock.getDescriptionId()), mouseX, mouseY);
         }
     }
 

@@ -4,11 +4,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import fr.atesab.xray.color.EntityTypeIcon;
-import net.minecraft.core.Registry;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.registry.Registry;
 
-@SuppressWarnings("deprecation")
 public class SyncedEntityTypeList extends SyncedRegistryList<EntityType<?>> {
 
     private SyncedEntityTypeList(SyncedRegistryList<EntityType<?>> other) {

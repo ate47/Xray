@@ -3,16 +3,16 @@ package fr.atesab.xray.widget;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.screen.XrayEntityMenu;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.TextComponent;
+import net.minecraft.item.ItemStack;
 
 public class EntityConfigWidget extends Button {
     private ESPConfig cfg;
@@ -26,7 +26,7 @@ public class EntityConfigWidget extends Button {
     public EntityConfigWidget(int x, int y, int width, int height, ESPConfig cfg, Screen menu, int deltaX,
             int deltaY) {
         super(x, y, width, height, new TextComponent(""),
-                b -> Minecraft.getInstance().setScreen(new XrayEntityMenu(menu, cfg)));
+                b -> MinecraftClient.getInstance().setScreen(new XrayEntityMenu(menu, cfg)));
         this.cfg = cfg;
         this.deltaX = deltaX;
         this.deltaY = deltaY;
@@ -41,18 +41,18 @@ public class EntityConfigWidget extends Button {
     }
 
     @Override
-    public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         int fit = (width - 2) / 17;
 
         Stream<ItemStack> stacks = cfg.getEntities().getIcons();
 
         List<ItemStack> view = stacks.limit(fit).toList();
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
 
         if (mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height) {
-            Gui.fill(matrices, x, y, x + width, y + height, 0x33ffaa00);
+            DrawableHelper.fill(matrices, x, y, x + width, y + height, 0x33ffaa00);
         } else {
-            Gui.fill(matrices, x, y, x + width, y + height, 0x33ffffff);
+            DrawableHelper.fill(matrices, x, y, x + width, y + height, 0x33ffffff);
         }
 
         int left = this.x + this.width / 2 - view.size() * 17 / 2;

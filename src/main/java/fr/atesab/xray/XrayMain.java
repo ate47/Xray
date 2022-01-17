@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 
@@ -37,22 +36,22 @@ import fr.atesab.xray.utils.RenderUtils;
 import fr.atesab.xray.utils.XrayUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.TextRenderer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
@@ -186,7 +185,7 @@ public class XrayMain {
 	public XrayMain modules() {
 		fullBright(isFullBrightEnable());
 		try {
-			Minecraft mc = Minecraft.getInstance();
+			MinecraftClient mc = MinecraftClient.getInstance();
 			if (mc.levelRenderer != null)
 				mc.levelRenderer.allChanged();
 		} catch (IllegalStateException e) {
@@ -195,7 +194,7 @@ public class XrayMain {
 		return this;
 	}
 
-	public int shouldSideBeRendered(BlockState adjacentState, BlockGetter blockState, BlockPos blockAccess,
+	public int shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
 			Direction pos, CallbackInfoReturnable<Boolean> ci) {
 		if (ci == null)
 			ci = new CallbackInfoReturnable<>("shouldSideBeRendered", true);
@@ -240,7 +239,7 @@ public class XrayMain {
 	 * Mod config file
 	 */
 	public static File getSaveFile() {
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 		return new File(mc.gameDirectory, "config/xray2.json");
 	}
 
@@ -262,13 +261,13 @@ public class XrayMain {
 
 	@SubscribeEvent
 	public void onKeyEvent(KeyInputEvent ev) {
-		Minecraft client = Minecraft.getInstance();
+		MinecraftClient client = MinecraftClient.getInstance();
 		if (client.screen != null)
 			return;
 
 		KeyInput input = new KeyInput(ev.getKey(), ev.getScanCode(), ev.getAction(), ev.getModifiers());
 
-		if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), input.key())) {
+		if (InputConstants.isKeyDown(MinecraftClient.getInstance().getWindow().getWindow(), input.key())) {
 			config.getModes().forEach(mode -> mode.onKeyInput(input));
 		}
 
@@ -282,9 +281,9 @@ public class XrayMain {
 	@SubscribeEvent
 	public void onHudRender(RenderGameOverlayEvent ev) {
 		int w = 0;
-		PoseStack stack = ev.getMatrixStack();
-		Minecraft mc = Minecraft.getInstance();
-		Font render = mc.font;
+		MatrixStack stack = ev.getMatrixStack();
+		MinecraftClient mc = MinecraftClient.getInstance();
+		TextRenderer render = mc.font;
 		LocalPlayer player = mc.player;
 
 		if (config.getLocationConfig().isShowMode()) {
@@ -310,10 +309,10 @@ public class XrayMain {
 
 	@SubscribeEvent
 	public void onRenderWorld(RenderWorldLastEvent ev) {
-		Minecraft minecraft = Minecraft.getInstance();
+		MinecraftClient minecraft = MinecraftClient.getInstance();
 		ClientLevel level = minecraft.level;
 		LocalPlayer player = minecraft.player;
-		PoseStack stack = ev.getMatrixStack();
+		MatrixStack stack = ev.getMatrixStack();
 		float delta = ev.getPartialTicks();
 		Camera mainCamera = minecraft.gameRenderer.getMainCamera();
 		Vec3 camera = mainCamera.getPosition();
@@ -321,7 +320,7 @@ public class XrayMain {
 		if (!config.getEspConfigs().stream().filter(ESPConfig::isEnabled).findAny().isPresent()) {
 			return;
 		}
-		BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
+		BufferSource source = MinecraftClient.getInstance().renderBuffers().bufferSource();
 
 		VertexConsumer buffer = source.getBuffer(RenderType.LINES);
 

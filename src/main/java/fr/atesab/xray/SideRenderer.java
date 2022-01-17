@@ -2,13 +2,14 @@ package fr.atesab.xray;
 
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
+import net.minecraft.block.BlockState;
 
 @FunctionalInterface
 public interface SideRenderer {
-	public void shouldSideBeRendered(BlockState adjacentState, BlockGetter blockState, BlockPos blockAccess,
+	public void shouldSideBeRendered(
+			BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
 			Direction pos, CallbackInfoReturnable<Boolean> ci);
 }

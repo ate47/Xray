@@ -2,11 +2,11 @@ package fr.atesab.xray.screen.page;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextComponent;
 
 public class RemovePagedButton extends Button {
-    private static final Component REMOVE_COMPONENT = new TextComponent("-").withStyle(ChatFormatting.RED);
+    private static final Text REMOVE_COMPONENT = new TextComponent("-").withStyle(ChatFormatting.RED);
     private static final Button.OnPress EMPTY_PRESS = btn -> {
     };
 

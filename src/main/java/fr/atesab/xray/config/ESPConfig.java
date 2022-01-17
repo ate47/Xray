@@ -8,13 +8,13 @@ import com.google.gson.annotations.Expose;
 
 import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EnumElement;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.registry.Registry;
 
 public class ESPConfig extends AbstractModeConfig implements Cloneable {
     public enum Template implements EnumElement {
@@ -27,14 +27,14 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
             new ESPConfig(0, 0, "Wither", EntityType.WITHER, EntityType.WITHER_SKELETON)
         ),
         AGGRESIVE("x13.mod.esp.template.aggresive", new ItemStack(Items.CREEPER_HEAD), () -> 
-             new ESPConfig(EntityTypeIcon.getEntityOfType(MobCategory.MONSTER))
+             new ESPConfig(EntityTypeIcon.getEntityOfType(SpawnGroup.MONSTER))
         ),
         PASSIVE("x13.mod.esp.template.passive", new ItemStack(Items.POPPY), () -> 
-             new ESPConfig(EntityTypeIcon.getEntityOfType(MobCategory.CREATURE))
+             new ESPConfig(EntityTypeIcon.getEntityOfType(SpawnGroup.CREATURE))
         );
         // @formatter:on
 
-        private Component title;
+        private Text title;
         private ItemStack icon;
         private Supplier<ESPConfig> cfg;
 
@@ -43,13 +43,13 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
         }
 
         Template(String translation, ItemStack icon, Supplier<ESPConfig> cfg) {
-            this.title = new TranslatableComponent(translation);
+            this.title = new TranslatableText(translation);
             this.icon = icon;
             this.cfg = cfg;
         }
 
         @Override
-        public Component getTitle() {
+        public Text getTitle() {
             return title;
         }
 
@@ -130,7 +130,6 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
         return new ESPConfig(this);
     }
 
-    @SuppressWarnings("deprecation")
     public boolean shouldTag(EntityType<?> type) {
         if (!isEnabled())
             return false;

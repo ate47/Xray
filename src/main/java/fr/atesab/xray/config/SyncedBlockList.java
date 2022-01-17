@@ -2,10 +2,9 @@ package fr.atesab.xray.config;
 
 import java.util.List;
 
-import net.minecraft.core.Registry;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.util.registry.Registry;
 
-@SuppressWarnings("deprecation")
 public class SyncedBlockList extends SyncedRegistryList<Block> {
 
     private SyncedBlockList(SyncedRegistryList<Block> other) {

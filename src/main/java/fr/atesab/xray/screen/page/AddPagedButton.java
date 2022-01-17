@@ -4,11 +4,11 @@ import java.util.function.Supplier;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextComponent;
 
 public class AddPagedButton<E> extends Button {
-    private static final Component ADD_COMPONENT = new TextComponent("+").withStyle(ChatFormatting.GREEN);
+    private static final Text ADD_COMPONENT = new TextComponent("+").withStyle(ChatFormatting.GREEN);
     private static final Button.OnPress EMPTY_PRESS = btn -> {
     };
 

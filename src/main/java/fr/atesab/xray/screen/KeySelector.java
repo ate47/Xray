@@ -3,15 +3,15 @@ package fr.atesab.xray.screen;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 import fr.atesab.xray.utils.KeyData;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 public class KeySelector extends XrayScreen {
-    private static final TranslatableComponent NONE_KEY = new TranslatableComponent("x13.mod.selector.key.none");
+    private static final TranslatableText NONE_KEY = new TranslatableText("x13.mod.selector.key.none");
 
     private Consumer<Optional<KeyData>> keyConsumer;
     private Optional<KeyData> value;
@@ -30,7 +30,7 @@ public class KeySelector extends XrayScreen {
     }
 
     public KeySelector(Screen parent, Optional<KeyData> currentValue, Consumer<Optional<KeyData>> keyConsumer) {
-        super(new TranslatableComponent("x13.mod.selector.key.title"), parent);
+        super(new TranslatableText("x13.mod.selector.key.title"), parent);
         value = currentValue;
         this.keyConsumer = keyConsumer;
     }
@@ -58,12 +58,12 @@ public class KeySelector extends XrayScreen {
         keyButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 - 24, 200, 20,
                 NONE_KEY, b -> waitKey()));
         doneButton = addRenderableWidget(new Button(width / 2 - 100, height / 2, 200, 20,
-                new TranslatableComponent("gui.done"), b -> {
+                new TranslatableText("gui.done"), b -> {
                     keyConsumer.accept(value);
                     minecraft.setScreen(parent);
                 }));
         cancelButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 24, 200, 20,
-                new TranslatableComponent("gui.cancel"), b -> {
+                new TranslatableText("gui.cancel"), b -> {
                     minecraft.setScreen(parent);
                 }));
         setKey(value);
@@ -91,13 +91,13 @@ public class KeySelector extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
-        drawCenteredString(stack, font, getTitle(), width / 2, height / 2 - 30 - font.lineHeight, 0xffffffff);
+        drawCenteredString(stack, font, getTitle(), width / 2, height / 2 - 30 - font.fontHeight, 0xffffffff);
 
         if (isWaitingKey) {
-            drawCenteredString(stack, font, new TranslatableComponent("x13.mod.selector.key.presskey"), width / 2,
-                    keyButton.y + keyButton.getHeight() / 2 - font.lineHeight, 0xffffff00);
+            drawCenteredString(stack, font, new TranslatableText("x13.mod.selector.key.presskey"), width / 2,
+                    keyButton.y + keyButton.getHeight() / 2 - font.fontHeight, 0xffffff00);
         }
 
         super.render(stack, mouseX, mouseY, delta);

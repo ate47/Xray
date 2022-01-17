@@ -1,8 +1,7 @@
 package fr.atesab.xray.utils;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class XrayUtils {
     @FunctionalInterface
@@ -32,8 +31,8 @@ public class XrayUtils {
         }
     }
 
-    public static Component getToggleable(boolean value, String title) {
-        return new TranslatableComponent(title).append(" (")
-                .append(new TranslatableComponent(value ? "x13.mod.on" : "x13.mod.off")).append(")");
+    public static Text getToggleable(boolean value, String title) {
+        return new TranslatableText(title).append(" (")
+                .append(new TranslatableText(value ? "x13.mod.on" : "x13.mod.off")).append(")");
     }
 }

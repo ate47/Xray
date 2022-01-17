@@ -1,12 +1,12 @@
 package fr.atesab.xray.view;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
+import net.minecraft.block.BlockState;
 
 @FunctionalInterface
 public interface Viewer {
-    public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, BlockGetter blockState,
+    public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, BlockView blockState,
             BlockPos blockAccess, Direction pos);
 }

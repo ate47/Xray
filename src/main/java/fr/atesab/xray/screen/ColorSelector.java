@@ -6,13 +6,13 @@ import java.util.function.IntConsumer;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.HSLResult;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,12 +21,12 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TextComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class ColorSelector extends XrayScreen {
@@ -94,7 +94,7 @@ public class ColorSelector extends XrayScreen {
     }
 
     public static void registerPickerImage() {
-        TextureManager tm = Minecraft.getInstance().getTextureManager();
+        TextureManager tm = MinecraftClient.getInstance().getTextureManager();
         setPickerState(0, 0, 100);
         tm.register(PICKER_S_RESOURCE, PICKER_IMAGE_S);
         tm.register(PICKER_HL_RESOURCE, PICKER_IMAGE_HL);
@@ -128,7 +128,7 @@ public class ColorSelector extends XrayScreen {
 
     public ColorSelector(Screen parent, Consumer<OptionalInt> setter, OptionalInt color, int defaultColor,
             boolean transparentAsDefault) {
-        super(new TranslatableComponent("x13.mod.color.title"), parent);
+        super(new TranslatableText("x13.mod.color.title"), parent);
         int rgba = color.orElse(defaultColor);
         this.color = rgba & 0xFFFFFF; // remove alpha
         this.oldAlphaLayer = rgba & 0xFF000000;
@@ -158,7 +158,7 @@ public class ColorSelector extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         // allow multiple color modifiers
         setPickerState(localHue, localSaturation, localLightness);
 
@@ -277,18 +277,18 @@ public class ColorSelector extends XrayScreen {
     @Override
     public void init() {
         addRenderableWidget(
-                new Button(width / 2 - 200, height / 2 + 80, 130, 20, new TranslatableComponent("gui.done"), b -> {
+                new Button(width / 2 - 200, height / 2 + 80, 130, 20, new TranslatableText("gui.done"), b -> {
                     complete();
                     getMinecraft().setScreen(parent);
                 }));
         advButton = addRenderableWidget(new Button(width / 2 - 66, height / 2 + 80, 132, 20,
-                new TranslatableComponent("x13.mod.color.advanced"), b -> {
+                new TranslatableText("x13.mod.color.advanced"), b -> {
                     advanced ^= true;
-                    advButton.setMessage(new TranslatableComponent(
+                    advButton.setMessage(new TranslatableText(
                             advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
                 }));
         addRenderableWidget(
-                new Button(width / 2 + 70, height / 2 + 80, 130, 20, new TranslatableComponent("gui.cancel"), b -> {
+                new Button(width / 2 + 70, height / 2 + 80, 130, 20, new TranslatableText("gui.cancel"), b -> {
                     getMinecraft().setScreen(parent);
                 }));
 

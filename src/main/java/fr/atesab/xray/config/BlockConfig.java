@@ -11,18 +11,18 @@ import fr.atesab.xray.SideRenderer;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.view.ViewMode;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 
 public class BlockConfig extends AbstractModeConfig implements SideRenderer, Cloneable {
     public enum Template implements EnumElement {
@@ -122,18 +122,18 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
             ));
         // @formatter:on
 
-        private Component title;
+        private Text title;
         private ItemStack icon;
         private BlockConfig cfg;
 
         Template(String translation, ItemStack icon, BlockConfig cfg) {
-            this.title = new TranslatableComponent(translation);
+            this.title = new TranslatableText(translation);
             this.icon = icon;
             this.cfg = cfg;
         }
 
         @Override
-        public Component getTitle() {
+        public Text getTitle() {
             return title;
         }
 
@@ -201,7 +201,7 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
 
     @Override
     @SuppressWarnings("deprecation")
-    public void shouldSideBeRendered(BlockState adjacentState, BlockGetter blockState, BlockPos blockAccess,
+    public void shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
             Direction pos, CallbackInfoReturnable<Boolean> ci) {
         if (!isEnabled())
             return;
@@ -233,7 +233,7 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
         mod.internalFullbright();
 
         if (reloadRenderers)
-            Minecraft.getInstance().levelRenderer.allChanged();
+            MinecraftClient.getInstance().worldRenderer.reload();
     }
 
     public ViewMode getViewMode() {

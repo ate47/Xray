@@ -8,15 +8,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 import fr.atesab.xray.screen.XrayScreen;
 import fr.atesab.xray.utils.TagOnWriteList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextComponent;
+import net.minecraft.text.TranslatableText;
 
 public abstract class PagedScreen<E> extends XrayScreen {
     @FunctionalInterface
@@ -40,7 +40,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
     private Button nextButton;
     private Button lastButton;
 
-    protected PagedScreen(Component title, Screen parent, int elementHeight, Stream<E> stream) {
+    protected PagedScreen(Text title, Screen parent, int elementHeight, Stream<E> stream) {
         super(title, parent);
         this.elementHeight = elementHeight;
 
@@ -152,7 +152,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
         addRenderableWidget(lastButton);
         if (doneButton)
             addRenderableWidget(
-                    new Button(width / 2 - 176, height - 24, 172, 20, new TranslatableComponent("gui.done"), b -> {
+                    new Button(width / 2 - 176, height - 24, 172, 20, new TranslatableText("gui.done"), b -> {
                         save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
                                 .collect(Collectors.toCollection(() -> new ArrayList<>())));
                         minecraft.setScreen(parent);
@@ -160,7 +160,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
         addRenderableWidget(
                 new Button(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20,
-                        new TranslatableComponent("gui.cancel"),
+                        new TranslatableText("gui.cancel"),
                         b -> {
                             cancel();
                             minecraft.setScreen(parent);
@@ -237,7 +237,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
         applyToAllElement((element, deltaY) -> {
             stack.translate(0, deltaY, 0);
@@ -250,7 +250,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
         String title = getTitle().getString();
         if (maxPage != 1)
             title += " (" + (page + 1) + "/" + maxPage + ")";
-        drawCenteredString(stack, font, title, width / 2, 11 - font.lineHeight / 2, 0xffffffff);
+        drawCenteredString(stack, font, title, width / 2, 11 - font.fontHeight / 2, 0xffffffff);
         super.render(stack, mouseX, mouseY, delta);
     }
 

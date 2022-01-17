@@ -1,10 +1,10 @@
 package fr.atesab.xray.color;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 
 public interface EnumElement {
     ItemStack getIcon();
 
-    Component getTitle();
+    Text getTitle();
 }

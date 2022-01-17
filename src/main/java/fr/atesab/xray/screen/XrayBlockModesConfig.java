@@ -3,7 +3,7 @@ package fr.atesab.xray.screen;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.screen.page.AddPagedButton;
@@ -17,7 +17,7 @@ import fr.atesab.xray.view.ViewMode;
 import fr.atesab.xray.widget.BlockConfigWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
     private class PagedBlockMode extends PagedElement<BlockConfig> {
@@ -48,7 +48,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             x += 60;
             addSubWidget(new Button(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
                 minecraft.setScreen(new EnumSelector<ViewMode>(
-                        new TranslatableComponent("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
+                        new TranslatableText("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
 
                     @Override
                     protected void select(ViewMode element) {
@@ -59,9 +59,9 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
                 });
             }));
             x += 68;
-            addSubWidget(new Button(x, 0, 20, 20, new TranslatableComponent("x13.mod.template.little"), btn -> {
+            addSubWidget(new Button(x, 0, 20, 20, new TranslatableText("x13.mod.template.little"), btn -> {
                 minecraft.setScreen(new EnumSelector<BlockConfig.Template>(
-                        new TranslatableComponent("x13.mod.template"), XrayBlockModesConfig.this,
+                        new TranslatableText("x13.mod.template"), XrayBlockModesConfig.this,
                         BlockConfig.Template.values()) {
 
                     @Override
@@ -93,12 +93,12 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
         }
 
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
             textHover = XrayUtils.isHover(mouseX, mouseY, width / 2 - 200, 0, width / 2 - 125 - 4, 20);
             fill(stack, width / 2 - 200, 0, width / 2 - 125 - 4, 20, textHover ? 0x33ffaa00 : 0x33ffffff);
-            int w = font.width(cfg.getModeName());
+            int w = font.getWidth(cfg.getModeName());
             font.draw(stack, cfg.getModeName(), width / 2 - (200 - 125 - 4) / 2 - 125 - 4 - w / 2,
-                    10 - font.lineHeight / 2,
+                    10 - font.fontHeight / 2,
                     cfg.getColor());
             super.render(stack, mouseX, mouseY, delta);
         }
@@ -120,7 +120,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
     }
 
     public XrayBlockModesConfig(Screen parent, Stream<BlockConfig> stream) {
-        super(new TranslatableComponent("x13.mod.mode"), parent, 24, stream);
+        super(new TranslatableText("x13.mod.mode"), parent, 24, stream);
     }
 
     @Override

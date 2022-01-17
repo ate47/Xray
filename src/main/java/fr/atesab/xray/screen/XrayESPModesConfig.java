@@ -3,7 +3,7 @@ package fr.atesab.xray.screen;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.screen.page.AddPagedButton;
@@ -16,7 +16,7 @@ import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.EntityConfigWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 
 public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
     private class PagedESPMode extends PagedElement<ESPConfig> {
@@ -51,9 +51,9 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
                         btn.setMessage(XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"));
                     }));
             x += 78;
-            addSubWidget(new Button(x, 0, 20, 20, new TranslatableComponent("x13.mod.template.little"), btn -> {
+            addSubWidget(new Button(x, 0, 20, 20, new TranslatableText("x13.mod.template.little"), btn -> {
                 minecraft.setScreen(new EnumSelector<ESPConfig.Template>(
-                        new TranslatableComponent("x13.mod.template"), XrayESPModesConfig.this,
+                        new TranslatableText("x13.mod.template"), XrayESPModesConfig.this,
                         ESPConfig.Template.values()) {
 
                     @Override
@@ -85,12 +85,12 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
         }
 
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
             textHover = XrayUtils.isHover(mouseX, mouseY, width / 2 - 200, 0, width / 2 - 125 - 4, 20);
             fill(stack, width / 2 - 200, 0, width / 2 - 125 - 4, 20, textHover ? 0x33ffaa00 : 0x33ffffff);
-            int w = font.width(cfg.getModeName());
+            int w = font.getWidth(cfg.getModeName());
             font.draw(stack, cfg.getModeName(), width / 2 - (200 - 125 - 4) / 2 - 125 - 4 - w / 2,
-                    10 - font.lineHeight / 2,
+                    10 - font.fontHeight / 2,
                     cfg.getColor());
             super.render(stack, mouseX, mouseY, delta);
         }
@@ -112,7 +112,7 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
     }
 
     public XrayESPModesConfig(Screen parent, Stream<ESPConfig> stream) {
-        super(new TranslatableComponent("x13.mod.esp"), parent, 24, stream);
+        super(new TranslatableText("x13.mod.esp"), parent, 24, stream);
     }
 
     @Override

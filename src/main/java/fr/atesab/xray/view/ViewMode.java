@@ -1,10 +1,10 @@
 package fr.atesab.xray.view;
 
 import fr.atesab.xray.color.EnumElement;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public enum ViewMode implements EnumElement {
     /**
@@ -15,20 +15,20 @@ public enum ViewMode implements EnumElement {
      * Inclusive mode, like in Cave Mode
      */
     INCLUSIVE("x13.mod.mode.view.inclusive", new ItemStack(Blocks.STONE), (il, v1, reader, pos, face) -> !il
-            && reader.getBlockState(pos.offset(face.getStepX(), face.getStepY(), face.getStepZ())).isAir());
+            && reader.getBlockState(pos.add(face.getOffsetX(), face.getOffsetY(), face.getOffsetZ())).isAir());
 
     private Viewer viewer;
-    private Component title;
+    private Text title;
     private ItemStack icon;
 
     private ViewMode(String translation, ItemStack icon, Viewer viewer) {
         this.viewer = viewer;
         this.icon = icon;
-        this.title = new TranslatableComponent(translation);
+        this.title = new TranslatableText(translation);
     }
 
     @Override
-    public Component getTitle() {
+    public Text getTitle() {
         return title;
     }
 
