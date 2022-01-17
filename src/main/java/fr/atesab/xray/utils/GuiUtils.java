@@ -7,8 +7,6 @@ import java.util.Random;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import org.jline.reader.Widget;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -239,7 +237,7 @@ public class GuiUtils {
     }
 
     /**
-     * Check if a {@link Widget} is hover by a location (mouse)
+     * Check if a {@link ClickableWidget} is hover by a location (mouse)
      * 
      * @param widget the widget
      * @param mouseX the mouse x location
@@ -262,7 +260,7 @@ public class GuiUtils {
      * @param mouseX the mouse x location
      * @param mouseY the mouse y location
      * @return true if the field is hover
-     * @see #isHover(Widget, int, int)
+     * @see #isHover(ClickableWidget, int, int)
      * @since 2.0
      */
     public static boolean isHover(int x, int y, int sizeX, int sizeY, int mouseX, int mouseY) {
@@ -406,7 +404,7 @@ public class GuiUtils {
     }
 
     /**
-     * Draw a String to the right of a {@link Widget}
+     * Draw a String to the right of a {@link ClickableWidget}
      * 
      * @param stack        the stack
      * @param textRenderer the textRenderer
@@ -425,7 +423,7 @@ public class GuiUtils {
     }
 
     /**
-     * Draw a String to the right of a {@link Widget} with offsets
+     * Draw a String to the right of a {@link ClickableWidget} with offsets
      * 
      * @param stack        the stack
      * @param textRenderer the textRenderer
@@ -436,7 +434,7 @@ public class GuiUtils {
      * @param offsetY      the y offset
      * 
      * @since 2.0
-     * @see #drawRightString(TextRenderer, String, Widget, int)
+     * @see #drawRightString(TextRenderer, String, ClickableWidget, int)
      */
     public static void drawRightString(MatrixStack stack,
             TextRenderer textRenderer, String text, ClickableWidget field, int color, int offsetX,
