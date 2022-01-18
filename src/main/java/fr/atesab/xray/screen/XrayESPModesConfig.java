@@ -3,8 +3,6 @@ package fr.atesab.xray.screen;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import net.minecraft.client.util.math.MatrixStack;
-
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.screen.page.AddPagedButton;
 import fr.atesab.xray.screen.page.AddPagedElement;
@@ -14,8 +12,9 @@ import fr.atesab.xray.screen.page.RemovePagedButton;
 import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.EntityConfigWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 
 public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
@@ -38,21 +37,22 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
             int x = width / 2 - 125;
             entities = addSubWidget(new EntityConfigWidget(x, 0, 115, 20, cfg, XrayESPModesConfig.this));
             x += 119;
-            addSubWidget(new Button(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
-                minecraft.setScreen(new KeySelector(XrayESPModesConfig.this, cfg.getKey(), oKey -> {
+            addSubWidget(new ButtonWidget(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
+                client.openScreen(new KeySelector(XrayESPModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
                     btn.setMessage(KeyData.getName(cfg.getKey()));
                 }));
             }));
             x += 60;
             addSubWidget(
-                    new Button(x, 0, 74, 20, XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"), btn -> {
-                        cfg.setTracer(!cfg.hasTracer());
-                        btn.setMessage(XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"));
-                    }));
+                    new ButtonWidget(x, 0, 74, 20, XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"),
+                            btn -> {
+                                cfg.setTracer(!cfg.hasTracer());
+                                btn.setMessage(XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"));
+                            }));
             x += 78;
-            addSubWidget(new Button(x, 0, 20, 20, new TranslatableText("x13.mod.template.little"), btn -> {
-                minecraft.setScreen(new EnumSelector<ESPConfig.Template>(
+            addSubWidget(new ButtonWidget(x, 0, 20, 20, new TranslatableText("x13.mod.template.little"), btn -> {
+                client.openScreen(new EnumSelector<ESPConfig.Template>(
                         new TranslatableText("x13.mod.template"), XrayESPModesConfig.this,
                         ESPConfig.Template.values()) {
 
@@ -88,9 +88,9 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
         public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
             textHover = XrayUtils.isHover(mouseX, mouseY, width / 2 - 200, 0, width / 2 - 125 - 4, 20);
             fill(stack, width / 2 - 200, 0, width / 2 - 125 - 4, 20, textHover ? 0x33ffaa00 : 0x33ffffff);
-            int w = font.getWidth(cfg.getModeName());
-            font.draw(stack, cfg.getModeName(), width / 2 - (200 - 125 - 4) / 2 - 125 - 4 - w / 2,
-                    10 - font.fontHeight / 2,
+            int w = textRenderer.getWidth(cfg.getModeName());
+            textRenderer.draw(stack, cfg.getModeName(), width / 2 - (200 - 125 - 4) / 2 - 125 - 4 - w / 2,
+                    10 - textRenderer.fontHeight / 2,
                     cfg.getColor());
             super.render(stack, mouseX, mouseY, delta);
         }
@@ -99,7 +99,7 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (textHover) {
                 playDownSound();
-                minecraft.setScreen(new XrayAbstractModeConfig(XrayESPModesConfig.this, cfg));
+                client.openScreen(new XrayAbstractModeConfig(XrayESPModesConfig.this, cfg));
                 return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);

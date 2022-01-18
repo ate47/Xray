@@ -1,18 +1,18 @@
 package fr.atesab.xray.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.util.math.MatrixStack;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.TextRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 
-public class MenuWidget extends AbstractButton {
+public class MenuWidget extends PressableWidget {
     public interface OnPress {
         void onPress();
     }
@@ -41,7 +41,7 @@ public class MenuWidget extends AbstractButton {
         DrawableHelper.fill(stack, x, y, x + width, y + height, color);
 
         Text message = getMessage();
-        TextRenderer font = client.font;
+        TextRenderer textRenderer = client.textRenderer;
         ItemRenderer renderer = client.getItemRenderer();
         MatrixStack modelStack = RenderSystem.getModelViewStack();
 
@@ -52,24 +52,25 @@ public class MenuWidget extends AbstractButton {
         float scaleX = getWidth() * 3 / 4f / 16f;
         float scaleY = getHeight() * 3 / 4f / 16f;
         modelStack.scale(scaleX, scaleY, 1);
-        renderer.renderGuiItem(itemStack, -8, -8);
+        renderer.renderGuiItemIcon(itemStack, -8, -8);
         modelStack.scale(1 / scaleX, 1 / scaleY, 1);
         modelStack.translate(-stackCenterX, -stackCenterY, 0);
         RenderSystem.applyModelViewMatrix();
 
-        stack.pushPose();
+        stack.push();
         stack.translate(centerX, y + getHeight(), 0);
-        float scale = getHeight() * 1 / 7f / font.fontHeight;
+        float scale = getHeight() * 1 / 7f / textRenderer.fontHeight;
         stack.scale(scale, scale, 1);
-        drawCenteredString(stack, font, message, 0, -font.fontHeight, packedFGColor);
+        int textColor = this.active ? 16777215 : 10526880;
+        drawCenteredText(stack, textRenderer, message, 0, -textRenderer.fontHeight, textColor);
         stack.scale(1 / scale, 1 / scale, 1);
         stack.translate(-centerX, -y - getHeight(), 0);
-        stack.popPose();
+        stack.pop();
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
-        this.defaultButtonNarrationText(narrationElementOutput);
+    public void appendNarrations(NarrationMessageBuilder narrationElementOutput) {
+        this.method_37021(narrationElementOutput);
     }
 
     @Override

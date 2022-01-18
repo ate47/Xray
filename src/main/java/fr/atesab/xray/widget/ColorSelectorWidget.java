@@ -3,22 +3,21 @@ package fr.atesab.xray.widget;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
-import net.minecraft.client.util.math.MatrixStack;
-
 import fr.atesab.xray.screen.ColorSelector;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.TextRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
-public class ColorSelectorWidget extends AbstractButton {
+public class ColorSelectorWidget extends PressableWidget {
 
     private IntConsumer setter;
     private IntSupplier getter;
-    private MinecraftClient minecraft;
+    private MinecraftClient client;
     private Screen parent;
 
     public ColorSelectorWidget(int x, int y, int w, int h, Text text, MinecraftClient mc, Screen parent,
@@ -26,13 +25,13 @@ public class ColorSelectorWidget extends AbstractButton {
         super(x, y, w, h, text);
         this.setter = setter;
         this.getter = getter;
-        this.minecraft = mc;
+        this.client = mc;
         this.parent = parent;
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
-        this.defaultButtonNarrationText(narrationElementOutput);
+    public void appendNarrations(NarrationMessageBuilder builder) {
+        this.method_37021(builder);
     }
 
     @Override
@@ -48,12 +47,14 @@ public class ColorSelectorWidget extends AbstractButton {
         DrawableHelper.fill(stack, x, y, x + width, y + height, color);
 
         Text message = getMessage();
-        TextRenderer font = minecraft.font;
-        drawCenteredString(stack, font, message, x + width / 2, y + height / 2 - font.fontHeight / 2, 0xFFFFFFFF);
+        TextRenderer textRenderer = client.textRenderer;
+        drawCenteredText(stack, textRenderer, message, x + width / 2, y + height / 2 - textRenderer.fontHeight / 2,
+                0xFFFFFFFF);
     }
 
     @Override
     public void onPress() {
-        minecraft.setScreen(new ColorSelector(parent, setter, getter.getAsInt()));
+        client.openScreen(new ColorSelector(parent, setter, getter.getAsInt()));
     }
+
 }

@@ -2,19 +2,18 @@ package fr.atesab.xray.widget;
 
 import java.util.List;
 
-import net.minecraft.client.util.math.MatrixStack;
-
-import fr.atesab.xray.screen.XrayBlockMenu;
 import fr.atesab.xray.config.BlockConfig;
+import fr.atesab.xray.screen.XrayBlockMenu;
+import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.text.TextComponent;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.text.LiteralText;
 
-public class BlockConfigWidget extends Button {
+public class BlockConfigWidget extends ButtonWidget {
     private BlockConfig cfg;
     private int deltaX;
     private int deltaY;
@@ -25,8 +24,8 @@ public class BlockConfigWidget extends Button {
 
     public BlockConfigWidget(int x, int y, int width, int height, BlockConfig cfg, Screen menu, int deltaX,
             int deltaY) {
-        super(x, y, width, height, new TextComponent(""),
-                b -> MinecraftClient.getInstance().setScreen(new XrayBlockMenu(menu, cfg)));
+        super(x, y, width, height, new LiteralText(""),
+                b -> MinecraftClient.getInstance().openScreen(new XrayBlockMenu(menu, cfg)));
         this.cfg = cfg;
         this.deltaX = deltaX;
         this.deltaY = deltaY;
@@ -58,7 +57,7 @@ public class BlockConfigWidget extends Button {
         int left = this.x + this.width / 2 - view.size() * 17 / 2;
         int top = this.y + this.height / 2 - 15 / 2;
         for (Block b : view) {
-            client.getItemRenderer().renderGuiItem(new ItemStack(b), left + deltaX, top + deltaY);
+            client.getItemRenderer().renderGuiItemIcon(new ItemStack(b), left + deltaX, top + deltaY);
             left += 17;
         }
     }

@@ -4,19 +4,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.minecraft.client.util.math.MatrixStack;
-
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.widget.MenuWidget;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.item.Items;
+import net.minecraft.text.TranslatableText;
 
 public class XrayMenu extends XrayScreen {
 
@@ -32,15 +31,15 @@ public class XrayMenu extends XrayScreen {
 
         XrayMain mod = XrayMain.getMod();
 
-        addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
+        addDrawableChild(
+                new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
                         btn -> {
-                            minecraft.setScreen(parent);
+                            client.openScreen(parent);
                         }));
 
-        addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
+        addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableText("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), () -> {
-                    minecraft.setScreen(new XrayBlockModesConfig(this, mod.getConfig().getBlockConfigs().stream()) {
+                    client.openScreen(new XrayBlockModesConfig(this, mod.getConfig().getBlockConfigs().stream()) {
                         @Override
                         protected void save(List<BlockConfig> list) {
                             mod.getConfig().setBlockConfigs(list);
@@ -48,9 +47,9 @@ public class XrayMenu extends XrayScreen {
                         }
                     });
                 }));
-        addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
+        addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableText("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), () -> {
-                    minecraft.setScreen(new XrayESPModesConfig(this, mod.getConfig().getEspConfigs().stream()) {
+                    client.openScreen(new XrayESPModesConfig(this, mod.getConfig().getEspConfigs().stream()) {
                         @Override
                         protected void save(List<ESPConfig> list) {
                             mod.getConfig().setEspConfigs(list);
@@ -58,17 +57,17 @@ public class XrayMenu extends XrayScreen {
                         }
                     });
                 }));
-        addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
+        addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableText("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), () -> {
                     mod.fullBright();
                 }));
-        addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
+        addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableText("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
-                    minecraft.setScreen(new XrayLocationConfig(this));
+                    client.openScreen(new XrayLocationConfig(this));
                 }));
-        addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
+        addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableText("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
-                    minecraft.setScreen(new XrayConfigMenu(this));
+                    client.openScreen(new XrayConfigMenu(this));
                 }));
 
         super.init();
@@ -77,12 +76,13 @@ public class XrayMenu extends XrayScreen {
     @Override
     public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
-        stack.pushPose();
+        stack.push();
         stack.translate(width / 2, height / 2 - 70, 0);
         stack.scale(4, 4, 1);
-        drawCenteredString(stack, minecraft.font, XrayMain.MOD_NAME, 0, -minecraft.font.fontHeight, 0xffffff33);
-        stack.popPose();
-        drawCenteredString(stack, minecraft.font, new TranslatableText("x13.mod.by",
+        drawCenteredText(stack, client.textRenderer, XrayMain.MOD_NAME, 0, -client.textRenderer.fontHeight,
+                0xffffff33);
+        stack.pop();
+        drawCenteredText(stack, client.textRenderer, new TranslatableText("x13.mod.by",
                 Arrays.stream(XrayMain.MOD_AUTHORS).collect(Collectors.joining(
                         ", "))),
                 width / 2, height / 2 - 60, 0xffaaaaaa);

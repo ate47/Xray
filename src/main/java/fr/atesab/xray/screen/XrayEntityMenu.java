@@ -4,42 +4,41 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.client.util.math.MatrixStack;
-
 import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EntityTypeInfo;
 import fr.atesab.xray.config.ESPConfig;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public class XrayEntityMenu extends Screen {
-    private static final Text ADD = new TextComponent("+").withStyle(ChatFormatting.GREEN);
+    private static final Text ADD = new LiteralText("+").formatted(Formatting.GREEN);
     private static final Text REPLACE = new TranslatableText("x13.mod.menu.replace")
-            .withStyle(ChatFormatting.YELLOW);
+            .formatted(Formatting.YELLOW);
     private static final Text DELETE = new TranslatableText("x13.mod.menu.delete")
-            .withStyle(ChatFormatting.RED);
+            .formatted(Formatting.RED);
     private Screen parent;
     private ESPConfig mode;
     private List<EntityType<?>> config;
     private List<EntityType<?>> visible = new ArrayList<>();
-    private EditBox searchBar;
-    private Button nextPage;
-    private Button lastPage;
+    private TextFieldWidget searchBar;
+    private ButtonWidget nextPage;
+    private ButtonWidget lastPage;
     private int elementByPage = 1;
     private int elementsX = 1;
     private int elementsY = 1;
     private int page = 0;
 
     public XrayEntityMenu(Screen parent, ESPConfig mode) {
-        super(new TextComponent(mode.getName()));
+        super(new LiteralText(mode.getName()));
         this.mode = mode;
         this.parent = parent;
         this.config = new ArrayList<>();
@@ -58,20 +57,21 @@ public class XrayEntityMenu extends Screen {
         int pageTop = height / 2 - sizeY / 2 - 24;
         int pageBottom = height / 2 + sizeY / 2 + 2;
 
-        searchBar = new EditBox(font, width / 2 - sizeX / 2, pageTop + 2, sizeX, 16, new TextComponent("")) {
+        searchBar = new TextFieldWidget(textRenderer, width / 2 - sizeX / 2, pageTop + 2, sizeX, 16,
+                new LiteralText("")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (button == 1 && mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y
                         && mouseY <= this.y + this.height) {
-                    setValue("");
+                    setText("");
                     return true;
                 }
                 return super.mouseClicked(mouseX, mouseY, button);
             }
 
             @Override
-            public void setValue(String text) {
-                super.setValue(text);
+            public void setText(String text) {
+                super.setText(text);
                 updateSearch();
             }
 
@@ -94,31 +94,31 @@ public class XrayEntityMenu extends Screen {
             }
         };
 
-        lastPage = new Button(width / 2 - 126, pageBottom, 20, 20, new TextComponent("<-"), b -> {
+        lastPage = new ButtonWidget(width / 2 - 126, pageBottom, 20, 20, new LiteralText("<-"), b -> {
             page--;
             updateArrows();
         });
 
-        Button doneBtn = new Button(width / 2 - 102, pageBottom, 100, 20,
+        ButtonWidget doneBtn = new ButtonWidget(width / 2 - 102, pageBottom, 100, 20,
                 new TranslatableText("gui.done"), b -> {
                     mode.getEntities().setObjects(config);
-                    getMinecraft().setScreen(parent);
+                    client.openScreen(parent);
                 });
 
-        Button cancelBtn = new Button(width / 2 + 2, pageBottom, 100, 20,
+        ButtonWidget cancelBtn = new ButtonWidget(width / 2 + 2, pageBottom, 100, 20,
                 new TranslatableText("gui.cancel"), b -> {
-                    getMinecraft().setScreen(parent);
+                    client.openScreen(parent);
                 });
-        nextPage = new Button(width / 2 + 106, pageBottom, 20, 20, new TextComponent("->"), b -> {
+        nextPage = new ButtonWidget(width / 2 + 106, pageBottom, 20, 20, new LiteralText("->"), b -> {
             page++;
             updateArrows();
         });
 
-        addWidget(searchBar);
-        addRenderableWidget(lastPage);
-        addRenderableWidget(doneBtn);
-        addRenderableWidget(cancelBtn);
-        addRenderableWidget(nextPage);
+        addSelectableChild(searchBar);
+        addDrawableChild(lastPage);
+        addDrawableChild(doneBtn);
+        addDrawableChild(cancelBtn);
+        addDrawableChild(nextPage);
 
         updateArrows();
         updateSearch();
@@ -132,9 +132,9 @@ public class XrayEntityMenu extends Screen {
     }
 
     public void updateSearch() {
-        String query = searchBar.getValue().toString().toLowerCase();
+        String query = searchBar.getText().toString().toLowerCase();
         visible.clear();
-        config.stream().filter(block -> I18n.get(block.getDescriptionId()).toLowerCase().contains(query))
+        config.stream().filter(block -> I18n.translate(block.getTranslationKey()).toLowerCase().contains(query))
                 .forEach(visible::add);
         page = Math.min(visible.size(), page);
         updateArrows();
@@ -173,7 +173,7 @@ public class XrayEntityMenu extends Screen {
             }
 
             fill(matrixStack, x, y, x + 18, y + 18, color);
-            getMinecraft().getItemRenderer().renderGuiItem(stack, x + 1, y + 1);
+            client.getItemRenderer().renderGuiItemIcon(stack, x + 1, y + 1);
         }
         // add [+] button
         int x = left + (i % elementsX) * 18;
@@ -188,15 +188,15 @@ public class XrayEntityMenu extends Screen {
         }
 
         fill(matrixStack, x, y, x + 18, y + 18, color);
-        font.draw(matrixStack, ADD, x + 18 / 2 - font.getWidth(ADD) / 2, y + 18 / 2 - font.fontHeight / 2, color);
+        textRenderer.draw(matrixStack, ADD, x + 18 / 2 - textRenderer.getWidth(ADD) / 2,
+                y + 18 / 2 - textRenderer.fontHeight / 2, color);
 
         super.render(matrixStack, mouseX, mouseY, partialTick);
 
         if (hovered != null) {
             renderTooltip(matrixStack,
-                    Arrays.asList(hoveredBlock.getDescription().getVisualOrderText(),
-                            REPLACE.getVisualOrderText(), DELETE.getVisualOrderText()),
-                    mouseX, mouseY, font);
+                    Arrays.asList(new TranslatableText(hoveredBlock.getTranslationKey()), REPLACE, DELETE),
+                    mouseX, mouseY);
         }
     }
 
@@ -216,7 +216,7 @@ public class XrayEntityMenu extends Screen {
             int y = top + (i / elementsX) * 18;
             if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
                 if (button == 0) { // left click: replace
-                    getMinecraft().setScreen(new EntitySelector(this) {
+                    client.openScreen(new EntitySelector(this) {
                         @Override
                         protected void select(EntityTypeInfo selection) {
                             int index = config.indexOf(b);
@@ -241,7 +241,7 @@ public class XrayEntityMenu extends Screen {
         int y = top + (i / elementsX) * 18;
         if (button == 0 && mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
             // add
-            getMinecraft().setScreen(new EntitySelector(this) {
+            client.openScreen(new EntitySelector(this) {
                 @Override
                 protected void select(EntityTypeInfo selection) {
                     config.add(selection.getType());

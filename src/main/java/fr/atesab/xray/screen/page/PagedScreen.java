@@ -8,14 +8,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import net.minecraft.client.util.math.MatrixStack;
-
 import fr.atesab.xray.screen.XrayScreen;
 import fr.atesab.xray.utils.TagOnWriteList;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableText;
 
 public abstract class PagedScreen<E> extends XrayScreen {
@@ -37,8 +36,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     private ListIterator<PagedElement<E>> iterator;
     private final TagOnWriteList<PagedElement<E>> elements = new TagOnWriteList<>(new ArrayList<>());
-    private Button nextButton;
-    private Button lastButton;
+    private ButtonWidget nextButton;
+    private ButtonWidget lastButton;
 
     protected PagedScreen(Text title, Screen parent, int elementHeight, Stream<E> stream) {
         super(title, parent);
@@ -47,8 +46,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
         elements.setTagEnabled(false);
         initElements(stream);
         elements.setTagEnabled(true);
-        lastButton = new Button(0, 0, 20, 20, new TextComponent("<-"), b -> lastPage());
-        nextButton = new Button(0, 0, 20, 20, new TextComponent("->"), b -> nextPage());
+        lastButton = new ButtonWidget(0, 0, 20, 20, new LiteralText("<-"), b -> lastPage());
+        nextButton = new ButtonWidget(0, 0, 20, 20, new LiteralText("->"), b -> nextPage());
     }
 
     protected void removeDoneButton() {
@@ -149,24 +148,24 @@ public abstract class PagedScreen<E> extends XrayScreen {
         nextButton.x = width / 2 + buttonSize / 2 + 4;
         lastButton.y = nextButton.y = height - 24;
 
-        addRenderableWidget(lastButton);
+        addDrawableChild(lastButton);
         if (doneButton)
-            addRenderableWidget(
-                    new Button(width / 2 - 176, height - 24, 172, 20, new TranslatableText("gui.done"), b -> {
+            addDrawableChild(
+                    new ButtonWidget(width / 2 - 176, height - 24, 172, 20, new TranslatableText("gui.done"), b -> {
                         save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
                                 .collect(Collectors.toCollection(() -> new ArrayList<>())));
-                        minecraft.setScreen(parent);
+                        client.openScreen(parent);
                     }));
 
-        addRenderableWidget(
-                new Button(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20,
+        addDrawableChild(
+                new ButtonWidget(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20,
                         new TranslatableText("gui.cancel"),
                         b -> {
                             cancel();
-                            minecraft.setScreen(parent);
+                            client.openScreen(parent);
                         }));
 
-        addRenderableWidget(nextButton);
+        addDrawableChild(nextButton);
 
         computePages(false);
         applyToAllElement(elements, (element, deltaY, index) -> {
@@ -250,7 +249,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
         String title = getTitle().getString();
         if (maxPage != 1)
             title += " (" + (page + 1) + "/" + maxPage + ")";
-        drawCenteredString(stack, font, title, width / 2, 11 - font.fontHeight / 2, 0xffffffff);
+        drawCenteredText(stack, textRenderer, title, width / 2, 11 - textRenderer.fontHeight / 2, 0xffffffff);
         super.render(stack, mouseX, mouseY, delta);
     }
 

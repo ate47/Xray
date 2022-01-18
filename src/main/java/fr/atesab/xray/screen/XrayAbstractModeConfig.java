@@ -1,19 +1,18 @@
 package fr.atesab.xray.screen;
 
-import net.minecraft.client.util.math.MatrixStack;
-
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.widget.ColorSelectorWidget;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.text.TextComponent;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
 public class XrayAbstractModeConfig extends XrayScreen {
     private AbstractModeConfig cfg;
-    private EditBox nameBox;
+    private TextFieldWidget nameBox;
     private int color;
 
     protected XrayAbstractModeConfig(Screen parent, AbstractModeConfig cfg) {
@@ -24,33 +23,32 @@ public class XrayAbstractModeConfig extends XrayScreen {
 
     @Override
     public void resize(MinecraftClient p_96575_, int p_96576_, int p_96577_) {
-        String s = nameBox.getValue();
+        String s = nameBox.getText();
         super.resize(p_96575_, p_96576_, p_96577_);
-        nameBox.setValue(s);
+        nameBox.setText(s);
     }
 
     @Override
     protected void init() {
-        addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 24, 200, 20, new TranslatableText("gui.done"), btn -> {
-                    cfg.setName(nameBox.getValue());
+        addDrawableChild(
+                new ButtonWidget(width / 2 - 100, height / 2 + 24, 200, 20, new TranslatableText("gui.done"), btn -> {
+                    cfg.setName(nameBox.getText());
                     cfg.setColor(color);
-                    minecraft.setScreen(parent);
+                    client.openScreen(parent);
                 }));
-        addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 48, 200, 20, new TranslatableText("gui.cancel"), btn -> {
-                    minecraft.setScreen(parent);
+        addDrawableChild(
+                new ButtonWidget(width / 2 - 100, height / 2 + 48, 200, 20, new TranslatableText("gui.cancel"), btn -> {
+                    client.openScreen(parent);
                 }));
 
-        nameBox = new EditBox(font, width / 2 - 98, height / 2 - 22, 196, 16, new TextComponent(""));
+        nameBox = new TextFieldWidget(textRenderer, width / 2 - 98, height / 2 - 22, 196, 16, new LiteralText(""));
         nameBox.setMaxLength(128);
-        nameBox.setValue(cfg.getModeName());
-        nameBox.setFocus(true);
+        nameBox.setText(cfg.getModeName());
 
-        addRenderableWidget(new ColorSelectorWidget(width / 2 - 100, height / 2, 200, 20,
-                new TranslatableText("x13.mod.color.title"), minecraft, this, c -> color = c, () -> color));
+        addDrawableChild(new ColorSelectorWidget(width / 2 - 100, height / 2, 200, 20,
+                new TranslatableText("x13.mod.color.title"), client, this, c -> color = c, () -> color));
 
-        addWidget(nameBox);
+        addSelectableChild(nameBox);
         setInitialFocus(nameBox);
 
         super.init();

@@ -49,7 +49,7 @@ public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Clo
         setTagEnabled(false);
         this.objects = new ArrayList<>(objects);
         clear();
-        objects.stream().filter(Objects::nonNull).map(registry::getKey).map(Object::toString).forEach(this::add);
+        objects.stream().filter(Objects::nonNull).map(registry::getId).map(Object::toString).forEach(this::add);
         setTagEnabled(true);
         synced = true;
     }

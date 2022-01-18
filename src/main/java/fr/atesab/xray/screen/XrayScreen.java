@@ -1,9 +1,9 @@
 package fr.atesab.xray.screen;
 
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.sounds.SoundEvents;
 
 public class XrayScreen extends Screen {
     public Screen parent;
@@ -14,7 +14,7 @@ public class XrayScreen extends Screen {
     }
 
     public void playDownSound() {
-        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
     @Override

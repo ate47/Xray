@@ -9,10 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,49 +24,49 @@ import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.config.XrayConfig;
-import fr.atesab.xray.screen.ColorSelector;
 import fr.atesab.xray.screen.XrayMenu;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.RGBResult;
 import fr.atesab.xray.utils.KeyInput;
 import fr.atesab.xray.utils.RenderUtils;
 import fr.atesab.xray.utils.XrayUtils;
-import net.minecraft.client.Camera;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.TextRenderer;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.core.Registry;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndTick;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents.AfterEntities;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlclient.ConfigGuiHandler.ConfigGuiFactory;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.EntityType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 
-@Mod(XrayMain.MOD_ID)
-public class XrayMain {
+public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTick, AfterEntities {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
 	public static final String[] MOD_AUTHORS = { "ATE47", "ThaEin" };
@@ -86,7 +83,7 @@ public class XrayMain {
 
 	private int internalFullbrightState = 0;
 
-	private KeyMapping configKey, fullbrightKey;
+	private KeyBinding configKey, fullbrightKey;
 
 	private XrayConfig config;
 
@@ -98,7 +95,7 @@ public class XrayMain {
 		}
 
 		public String getModeName() {
-			return I18n.get("x13.mod.fullbright");
+			return I18n.translate("x13.mod.fullbright");
 		}
 	};
 
@@ -117,7 +114,6 @@ public class XrayMain {
 		return internalFullbright();
 	}
 
-	@SuppressWarnings("deprecation")
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
 		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId) // BLOCK
 				.filter(Objects::nonNull).map(Objects::toString).collect(collector);
@@ -186,8 +182,8 @@ public class XrayMain {
 		fullBright(isFullBrightEnable());
 		try {
 			MinecraftClient mc = MinecraftClient.getInstance();
-			if (mc.levelRenderer != null)
-				mc.levelRenderer.allChanged();
+			if (mc.worldRenderer != null)
+				mc.worldRenderer.reload();
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
@@ -224,8 +220,6 @@ public class XrayMain {
 
 	public XrayMain() {
 		instance = this;
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	/**
@@ -240,7 +234,7 @@ public class XrayMain {
 	 */
 	public static File getSaveFile() {
 		MinecraftClient mc = MinecraftClient.getInstance();
-		return new File(mc.gameDirectory, "config/xray2.json");
+		return new File(mc.runDirectory, "config/xray2.json");
 	}
 
 	/**
@@ -250,41 +244,35 @@ public class XrayMain {
 		config = XrayConfig.sync(getSaveFile());
 	}
 
-	@SubscribeEvent
-	public void onEndTickEvent(TickEvent.ClientTickEvent ev) {
-		if (ev.phase != Phase.END)
-			return;
+	@Override
+	public void onEndTick(MinecraftClient client) {
 		if (internalFullbrightState != 0 && internalFullbrightState < maxFullbrightStates) {
 			internalFullbrightState++;
 		}
 	}
 
-	@SubscribeEvent
-	public void onKeyEvent(KeyInputEvent ev) {
+	public void onKeyEvent(KeyInput input) {
 		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.screen != null)
+		if (client.currentScreen != null)
 			return;
 
-		KeyInput input = new KeyInput(ev.getKey(), ev.getScanCode(), ev.getAction(), ev.getModifiers());
-
-		if (InputConstants.isKeyDown(MinecraftClient.getInstance().getWindow().getWindow(), input.key())) {
+		if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), input.key())) {
 			config.getModes().forEach(mode -> mode.onKeyInput(input));
 		}
 
-		if (fullbrightKey.consumeClick())
+		if (fullbrightKey.wasPressed())
 			fullBright();
-		if (configKey.consumeClick())
-			client.setScreen(new XrayMenu(null));
+		if (configKey.wasPressed())
+			client.openScreen(new XrayMenu(null));
 
 	}
 
-	@SubscribeEvent
-	public void onHudRender(RenderGameOverlayEvent ev) {
+	@Override
+	public void onHudRender(MatrixStack stack, float tickDelta) {
 		int w = 0;
-		MatrixStack stack = ev.getMatrixStack();
 		MinecraftClient mc = MinecraftClient.getInstance();
-		TextRenderer render = mc.font;
-		LocalPlayer player = mc.player;
+		TextRenderer render = mc.textRenderer;
+		ClientPlayerEntity player = mc.player;
 
 		if (config.getLocationConfig().isShowMode()) {
 			for (AbstractModeConfig cfg : config.getModes()) {
@@ -292,12 +280,12 @@ public class XrayMain {
 					continue;
 				String s = "[" + cfg.getModeName() + "] ";
 				render.draw(stack, s, 5 + w, 5, cfg.getColor());
-				w += render.width(s);
+				w += render.getWidth(s);
 			}
 			if (w == 0 && fullBrightEnable) {
 				String s = "[" + fullbrightMode.getModeName() + "] ";
 				render.draw(stack, s, 5 + w, 5, fullbrightMode.getColor());
-				w += render.width(s);
+				w += render.getWidth(s);
 			}
 		}
 
@@ -307,66 +295,72 @@ public class XrayMain {
 		}
 	}
 
-	@SubscribeEvent
-	public void onRenderWorld(RenderWorldLastEvent ev) {
+	@Override
+	public void afterEntities(WorldRenderContext context) {
 		MinecraftClient minecraft = MinecraftClient.getInstance();
-		ClientLevel level = minecraft.level;
-		LocalPlayer player = minecraft.player;
-		MatrixStack stack = ev.getMatrixStack();
-		float delta = ev.getPartialTicks();
-		Camera mainCamera = minecraft.gameRenderer.getMainCamera();
-		Vec3 camera = mainCamera.getPosition();
+		ClientWorld level = minecraft.world;
+		ClientPlayerEntity player = minecraft.player;
+		MatrixStack stack = context.matrixStack();
+		float delta = context.tickDelta();
+		Camera mainCamera = minecraft.gameRenderer.getCamera();
+		Vec3d camera = mainCamera.getPos();
 
 		if (!config.getEspConfigs().stream().filter(ESPConfig::isEnabled).findAny().isPresent()) {
 			return;
 		}
-		BufferSource source = MinecraftClient.getInstance().renderBuffers().bufferSource();
 
-		VertexConsumer buffer = source.getBuffer(RenderType.LINES);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+		RenderSystem.depthMask(false);
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
+		RenderSystem.disableTexture();
 
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glEnable(GL11.GL_LINE_SMOOTH);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		stack.push();
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder buffer = tessellator.getBuffer();
+		buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 
-		stack.pushPose();
+		RenderSystem.applyModelViewMatrix();
 		stack.translate(-camera.x, -camera.y, -camera.z);
-		Vector3f look = mainCamera.getLookVector();
-		float px = (float) (player.xOld + (player.getX() - player.xOld) * delta) + look.x();
-		float py = (float) (player.yOld + (player.getY() - player.yOld) * delta) + player.getEyeHeight() + look.y();
-		float pz = (float) (player.zOld + (player.getZ() - player.zOld) * delta) + look.z();
+		Vec3f look = mainCamera.getHorizontalPlane();
+		float px = (float) (player.prevX + (player.getX() - player.prevX) * delta) + look.getX();
+		float py = (float) (player.prevY + (player.getY() - player.prevY) * delta) + look.getY()
+				+ player.getStandingEyeHeight();
+		float pz = (float) (player.prevZ + (player.getZ() - player.prevZ) * delta) + look.getZ();
 
 		int maxDistanceSquared = (config.getMaxTracerRange() * config.getMaxTracerRange());
-		level.entitiesForRendering().forEach(e -> {
+		level.getEntities().forEach(e -> {
 
-			if ((config.getMaxTracerRange() != 0 && e.distanceToSqr(player) > maxDistanceSquared) || player == e)
+			if ((config.getMaxTracerRange() != 0 && e.squaredDistanceTo(player) > maxDistanceSquared) || player == e)
 				return;
 
 			EntityType<?> type = e.getType();
 
 			config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
-				double x = e.xOld + (e.getX() - e.xOld) * delta;
-				double y = e.yOld + (e.getY() - e.yOld) * delta;
-				double z = e.zOld + (e.getZ() - e.zOld) * delta;
+				double x = e.prevX + (e.getX() - e.prevX) * delta;
+				double y = e.prevY + (e.getY() - e.prevY) * delta;
+				double z = e.prevZ + (e.getZ() - e.prevZ) * delta;
 				RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
 				float r = c.red() / 255F;
 				float g = c.green() / 255F;
 				float b = c.blue() / 255F;
 				float a = c.alpha() / 255F;
 
-				AABB aabb = type.getAABB(x, y, z);
+				Box aabb = type.createSimpleBoundingBox(x, y, z);
 
-				LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
+				WorldRenderer.drawBox(stack, buffer, aabb, r, g, b, a);
 
 				if (esp.hasTracer()) {
-					Vec3 center = aabb.getCenter();
+					Vec3d center = aabb.getCenter();
 					RenderUtils.renderSingleLine(stack, buffer, px, py, pz, (float) center.x,
 							(float) center.y, (float) center.z, r, g, b, a);
 				}
 			});
 		});
-		source.endBatch(RenderType.LINES);
-		stack.popPose();
+		tessellator.draw();
+		stack.pop();
+		RenderSystem.applyModelViewMatrix();
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_BLEND);
@@ -381,20 +375,21 @@ public class XrayMain {
 		modules();
 	}
 
-	private void setup(final FMLCommonSetupEvent event) {
+	@Override
+	public void onInitializeClient() {
 		log("Initialization");
 		fullbrightColor = ColorSupplier.DEFAULT.getColor();
 		loadConfigs();
 
-		fullbrightKey = new KeyMapping("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
-		ClientRegistry.registerKeyBinding(fullbrightKey);
+		fullbrightKey = new KeyBinding("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
+		KeyBindingHelper.registerKeyBinding(fullbrightKey);
 
-		configKey = new KeyMapping("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
-		ClientRegistry.registerKeyBinding(configKey);
+		configKey = new KeyBinding("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
+		KeyBindingHelper.registerKeyBinding(configKey);
 
-		ModList.get().getModContainerById(MOD_ID).ifPresent(con -> {
-			con.registerExtensionPoint(ConfigGuiFactory.class,
-					() -> new ConfigGuiFactory((mc, parent) -> new XrayMenu(parent)));
-		});
+		
+		HudRenderCallback.EVENT.register(this);
+		ClientTickEvents.END_CLIENT_TICK.register(this);
+		WorldRenderEvents.AFTER_ENTITIES.register(this);
 	}
 }
