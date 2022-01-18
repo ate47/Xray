@@ -51,7 +51,6 @@ public class ColorSelector extends XrayScreen {
     private static final int RANDOM_PICKER_FREQUENCY = 3600;
 
     private static ItemStack updatePicker() {
-        CompoundTag tag = RANDOM_PICKER.getTag();
         if (pickerInit)
             updatePicker();
         NbtCompound tag = RANDOM_PICKER.getTag();
