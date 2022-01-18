@@ -51,8 +51,6 @@ public class ColorSelector extends XrayScreen {
     private static final int RANDOM_PICKER_FREQUENCY = 3600;
 
     private static ItemStack updatePicker() {
-        if (pickerInit)
-            updatePicker();
         NbtCompound tag = RANDOM_PICKER.getTag();
         tag.putInt("CustomPotionColor", GuiUtils.getTimeColor(RANDOM_PICKER_FREQUENCY, 100, 50));
         RANDOM_PICKER.setTag(tag);
