@@ -51,7 +51,6 @@ public class ColorSelector extends XrayScreen {
     private static final int RANDOM_PICKER_FREQUENCY = 3600;
 
     private static ItemStack updatePicker() {
-        pickerInit = true;
         NbtCompound tag = RANDOM_PICKER.getNbt();
         tag.putInt("CustomPotionColor", GuiUtils.getTimeColor(RANDOM_PICKER_FREQUENCY, 100, 50));
         RANDOM_PICKER.setNbt(tag);
@@ -59,14 +58,10 @@ public class ColorSelector extends XrayScreen {
     }
 
     public static Identifier getPickerHlResource() {
-        if (pickerInit)
-            registerPickerImage();
         return PICKER_HL_RESOURCE;
     }
 
     public static Identifier getPickerSResource() {
-        if (pickerInit)
-            registerPickerImage();
         return PICKER_S_RESOURCE;
     }
 
@@ -75,6 +70,8 @@ public class ColorSelector extends XrayScreen {
     private static int pickerLightness;
 
     private static void setPickerState(int hue, int saturation, int lightness) {
+        if (!pickerInit)
+            registerPickerImage();
         // regen PICKER_IMAGE_S
         if (!(hue == pickerHue && lightness == pickerLightness)) {
             pickerHue = hue;
@@ -107,7 +104,8 @@ public class ColorSelector extends XrayScreen {
 
     }
 
-    public static void registerPickerImage() {
+    private static void registerPickerImage() {
+        pickerInit = true;
         TextureManager tm = MinecraftClient.getInstance().getTextureManager();
         setPickerState(0, 0, 100);
         tm.registerTexture(PICKER_S_RESOURCE, PICKER_IMAGE_S);
