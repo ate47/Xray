@@ -396,7 +396,5 @@ public class XrayMain {
 			con.registerExtensionPoint(ConfigGuiFactory.class,
 					() -> new ConfigGuiFactory((mc, parent) -> new XrayMenu(parent)));
 		});
-
-		ColorSelector.registerPickerImage();
 	}
 }
