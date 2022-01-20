@@ -28,7 +28,6 @@ import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.config.XrayConfig;
-import fr.atesab.xray.screen.ColorSelector;
 import fr.atesab.xray.screen.XrayMenu;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.RGBResult;
@@ -397,7 +396,5 @@ public class XrayMain {
 			con.registerExtensionPoint(ConfigGuiFactory.class,
 					() -> new ConfigGuiFactory((mc, parent) -> new XrayMenu(parent)));
 		});
-
-		ColorSelector.registerPickerImage();
 	}
 }
