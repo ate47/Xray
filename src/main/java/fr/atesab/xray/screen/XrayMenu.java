@@ -65,8 +65,17 @@ public class XrayMenu extends XrayScreen {
                     client.setScreen(new XrayLocationConfig(this));
                 }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
+                Text.translatable("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
+            client.setScreen(new XrayLocationConfig(this) {
+                    	@Override
+						protected void save() {
+                            mod.saveConfigs();
+                        }
+                    });
+                }));
+        addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 Text.translatable("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
-                    client.setScreen(new XrayConfigMenu(this));
+            client.setScreen(new XrayConfigMenu(this));
                 }));
 
         super.init();

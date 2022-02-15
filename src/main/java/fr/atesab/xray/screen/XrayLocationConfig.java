@@ -41,7 +41,7 @@ public class XrayLocationConfig extends XrayScreen {
                 }));
 
         format = new TextFieldWidget(textRenderer, width / 2 - 98, height / 2 + 2, 196, 16, Text.literal(""));
-        format.setMaxLength(128);
+        format.setMaxLength(256);
         format.setText(mod.getConfig().getLocationConfig().getFormat());
         format.setChangedListener(mod.getConfig().getLocationConfig()::setFormat);
         addSelectableChild(format);
@@ -71,6 +71,7 @@ public class XrayLocationConfig extends XrayScreen {
         addDrawableChild(
                 new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, Text.translatable("gui.done"),
                         btn -> {
+                        	save();
                             client.setScreen(parent);
                         }));
 
@@ -99,5 +100,9 @@ public class XrayLocationConfig extends XrayScreen {
                 0xffffffff);
         format.render(stack, mouseX, mouseY, delta);
         super.render(stack, mouseX, mouseY, delta);
+    }
+
+    protected void save() {
+    	// unimplemenets. save code is in XrayMenu.
     }
 }
