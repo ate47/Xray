@@ -20,6 +20,12 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
 import fr.atesab.xray.config.AbstractModeConfig;
@@ -84,9 +90,11 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	private boolean fullBrightEnable = false;
 
+	private boolean isShowLocationContext = true;
+
 	private int internalFullbrightState = 0;
 
-	private KeyBinding configKey, fullbrightKey;
+	private KeyBinding configKey, fullbrightKey, locationEnableKey;
 
 	private XrayConfig config;
 
@@ -278,6 +286,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 		if (fullbrightKey.wasPressed())
 			fullBright();
+		if (locationEnableKey.wasPressed())
+			isShowLocationContext = !isShowLocationContext;
 		if (configKey.wasPressed())
 			client.setScreen(new XrayMenu(null));
 
@@ -285,6 +295,9 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	@Override
 	public void onHudRender(MatrixStack stack, float tickDelta) {
+		if (!isShowLocationContext) {
+			return;
+		}
 		int w = 0;
 		MinecraftClient mc = MinecraftClient.getInstance();
 		TextRenderer render = mc.textRenderer;
@@ -307,7 +320,11 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 		if (config.getLocationConfig().isEnabled() && player != null) {
 			String format = getConfig().getLocationConfig().getFormat();
-			render.draw(stack, LocationFormatTool.applyAll(format, mc), 5 + w, 5, 0xffffffff);
+			String[] renderStrings = LocationFormatTool.applyAll(format, mc).split(LocationFormatTool.LINE_SEPARATER);
+			for (int lineIndex = 0;lineIndex < renderStrings.length;lineIndex++) {
+				render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER,""),
+						5, 5 + render.fontHeight * (lineIndex + (w > 0 ? 1 : 0)), 0xffffffff);
+			}
 		}
 	}
 
@@ -399,6 +416,9 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 		fullbrightKey = new KeyBinding("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
 		KeyBindingHelper.registerKeyBinding(fullbrightKey);
+
+		locationEnableKey = new KeyBinding("x13.mod.locationEnable", GLFW.GLFW_KEY_J, "key.categories.xray");
+		KeyBindingHelper.registerKeyBinding(locationEnableKey);
 
 		configKey = new KeyBinding("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
 		KeyBindingHelper.registerKeyBinding(configKey);
