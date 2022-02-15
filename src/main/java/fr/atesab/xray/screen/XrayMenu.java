@@ -64,7 +64,12 @@ public class XrayMenu extends XrayScreen {
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableComponent("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
-                    minecraft.setScreen(new XrayLocationConfig(this));
+                    minecraft.setScreen(new XrayLocationConfig(this) {
+                    	@Override
+						protected void save() {
+                            mod.saveConfigs();
+                        }
+                    });
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 new TranslatableComponent("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
