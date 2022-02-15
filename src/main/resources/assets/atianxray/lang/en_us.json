@@ -63,7 +63,7 @@
   "x13.mod.location.opt.hoursPadding": "Hours(with 0 Padding)",
   "x13.mod.location.opt.hours": "Hours(with no Padding)",
   "x13.mod.location.opt.minutesPadding": "Minutes(with 0 Padding)",
-  "x13.mod.location.opt.secondsPadding": "Seconds(with 0 Padding)"",
+  "x13.mod.location.opt.secondsPadding": "Seconds(with 0 Padding)",
   "x13.mod.location.opt.isSlime": "Is Slime Chunk",
   "x13.mod.location.opt.lineFeed": "Start New Line",
   "x13.mod.location.opt.valueSeparate": "Separete Value",
