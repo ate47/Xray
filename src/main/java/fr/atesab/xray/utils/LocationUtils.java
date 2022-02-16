@@ -1,58 +1,61 @@
 package fr.atesab.xray.utils;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.ChunkRandom;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-
 public class LocationUtils {
 	
-	private static final ThreadLocal<NumberFormat> localTwoDigitNfFormat = new ThreadLocal<NumberFormat>() {
-		@Override
-		protected NumberFormat initialValue() {
-			return new DecimalFormat("00");
-		}
-	};
+	private static final ThreadLocal<NumberFormat> localTwoDigitNfFormat = ThreadLocal.withInitial(() -> new DecimalFormat("00"));
 
-	public static BlockPos getLookingBlockPos(Minecraft mc) {
-		BlockPos answer = null;
-		HitResult hitResult = mc.hitResult;
-		if (hitResult.getType() == HitResult.Type.BLOCK && hitResult instanceof BlockHitResult) {
-				answer = ((BlockHitResult)hitResult).getBlockPos();
+	public static BlockPos getLookingBlockPos(MinecraftClient mc) {
+		HitResult hitResult = mc.crosshairTarget;
+		if (hitResult instanceof BlockHitResult bir) {
+			return bir.getBlockPos();
+		} else if (hitResult != null) {
+				Vec3d pos = hitResult.getPos();
+			return new BlockPos(pos.x, pos.y, pos.z);
 		} else {
-				Vec3 pos = hitResult.getLocation();
-				answer = new BlockPos(pos.x, pos.y, pos.z);
+			return new BlockPos(0, 0, 0);
 		}
-		return answer;
 	}
 	
-	public static BlockPos getLookingFaceBlockPos(Minecraft mc) {
-		BlockPos answer = null;
-		Vec3 pos = mc.hitResult.getLocation();
-		if (pos.x == (int)pos.x) {
-			answer = getLookingBlockPos(mc).offset(mc.player.getX() < pos.x ? -1 : 1, 0, 0);
-		} else if (pos.y == (int)pos.y) {
-			answer = getLookingBlockPos(mc).offset(0, mc.player.getY() < pos.y ? -1 : 1, 0);
-		} else if (pos.z == (int)pos.z) {
-			answer = getLookingBlockPos(mc).offset(0, 0, mc.player.getZ() < pos.z ? -1 : 1);
-		} else {
-    		answer = new BlockPos(pos.x, pos.y, pos.z);
+	public static BlockPos getLookingFaceBlockPos(MinecraftClient mc, ClientPlayerEntity player) {
+		HitResult target = mc.crosshairTarget;
+		if (target == null) {
+			return new BlockPos(0, 0, 0);
 		}
-		return answer;
+		Vec3d pos = target.getPos();
+		if (pos.x == (int)pos.x) {
+			return getLookingBlockPos(mc).add(player.getX() < pos.x ? -1 : 1, 0, 0);
+		} else if (pos.y == (int)pos.y) {
+			return getLookingBlockPos(mc).add(0, player.getY() < pos.y ? -1 : 1, 0);
+		} else if (pos.z == (int)pos.z) {
+			return getLookingBlockPos(mc).add(0, 0, player.getZ() < pos.z ? -1 : 1);
+		} else {
+			return new BlockPos(pos.x, pos.y, pos.z);
+		}
 	}
 	
 	public static NumberFormat getTwoDigitNumberFormat() {
 		return localTwoDigitNfFormat.get();
 	}
 
-	public static String isSlimeChunk(Minecraft mc, ChunkPos chunk) {
-		return String.valueOf(WorldgenRandom.seedSlimeChunk(chunk.x, chunk.z, 
-				mc.getSingleplayerServer().getWorldData().worldGenSettings().seed(), 987234911L).nextInt(10) == 0);
+	public static String isSlimeChunk(MinecraftClient mc, ChunkPos chunk) {
+		IntegratedServer server = mc.getServer();
+		if (server == null) {
+			return "false";
+		}
+		return String.valueOf(ChunkRandom.getSlimeRandom(chunk.x, chunk.z,
+				server.getSaveProperties().getGeneratorOptions().getSeed(), 987234911L).nextInt(10) == 0);
 	}
 }

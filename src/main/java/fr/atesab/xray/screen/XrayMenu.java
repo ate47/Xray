@@ -62,10 +62,6 @@ public class XrayMenu extends XrayScreen {
                 Text.translatable("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), mod::fullBright));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 Text.translatable("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
-                    client.setScreen(new XrayLocationConfig(this));
-                }));
-        addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                Text.translatable("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
             client.setScreen(new XrayLocationConfig(this) {
                     	@Override
 						protected void save() {
@@ -85,14 +81,13 @@ public class XrayMenu extends XrayScreen {
     public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
         stack.push();
-        stack.translate(width / 2, height / 2 - 70, 0);
+        stack.translate(width / 2f, height / 2f - 70, 0);
         stack.scale(4, 4, 1);
         drawCenteredText(stack, client.textRenderer, XrayMain.MOD_NAME, 0, -client.textRenderer.fontHeight,
                 0xffffff33);
         stack.pop();
         drawCenteredText(stack, client.textRenderer, Text.translatable("x13.mod.by",
-                Arrays.stream(XrayMain.MOD_AUTHORS).collect(Collectors.joining(
-                        ", "))),
+                        String.join(", ", XrayMain.MOD_AUTHORS)),
                 width / 2, height / 2 - 60, 0xffaaaaaa);
         int size = 400 / 5;
         DrawableHelper.fill(stack, 0, height / 2 - size / 2, width / 2 - 200, height / 2 + size / 2, 0x22ffffff);

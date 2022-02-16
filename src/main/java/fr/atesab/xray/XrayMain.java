@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.option.GameOptions;
+import fr.atesab.xray.config.*;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
@@ -20,20 +20,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
-
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
-import fr.atesab.xray.config.AbstractModeConfig;
-import fr.atesab.xray.config.BlockConfig;
-import fr.atesab.xray.config.ESPConfig;
-import fr.atesab.xray.config.LocationFormatTool;
-import fr.atesab.xray.config.XrayConfig;
-import fr.atesab.xray.screen.ColorSelector;
 import fr.atesab.xray.screen.XrayMenu;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.RGBResult;
@@ -83,14 +71,12 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	public static final URL MOD_ISSUE = XrayUtils.soWhat(() -> new URL("https://github.com/ate47/Xray/issues"));
 	public static final URL MOD_LINK = XrayUtils
 			.soWhat(() -> new URL("https://www.curseforge.com/minecraft/mc-mods/xray-1-13-rift-modloader"));
-	private static int maxFullbrightStates = 20;
+	private static final int maxFullbrightStates = 20;
 	private static final Logger log = LogManager.getLogger(MOD_ID);
 
 	private static XrayMain instance;
 
 	private boolean fullBrightEnable = false;
-
-	private boolean isShowLocationContext = true;
 
 	private int internalFullbrightState = 0;
 
@@ -139,8 +125,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	}
 
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
-		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId) // BLOCK
-				.filter(Objects::nonNull).map(Objects::toString).collect(collector);
+		// BLOCK
+		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId).map(Objects::toString).collect(collector);
 	}
 
 	/**
@@ -214,17 +200,14 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		return this;
 	}
 
-	public int shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
-			Direction pos, CallbackInfoReturnable<Boolean> ci) {
+	public void shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
+									 Direction pos, CallbackInfoReturnable<Boolean> ci) {
 		if (ci == null)
 			ci = new CallbackInfoReturnable<>("shouldSideBeRendered", true);
 
 		for (BlockConfig mode : getConfig().getBlockConfigs()) {
 			mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
 		}
-		if (ci.isCancelled())
-			return ci.getReturnValue().booleanValue() ? 0 : 1;
-		return 2;
 	}
 
 	public static String significantNumbers(double d) {
@@ -287,7 +270,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		if (fullbrightKey.wasPressed())
 			fullBright();
 		if (locationEnableKey.wasPressed())
-			isShowLocationContext = !isShowLocationContext;
+			config.getLocationConfig().setEnabled(!config.getLocationConfig().isEnabled());
 		if (configKey.wasPressed())
 			client.setScreen(new XrayMenu(null));
 
@@ -295,13 +278,15 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	@Override
 	public void onHudRender(MatrixStack stack, float tickDelta) {
-		if (!isShowLocationContext) {
-			return;
-		}
-		int w = 0;
 		MinecraftClient mc = MinecraftClient.getInstance();
 		TextRenderer render = mc.textRenderer;
 		ClientPlayerEntity player = mc.player;
+
+		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.debugEnabled) {
+			return;
+		}
+
+		int w = 0;
 
 		if (config.getLocationConfig().isShowMode()) {
 			for (AbstractModeConfig cfg : config.getModes()) {
@@ -318,12 +303,17 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 			}
 		}
 
-		if (config.getLocationConfig().isEnabled() && player != null) {
-			String format = getConfig().getLocationConfig().getFormat();
-			String[] renderStrings = LocationFormatTool.applyAll(format, mc).split(LocationFormatTool.LINE_SEPARATER);
-			for (int lineIndex = 0;lineIndex < renderStrings.length;lineIndex++) {
-				render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER,""),
-						5, 5 + render.fontHeight * (lineIndex + (w > 0 ? 1 : 0)), 0xffffffff);
+		if (config.getLocationConfig().isEnabled()) {
+			String format = LocationFormatTool.applyColor(
+					getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.world)
+			);
+			String[] renderStrings = format.split("\n");
+			// write first line with the shift for the mode
+			render.draw(stack, renderStrings[0],5 + w, 5, 0xffffffff);
+			// write next lines
+			for (int lineIndex = 1; lineIndex < renderStrings.length; lineIndex++) {
+				render.draw(stack, renderStrings[lineIndex],
+						5, 5 + render.fontHeight * lineIndex, 0xffffffff);
 			}
 		}
 	}
@@ -338,7 +328,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		Camera mainCamera = minecraft.gameRenderer.getCamera();
 		Vec3d camera = mainCamera.getPos();
 
-		if (!config.getEspConfigs().stream().filter(ESPConfig::isEnabled).findAny().isPresent()) {
+		if (player == null || level == null || config.getEspConfigs().stream().noneMatch(ESPConfig::isEnabled)) {
 			return;
 		}
 
