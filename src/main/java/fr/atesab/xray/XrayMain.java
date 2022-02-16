@@ -125,8 +125,8 @@ public class XrayMain {
 
 	@SuppressWarnings("deprecation")
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
-		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId) // BLOCK
-				.filter(Objects::nonNull).map(Objects::toString).collect(collector);
+		// BLOCK
+		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId).map(Objects::toString).collect(collector);
 	}
 
 	/**
@@ -217,9 +217,6 @@ public class XrayMain {
 		for (BlockConfig mode : getConfig().getBlockConfigs()) {
 			mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
 		}
-		if (ci.isCancelled())
-			return ci.getReturnValue().booleanValue() ? 0 : 1;
-		return 2;
 	}
 
 	public static String significantNumbers(double d) {
@@ -312,6 +309,12 @@ public class XrayMain {
 			return;
 		}
 
+		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.debugEnabled) {
+			return;
+		}
+
+		int w = 0;
+
 		if (config.getLocationConfig().isShowMode()) {
 			for (AbstractModeConfig cfg : config.getModes()) {
 				if (!cfg.isEnabled())
@@ -327,8 +330,19 @@ public class XrayMain {
 			}
 		}
 
-		String format = getConfig().getLocationConfig().getFormat();
-		render.draw(stack, LocationFormatTool.applyAll(format, mc), 5 + w, 5, 0xffffffff);
+		if (config.getLocationConfig().isEnabled()) {
+			String format = LocationFormatTool.applyColor(
+					getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.world)
+			);
+			String[] renderStrings = format.split("\n");
+			// write first line with the shift for the mode
+			render.draw(stack, renderStrings[0],5 + w, 5, 0xffffffff);
+			// write next lines
+			for (int lineIndex = 1; lineIndex < renderStrings.length; lineIndex++) {
+				render.draw(stack, renderStrings[lineIndex],
+						5, 5 + render.fontHeight * lineIndex, 0xffffffff);
+			}
+		}
 	}
 
 	@SubscribeEvent

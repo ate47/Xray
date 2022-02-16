@@ -1,6 +1,7 @@
 package fr.atesab.xray.screen;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -14,7 +15,7 @@ import net.minecraft.network.chat.Component;
 public abstract class EnumSelector<E extends EnumElement> extends PagedScreen<E> {
 
     private class EnumSelectionElement extends PagedElement<E> {
-        private E e;
+        private final E e;
         private LongItemWidget btn;
 
         public EnumSelectionElement(E e) {
@@ -47,7 +48,7 @@ public abstract class EnumSelector<E extends EnumElement> extends PagedScreen<E>
         this(title, parent, Arrays.stream(array));
     }
 
-    public EnumSelector(Component title, Screen parent, List<E> list) {
+    public EnumSelector(Component title, Screen parent, Collection<E> list) {
         this(title, parent, list.stream());
     }
 

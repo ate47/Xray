@@ -30,7 +30,7 @@ public class XrayConfig implements Cloneable {
      * 
      * @param saveFile the save file
      * @return the config
-     * @see #save(File)
+     * @see #save()
      */
     public static XrayConfig sync(File saveFile) {
         XrayConfig cfg;
@@ -43,6 +43,8 @@ public class XrayConfig implements Cloneable {
         }
 
         cfg.saveFile = saveFile;
+
+        cfg.locationConfig.load();
 
         // save the config
         cfg.save();
@@ -65,17 +67,17 @@ public class XrayConfig implements Cloneable {
 
     private XrayConfig(XrayConfig other) {
         this.espConfigs = other.espConfigs.stream().map(ESPConfig::clone)
-                .collect(Collectors.toCollection(() -> new ArrayList<>()));
+                .collect(Collectors.toCollection(ArrayList::new));
         this.blockConfigs = other.blockConfigs.stream().map(
                 BlockConfig::clone)
-                .collect(Collectors.toCollection(() -> new ArrayList<>()));
+                .collect(Collectors.toCollection(ArrayList::new));
         this.maxTracerRange = other.maxTracerRange;
         this.locationConfig = other.locationConfig.clone();
         this.saveFile = other.saveFile;
     }
 
     public Iterable<AbstractModeConfig> getModes() {
-        return new MergedIterable<AbstractModeConfig>(getBlockConfigs(), getEspConfigs());
+        return new MergedIterable<>(getBlockConfigs(), getEspConfigs());
     }
 
     /**
@@ -137,7 +139,6 @@ public class XrayConfig implements Cloneable {
     /**
      * save the config to a file
      * 
-     * @param saveFile the save file
      * @see #sync(File)
      */
     public void save() {
