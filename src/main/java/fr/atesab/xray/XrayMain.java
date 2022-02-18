@@ -83,8 +83,6 @@ public class XrayMain {
 	private static XrayMain instance;
 
 	private boolean fullBrightEnable = false;
-	
-	private boolean isShowLocationContext = true;
 
 	private int internalFullbrightState = 0;
 
@@ -276,7 +274,7 @@ public class XrayMain {
 		if (fullbrightKey.consumeClick())
 			fullBright();
 		if (locationEnableKey.consumeClick())
-			isShowLocationContext = !isShowLocationContext;
+			config.getLocationConfig().setEnabled(!config.getLocationConfig().isEnabled());
 		if (configKey.consumeClick())
 			client.setScreen(new XrayMenu(null));
 
@@ -284,12 +282,15 @@ public class XrayMain {
 
 	@SubscribeEvent
 	public void onHudRender(RenderGameOverlayEvent ev) {
-		if (!isShowLocationContext) return;
+		Minecraft mc = Minecraft.getInstance();
+		LocalPlayer player = mc.player;
+		
+		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.renderDebug)
+			return;
+
 		int w = 0;
 		PoseStack stack = ev.getMatrixStack();
-		Minecraft mc = Minecraft.getInstance();
 		Font render = mc.font;
-		LocalPlayer player = mc.player;
 
 		if (config.getLocationConfig().isShowMode()) {
 			for (AbstractModeConfig cfg : config.getModes()) {
@@ -306,13 +307,11 @@ public class XrayMain {
 			}
 		}
 
-		if (config.getLocationConfig().isEnabled() && player != null) {
-			String format = getConfig().getLocationConfig().getFormat();
-			String[] renderStrings = LocationFormatTool.applyAll(format, mc).split(LocationFormatTool.LINE_SEPARATER);
-			for (int lineIndex = 0;lineIndex < renderStrings.length;lineIndex++) {
-				render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER,""), 
-						5, 5 + render.lineHeight * (lineIndex + (w > 0 ? 1 : 0)), 0xffffffff);
-			}
+		String format = getConfig().getLocationConfig().getFormat();
+		String[] renderStrings = LocationFormatTool.applyAll(format, mc).split(LocationFormatTool.LINE_SEPARATER);
+		for (int lineIndex = 0;lineIndex < renderStrings.length;lineIndex++) {
+			render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER,""), 
+					5, 5 + render.lineHeight * (lineIndex + (w > 0 ? 1 : 0)), 0xffffffff);
 		}
 	}
 
