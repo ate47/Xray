@@ -26,7 +26,6 @@ import fr.atesab.xray.color.IColorObject;
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
-import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.screen.XrayMenu;
 import fr.atesab.xray.utils.GuiUtils;
@@ -307,12 +306,11 @@ public class XrayMain {
 			}
 		}
 
-		String format = getConfig().getLocationConfig().getFormat();
-		String[] renderStrings = LocationFormatTool.applyAll(format, mc).split(LocationFormatTool.LINE_SEPARATER);
-		for (int lineIndex = 0; lineIndex < renderStrings.length; lineIndex++) {
-			render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER, ""),
-					5, 5 + render.lineHeight * (lineIndex + (w > 0 ? 1 : 0)), 0xffffffff);
-		}
+		final int finalW = w;
+
+		getConfig().getLocationConfig().getBufferedFormat().apply(mc, (lineIndex, text) -> {
+			render.draw(stack, text, 5, 5 + render.lineHeight * (lineIndex + (finalW > 0 ? 1 : 0)), 0xffffffff);
+		});
 	}
 
 	@SubscribeEvent

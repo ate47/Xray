@@ -17,7 +17,6 @@ import com.google.gson.annotations.Expose;
 
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.MergedIterable;
-import fr.atesab.xray.utils.XrayUtils;
 
 public class XrayConfig implements Cloneable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization()
@@ -43,6 +42,8 @@ public class XrayConfig implements Cloneable {
         }
 
         cfg.saveFile = saveFile;
+
+        cfg.locationConfig.syncConfig();
 
         // save the config
         cfg.save();
