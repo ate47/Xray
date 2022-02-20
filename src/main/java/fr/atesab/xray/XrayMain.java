@@ -274,7 +274,7 @@ public class XrayMain {
 		if (fullbrightKey.consumeClick())
 			fullBright();
 		if (locationEnableKey.consumeClick())
-			config.getLocationConfig().setEnabled(!config.getLocationConfig().isEnabled())
+			config.getLocationConfig().setEnabled(!config.getLocationConfig().isEnabled());
 		if (configKey.consumeClick())
 			client.setScreen(new XrayMenu(null));
 
@@ -284,7 +284,7 @@ public class XrayMain {
 	public void onHudRender(RenderGameOverlayEvent ev) {
 		Minecraft mc = Minecraft.getInstance();
 		LocalPlayer player = mc.player;
-		
+
 		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.renderDebug)
 			return;
 
@@ -309,8 +309,8 @@ public class XrayMain {
 
 		String format = getConfig().getLocationConfig().getFormat();
 		String[] renderStrings = LocationFormatTool.applyAll(format, mc).split(LocationFormatTool.LINE_SEPARATER);
-		for (int lineIndex = 0;lineIndex < renderStrings.length;lineIndex++) {
-			render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER,""), 
+		for (int lineIndex = 0; lineIndex < renderStrings.length; lineIndex++) {
+			render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER, ""),
 					5, 5 + render.lineHeight * (lineIndex + (w > 0 ? 1 : 0)), 0xffffffff);
 		}
 	}
