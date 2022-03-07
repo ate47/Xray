@@ -72,7 +72,7 @@
   "x13.mod.cave": "洞窟モード",
   "x13.mod.redstone": "レッドストーンモード",
   "x13.mod.fullbright": "最大光量",
-  "x13.mod.location": "座標情報On/Off",
+  "x13.mod.locationEnable": "座標情報On/Off",
   "x13.mod.config": "設定",
   "x13.mod.modes": "モード",
   "x13.mod.selector.key.title": "ショートカットキー設定",
