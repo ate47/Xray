@@ -7,10 +7,11 @@ import fr.atesab.xray.utils.KeyData;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
+
 
 public class KeySelector extends XrayScreen {
-    private static final TranslatableText NONE_KEY = new TranslatableText("x13.mod.selector.key.none");
+    private static final Text NONE_KEY = Text.translatable("x13.mod.selector.key.none");
 
     private Consumer<Optional<KeyData>> keyConsumer;
     private Optional<KeyData> value;
@@ -29,7 +30,7 @@ public class KeySelector extends XrayScreen {
     }
 
     public KeySelector(Screen parent, Optional<KeyData> currentValue, Consumer<Optional<KeyData>> keyConsumer) {
-        super(new TranslatableText("x13.mod.selector.key.title"), parent);
+        super(Text.translatable("x13.mod.selector.key.title"), parent);
         value = currentValue;
         this.keyConsumer = keyConsumer;
     }
@@ -57,12 +58,12 @@ public class KeySelector extends XrayScreen {
         keyButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 - 24, 200, 20,
                 NONE_KEY, b -> waitKey()));
         doneButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2, 200, 20,
-                new TranslatableText("gui.done"), b -> {
+                Text.translatable("gui.done"), b -> {
                     keyConsumer.accept(value);
                     client.setScreen(parent);
                 }));
         cancelButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 24, 200, 20,
-                new TranslatableText("gui.cancel"), b -> {
+                Text.translatable("gui.cancel"), b -> {
                     client.setScreen(parent);
                 }));
         setKey(value);
@@ -96,7 +97,7 @@ public class KeySelector extends XrayScreen {
                 0xffffffff);
 
         if (isWaitingKey) {
-            drawCenteredText(stack, textRenderer, new TranslatableText("x13.mod.selector.key.presskey"), width / 2,
+            drawCenteredText(stack, textRenderer, Text.translatable("x13.mod.selector.key.presskey"), width / 2,
                     keyButton.y + keyButton.getHeight() / 2 - textRenderer.fontHeight, 0xffffff00);
         }
 

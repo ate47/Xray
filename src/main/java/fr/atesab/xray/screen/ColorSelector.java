@@ -23,8 +23,9 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+
+
+import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -140,7 +141,7 @@ public class ColorSelector extends XrayScreen {
 
     public ColorSelector(Screen parent, Consumer<OptionalInt> setter, OptionalInt color, int defaultColor,
             boolean transparentAsDefault) {
-        super(new TranslatableText("x13.mod.color.title"), parent);
+        super(Text.translatable("x13.mod.color.title"), parent);
         int rgba = color.orElse(defaultColor);
         this.color = rgba & 0xFFFFFF; // remove alpha
         this.oldAlphaLayer = rgba & 0xFF000000;
@@ -293,36 +294,36 @@ public class ColorSelector extends XrayScreen {
     @Override
     public void init() {
         addDrawableChild(
-                new ButtonWidget(width / 2 - 200, height / 2 + 80, 130, 20, new TranslatableText("gui.done"), b -> {
+                new ButtonWidget(width / 2 - 200, height / 2 + 80, 130, 20, Text.translatable("gui.done"), b -> {
                     complete();
                     client.setScreen(parent);
                 }));
         advButton = addDrawableChild(new ButtonWidget(width / 2 - 66, height / 2 + 80, 132, 20,
-                new TranslatableText("x13.mod.color.advanced"), b -> {
+                Text.translatable("x13.mod.color.advanced"), b -> {
                     advanced ^= true;
-                    advButton.setMessage(new TranslatableText(
+                    advButton.setMessage(Text.translatable(
                             advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
                 }));
         addDrawableChild(
-                new ButtonWidget(width / 2 + 70, height / 2 + 80, 130, 20, new TranslatableText("gui.cancel"), b -> {
+                new ButtonWidget(width / 2 + 70, height / 2 + 80, 130, 20, Text.translatable("gui.cancel"), b -> {
                     client.setScreen(parent);
                 }));
 
         int advWidth = 158 + 200;
         int midAdv = width / 2 + (-158 + 200) / 2;
-        tfr = new TextFieldWidget(textRenderer, midAdv - 56, height / 2 - 54, 56, 18, new LiteralText(""));
-        tfg = new TextFieldWidget(textRenderer, midAdv - 56, height / 2 - 26, 56, 18, new LiteralText(""));
-        tfb = new TextFieldWidget(textRenderer, midAdv - 56, height / 2 + 2, 56, 18, new LiteralText(""));
+        tfr = new TextFieldWidget(textRenderer, midAdv - 56, height / 2 - 54, 56, 18, Text.literal(""));
+        tfg = new TextFieldWidget(textRenderer, midAdv - 56, height / 2 - 26, 56, 18, Text.literal(""));
+        tfb = new TextFieldWidget(textRenderer, midAdv - 56, height / 2 + 2, 56, 18, Text.literal(""));
 
         int rightAdv = width / 2 + 200;
-        tfh = new TextFieldWidget(textRenderer, rightAdv - 56, height / 2 - 54, 56, 18, new LiteralText(""));
-        tfl = new TextFieldWidget(textRenderer, rightAdv - 56, height / 2 - 26, 56, 18, new LiteralText(""));
-        tfs = new TextFieldWidget(textRenderer, rightAdv - 56, height / 2 + 2, 56, 18, new LiteralText(""));
+        tfh = new TextFieldWidget(textRenderer, rightAdv - 56, height / 2 - 54, 56, 18, Text.literal(""));
+        tfl = new TextFieldWidget(textRenderer, rightAdv - 56, height / 2 - 26, 56, 18, Text.literal(""));
+        tfs = new TextFieldWidget(textRenderer, rightAdv - 56, height / 2 + 2, 56, 18, Text.literal(""));
 
         int intHexWidth = (advWidth - 4 - 4) / 2;
         intColor = new TextFieldWidget(textRenderer, midAdv - intHexWidth, height / 2 + 40, intHexWidth, 18,
-                new LiteralText(""));
-        hexColor = new TextFieldWidget(textRenderer, midAdv + 4, height / 2 + 40, intHexWidth, 18, new LiteralText(""));
+                Text.literal(""));
+        hexColor = new TextFieldWidget(textRenderer, midAdv + 4, height / 2 + 40, intHexWidth, 18, Text.literal(""));
 
         tfr.setMaxLength(4);
         tfg.setMaxLength(4);

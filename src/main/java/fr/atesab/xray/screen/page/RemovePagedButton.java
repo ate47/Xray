@@ -1,12 +1,12 @@
 package fr.atesab.xray.screen.page;
 
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.LiteralText;
+
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class RemovePagedButton extends ButtonWidget {
-    private static final Text REMOVE_COMPONENT = new LiteralText("-").formatted(Formatting.RED);
+    private static final Text REMOVE_COMPONENT = Text.literal("-").formatted(Formatting.RED);
     private static final ButtonWidget.PressAction EMPTY_PRESS = btn -> {
     };
 

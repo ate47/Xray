@@ -16,7 +16,8 @@ import fr.atesab.xray.widget.BlockConfigWidget;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
+
 
 public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
     private class PagedBlockMode extends PagedElement<BlockConfig> {
@@ -47,7 +48,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             x += 60;
             addSubWidget(new ButtonWidget(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
                 client.setScreen(new EnumSelector<ViewMode>(
-                        new TranslatableText("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
+                        Text.translatable("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
 
                     @Override
                     protected void select(ViewMode element) {
@@ -58,9 +59,9 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
                 });
             }));
             x += 68;
-            addSubWidget(new ButtonWidget(x, 0, 20, 20, new TranslatableText("x13.mod.template.little"), btn -> {
+            addSubWidget(new ButtonWidget(x, 0, 20, 20, Text.translatable("x13.mod.template.little"), btn -> {
                 client.setScreen(new EnumSelector<BlockConfig.Template>(
-                        new TranslatableText("x13.mod.template"), XrayBlockModesConfig.this,
+                        Text.translatable("x13.mod.template"), XrayBlockModesConfig.this,
                         BlockConfig.Template.values()) {
 
                     @Override
@@ -119,7 +120,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
     }
 
     public XrayBlockModesConfig(Screen parent, Stream<BlockConfig> stream) {
-        super(new TranslatableText("x13.mod.mode"), parent, 24, stream);
+        super(Text.translatable("x13.mod.mode"), parent, 24, stream);
     }
 
     @Override

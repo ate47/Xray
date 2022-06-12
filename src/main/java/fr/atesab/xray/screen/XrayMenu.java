@@ -15,12 +15,13 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
+
 
 public class XrayMenu extends XrayScreen {
 
     public XrayMenu(Screen parent) {
-        super(new TranslatableText("x13.mod.config"), parent);
+        super(Text.translatable("x13.mod.config"), parent);
     }
 
     @Override
@@ -32,13 +33,13 @@ public class XrayMenu extends XrayScreen {
         XrayMain mod = XrayMain.getMod();
 
         addDrawableChild(
-                new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
+                new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, Text.translatable("gui.done"),
                         btn -> {
                             client.setScreen(parent);
                         }));
 
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableText("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), () -> {
+                Text.translatable("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), () -> {
                     client.setScreen(new XrayBlockModesConfig(this, mod.getConfig().getBlockConfigs().stream()) {
                         @Override
                         protected void save(List<BlockConfig> list) {
@@ -48,7 +49,7 @@ public class XrayMenu extends XrayScreen {
                     });
                 }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableText("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), () -> {
+                Text.translatable("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), () -> {
                     client.setScreen(new XrayESPModesConfig(this, mod.getConfig().getEspConfigs().stream()) {
                         @Override
                         protected void save(List<ESPConfig> list) {
@@ -58,15 +59,18 @@ public class XrayMenu extends XrayScreen {
                     });
                 }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableText("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), () -> {
+                /*Text.translatable("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), () -> {
                     mod.fullBright();
+                }));*/ //Todo 1.19 :/
+                Text.literal("broken"), new ItemStack(Blocks.BARRIER), () -> {
+                    client.player.sendMessage(Text.literal("Fullbright is currently broken."), false);
                 }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableText("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
+                Text.translatable("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
                     client.setScreen(new XrayLocationConfig(this));
                 }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableText("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
+                Text.translatable("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
                     client.setScreen(new XrayConfigMenu(this));
                 }));
 
@@ -82,7 +86,7 @@ public class XrayMenu extends XrayScreen {
         drawCenteredText(stack, client.textRenderer, XrayMain.MOD_NAME, 0, -client.textRenderer.fontHeight,
                 0xffffff33);
         stack.pop();
-        drawCenteredText(stack, client.textRenderer, new TranslatableText("x13.mod.by",
+        drawCenteredText(stack, client.textRenderer, Text.translatable("x13.mod.by",
                 Arrays.stream(XrayMain.MOD_AUTHORS).collect(Collectors.joining(
                         ", "))),
                 width / 2, height / 2 - 60, 0xffaaaaaa);

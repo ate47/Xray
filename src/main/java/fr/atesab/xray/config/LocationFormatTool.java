@@ -9,7 +9,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+
 
 public enum LocationFormatTool implements EnumElement {
     PLAYER_LOCATION_X("x13.mod.location.opt.x", Items.BOOK, "x",
@@ -44,7 +44,7 @@ public enum LocationFormatTool implements EnumElement {
         this.regex = "%" + txt;
         this.action = action;
         this.icon = new ItemStack(icon);
-        this.title = new TranslatableText(translation);
+        this.title = Text.translatable(translation);
     }
 
     public String getOption() {

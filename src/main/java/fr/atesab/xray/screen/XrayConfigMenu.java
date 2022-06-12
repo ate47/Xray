@@ -13,20 +13,21 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
+
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 public class XrayConfigMenu extends XrayScreen {
 
     public XrayConfigMenu(Screen parent) {
-        super(new TranslatableText("x13.mod.config"), parent);
+        super(Text.translatable("x13.mod.config"), parent);
     }
 
     @Override
     protected void init() {
         XrayConfig cfg = XrayMain.getMod().getConfig();
         addDrawableChild(new SliderWidget(width / 2 - 100, height / 2 - 48, 200, 20,
-                new TranslatableText("x13.mod.esp.maxdistance"), cfg.getMaxTracerRangeNormalized()) {
+                Text.translatable("x13.mod.esp.maxdistance"), cfg.getMaxTracerRangeNormalized()) {
             {
                 updateMessage();
             }
@@ -34,12 +35,12 @@ public class XrayConfigMenu extends XrayScreen {
             @Override
             protected void updateMessage() {
                 int range = cfg.getMaxTracerRange();
-                MutableText distance = new TranslatableText("x13.mod.esp.maxdistance").append(": ");
+                MutableText distance = Text.translatable("x13.mod.esp.maxdistance").append(": ");
                 if (range == 0)
-                    setMessage(distance.append(new TranslatableText("x13.mod.esp.maxdistance.infinite")));
+                    setMessage(distance.append(Text.translatable("x13.mod.esp.maxdistance.infinite")));
                 else
                     setMessage(distance
-                            .append(new TranslatableText("x13.mod.esp.maxdistance.block", String.valueOf(range))));
+                            .append(Text.translatable("x13.mod.esp.maxdistance.block", String.valueOf(range))));
             }
 
             @Override
@@ -49,21 +50,21 @@ public class XrayConfigMenu extends XrayScreen {
 
         });
         addDrawableChild(
-                new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableText("gui.done"),
+                new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, Text.translatable("gui.done"),
                         btn -> {
                             client.setScreen(parent);
                         }));
 
         addDrawableChild(new LongItemWidget(width * 0 / 3, height - 20, width / 3, 20,
-                new TranslatableText("x13.mod.link.mod"), new ItemStack(Blocks.GOLD_ORE), () -> {
+                Text.translatable("x13.mod.link.mod"), new ItemStack(Blocks.GOLD_ORE), () -> {
                     openLink(XrayMain.MOD_LINK);
                 }));
         addDrawableChild(new LongItemWidget(width * 1 / 3, height - 20, width / 3, 20,
-                new TranslatableText("x13.mod.link.issue"), new ItemStack(Blocks.TNT), () -> {
+                Text.translatable("x13.mod.link.issue"), new ItemStack(Blocks.TNT), () -> {
                     openLink(XrayMain.MOD_ISSUE);
                 }));
         addDrawableChild(new LongItemWidget(width * 2 / 3, height - 20, width - width * 2 / 3, 20,
-                new TranslatableText("x13.mod.link.source"), new ItemStack(Items.PAPER), () -> {
+                Text.translatable("x13.mod.link.source"), new ItemStack(Items.PAPER), () -> {
                     openLink(XrayMain.MOD_SOURCE);
                 }));
         super.init();

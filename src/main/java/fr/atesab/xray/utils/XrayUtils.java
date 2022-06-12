@@ -1,7 +1,7 @@
 package fr.atesab.xray.utils;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+
 
 public class XrayUtils {
     @FunctionalInterface
@@ -32,7 +32,7 @@ public class XrayUtils {
     }
 
     public static Text getToggleable(boolean value, String title) {
-        return new TranslatableText(title).append(" (")
-                .append(new TranslatableText(value ? "x13.mod.on" : "x13.mod.off")).append(")");
+        return Text.translatable(title).append(" (")
+                .append(Text.translatable(value ? "x13.mod.on" : "x13.mod.off")).append(")");
     }
 }

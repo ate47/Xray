@@ -18,7 +18,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
@@ -130,7 +130,7 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
         private BlockConfig cfg;
 
         Template(String translation, ItemStack icon, BlockConfig cfg) {
-            this.title = new TranslatableText(translation);
+            this.title = Text.translatable(translation);
             this.icon = icon;
             this.cfg = cfg;
         }
