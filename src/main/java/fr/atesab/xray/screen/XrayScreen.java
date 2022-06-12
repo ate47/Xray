@@ -16,4 +16,9 @@ public class XrayScreen extends Screen {
     public void playDownSound() {
         client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
+
+    @Override
+    public boolean shouldPause() {
+        return false;
+    }
 }
