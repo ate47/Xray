@@ -4,7 +4,7 @@ import fr.atesab.xray.color.EnumElement;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+
 
 public enum ViewMode implements EnumElement {
     /**
@@ -24,7 +24,7 @@ public enum ViewMode implements EnumElement {
     private ViewMode(String translation, ItemStack icon, Viewer viewer) {
         this.viewer = viewer;
         this.icon = icon;
-        this.title = new TranslatableText(translation);
+        this.title = Text.translatable(translation);
     }
 
     @Override

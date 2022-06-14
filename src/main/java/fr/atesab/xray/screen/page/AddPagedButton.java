@@ -3,12 +3,12 @@ package fr.atesab.xray.screen.page;
 import java.util.function.Supplier;
 
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.LiteralText;
+
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class AddPagedButton<E> extends ButtonWidget {
-    private static final Text ADD_COMPONENT = new LiteralText("+").formatted(Formatting.GREEN);
+    private static final Text ADD_COMPONENT = Text.literal("+").formatted(Formatting.GREEN);
     private static final ButtonWidget.PressAction EMPTY_PRESS = btn -> {
     };
 

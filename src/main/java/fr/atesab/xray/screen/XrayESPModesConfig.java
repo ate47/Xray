@@ -15,7 +15,8 @@ import fr.atesab.xray.widget.EntityConfigWidget;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
+
 
 public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
     private class PagedESPMode extends PagedElement<ESPConfig> {
@@ -51,9 +52,9 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
                                 btn.setMessage(XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"));
                             }));
             x += 78;
-            addSubWidget(new ButtonWidget(x, 0, 20, 20, new TranslatableText("x13.mod.template.little"), btn -> {
+            addSubWidget(new ButtonWidget(x, 0, 20, 20, Text.translatable("x13.mod.template.little"), btn -> {
                 client.setScreen(new EnumSelector<ESPConfig.Template>(
-                        new TranslatableText("x13.mod.template"), XrayESPModesConfig.this,
+                        Text.translatable("x13.mod.template"), XrayESPModesConfig.this,
                         ESPConfig.Template.values()) {
 
                     @Override
@@ -112,7 +113,7 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
     }
 
     public XrayESPModesConfig(Screen parent, Stream<ESPConfig> stream) {
-        super(new TranslatableText("x13.mod.esp"), parent, 24, stream);
+        super(Text.translatable("x13.mod.esp"), parent, 24, stream);
     }
 
     @Override

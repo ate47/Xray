@@ -10,8 +10,9 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+
+
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 
 public abstract class BlockSelector extends Screen {
@@ -27,7 +28,7 @@ public abstract class BlockSelector extends Screen {
     private int page = 0;
 
     public BlockSelector(Screen parent) {
-        super(new TranslatableText("x13.mod.menu.selector"));
+        super(Text.translatable("x13.mod.menu.selector"));
         this.parent = parent;
         blocks = new ArrayList<>();
         Registry.BLOCK.forEach(blocks::add);
@@ -46,7 +47,7 @@ public abstract class BlockSelector extends Screen {
         int pageBottom = height / 2 + sizeY / 2 + 2;
 
         searchBar = new TextFieldWidget(textRenderer, width / 2 - sizeX / 2, pageTop + 2, sizeX, 16,
-                new LiteralText("")) {
+                Text.literal("")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (button == 1 && mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y
@@ -82,16 +83,16 @@ public abstract class BlockSelector extends Screen {
             }
         };
 
-        lastPage = new ButtonWidget(width / 2 - 124, pageBottom, 20, 20, new LiteralText("<-"), b -> {
+        lastPage = new ButtonWidget(width / 2 - 124, pageBottom, 20, 20, Text.literal("<-"), b -> {
             page--;
             updateArrows();
         });
         ButtonWidget cancelBtn = new ButtonWidget(width / 2 - 100, pageBottom, 200, 20,
-                new TranslatableText("gui.cancel"),
+                Text.translatable("gui.cancel"),
                 b -> {
                     client.setScreen(parent);
                 });
-        nextPage = new ButtonWidget(width / 2 + 104, pageBottom, 20, 20, new LiteralText("->"), b -> {
+        nextPage = new ButtonWidget(width / 2 + 104, pageBottom, 20, 20, Text.literal("->"), b -> {
             page++;
             updateArrows();
         });
@@ -156,7 +157,7 @@ public abstract class BlockSelector extends Screen {
         super.render(matrixStack, mouseX, mouseY, partialTick);
 
         if (hoveredBlock != null) {
-            renderTooltip(matrixStack, new TranslatableText(hoveredBlock.getTranslationKey()), mouseX, mouseY);
+            renderTooltip(matrixStack, Text.translatable(hoveredBlock.getTranslationKey()), mouseX, mouseY);
         }
     }
 

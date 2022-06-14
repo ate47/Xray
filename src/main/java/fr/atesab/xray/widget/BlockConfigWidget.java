@@ -11,7 +11,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+
 
 public class BlockConfigWidget extends ButtonWidget {
     private BlockConfig cfg;
@@ -24,7 +25,7 @@ public class BlockConfigWidget extends ButtonWidget {
 
     public BlockConfigWidget(int x, int y, int width, int height, BlockConfig cfg, Screen menu, int deltaX,
             int deltaY) {
-        super(x, y, width, height, new LiteralText(""),
+        super(x, y, width, height, Text.empty(),
                 b -> MinecraftClient.getInstance().setScreen(new XrayBlockMenu(menu, cfg)));
         this.cfg = cfg;
         this.deltaX = deltaX;

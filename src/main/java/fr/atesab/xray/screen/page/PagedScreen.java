@@ -13,9 +13,9 @@ import fr.atesab.xray.utils.TagOnWriteList;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+
 
 public abstract class PagedScreen<E> extends XrayScreen {
     @FunctionalInterface
@@ -46,8 +46,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
         elements.setTagEnabled(false);
         initElements(stream);
         elements.setTagEnabled(true);
-        lastButton = new ButtonWidget(0, 0, 20, 20, new LiteralText("<-"), b -> lastPage());
-        nextButton = new ButtonWidget(0, 0, 20, 20, new LiteralText("->"), b -> nextPage());
+        lastButton = new ButtonWidget(0, 0, 20, 20, Text.literal("<-"), b -> lastPage());
+        nextButton = new ButtonWidget(0, 0, 20, 20, Text.literal("->"), b -> nextPage());
     }
 
     protected void removeDoneButton() {
@@ -151,7 +151,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
         addDrawableChild(lastButton);
         if (doneButton)
             addDrawableChild(
-                    new ButtonWidget(width / 2 - 176, height - 24, 172, 20, new TranslatableText("gui.done"), b -> {
+                    new ButtonWidget(width / 2 - 176, height - 24, 172, 20, Text.translatable("gui.done"), b -> {
                         save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
                                 .collect(Collectors.toCollection(() -> new ArrayList<>())));
                         client.setScreen(parent);
@@ -159,7 +159,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
         addDrawableChild(
                 new ButtonWidget(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20,
-                        new TranslatableText("gui.cancel"),
+                        Text.translatable("gui.cancel"),
                         b -> {
                             cancel();
                             client.setScreen(parent);

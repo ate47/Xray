@@ -13,7 +13,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+
 import net.minecraft.util.registry.Registry;
 
 public class ESPConfig extends AbstractModeConfig implements Cloneable {
@@ -43,7 +43,7 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
         }
 
         Template(String translation, ItemStack icon, Supplier<ESPConfig> cfg) {
-            this.title = new TranslatableText(translation);
+            this.title = Text.translatable(translation);
             this.icon = icon;
             this.cfg = cfg;
         }

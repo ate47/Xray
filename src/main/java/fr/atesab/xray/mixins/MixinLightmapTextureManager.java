@@ -9,7 +9,7 @@ import fr.atesab.xray.XrayMain;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.LightmapTextureManager;
 
-@Mixin(value = LightmapTextureManager.class)
+/*@Mixin(value = LightmapTextureManager.class)
 public class MixinLightmapTextureManager {
 
 	@Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;gamma*:D", opcode = Opcodes.GETFIELD), method = "update(F)V")
@@ -20,4 +20,4 @@ public class MixinLightmapTextureManager {
 			return options.gamma;
 		}
 	}
-}
+}*/ //TODO Broke 1.19 :/

@@ -14,16 +14,16 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
+
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+
 import net.minecraft.util.Formatting;
 
 public class XrayEntityMenu extends Screen {
-    private static final Text ADD = new LiteralText("+").formatted(Formatting.GREEN);
-    private static final Text REPLACE = new TranslatableText("x13.mod.menu.replace")
+    private static final Text ADD = Text.literal("+").formatted(Formatting.GREEN);
+    private static final Text REPLACE = Text.translatable("x13.mod.menu.replace")
             .formatted(Formatting.YELLOW);
-    private static final Text DELETE = new TranslatableText("x13.mod.menu.delete")
+    private static final Text DELETE = Text.translatable("x13.mod.menu.delete")
             .formatted(Formatting.RED);
     private Screen parent;
     private ESPConfig mode;
@@ -38,7 +38,7 @@ public class XrayEntityMenu extends Screen {
     private int page = 0;
 
     public XrayEntityMenu(Screen parent, ESPConfig mode) {
-        super(new LiteralText(mode.getName()));
+        super(Text.literal(mode.getName()));
         this.mode = mode;
         this.parent = parent;
         this.config = new ArrayList<>();
@@ -58,7 +58,7 @@ public class XrayEntityMenu extends Screen {
         int pageBottom = height / 2 + sizeY / 2 + 2;
 
         searchBar = new TextFieldWidget(textRenderer, width / 2 - sizeX / 2, pageTop + 2, sizeX, 16,
-                new LiteralText("")) {
+                Text.literal("")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (button == 1 && mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y
@@ -94,22 +94,22 @@ public class XrayEntityMenu extends Screen {
             }
         };
 
-        lastPage = new ButtonWidget(width / 2 - 126, pageBottom, 20, 20, new LiteralText("<-"), b -> {
+        lastPage = new ButtonWidget(width / 2 - 126, pageBottom, 20, 20, Text.literal("<-"), b -> {
             page--;
             updateArrows();
         });
 
         ButtonWidget doneBtn = new ButtonWidget(width / 2 - 102, pageBottom, 100, 20,
-                new TranslatableText("gui.done"), b -> {
+                Text.translatable("gui.done"), b -> {
                     mode.getEntities().setObjects(config);
                     client.setScreen(parent);
                 });
 
         ButtonWidget cancelBtn = new ButtonWidget(width / 2 + 2, pageBottom, 100, 20,
-                new TranslatableText("gui.cancel"), b -> {
+                Text.translatable("gui.cancel"), b -> {
                     client.setScreen(parent);
                 });
-        nextPage = new ButtonWidget(width / 2 + 106, pageBottom, 20, 20, new LiteralText("->"), b -> {
+        nextPage = new ButtonWidget(width / 2 + 106, pageBottom, 20, 20, Text.literal("->"), b -> {
             page++;
             updateArrows();
         });
@@ -195,7 +195,7 @@ public class XrayEntityMenu extends Screen {
 
         if (hovered != null) {
             renderTooltip(matrixStack,
-                    Arrays.asList(new TranslatableText(hoveredBlock.getTranslationKey()), REPLACE, DELETE),
+                    Arrays.asList(Text.translatable(hoveredBlock.getTranslationKey()), REPLACE, DELETE),
                     mouseX, mouseY);
         }
     }

@@ -11,7 +11,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+
 
 public class EntityConfigWidget extends ButtonWidget {
     private ESPConfig cfg;
@@ -24,7 +25,7 @@ public class EntityConfigWidget extends ButtonWidget {
 
     public EntityConfigWidget(int x, int y, int width, int height, ESPConfig cfg, Screen menu, int deltaX,
             int deltaY) {
-        super(x, y, width, height, new LiteralText(""),
+        super(x, y, width, height, Text.literal(""),
                 b -> MinecraftClient.getInstance().setScreen(new XrayEntityMenu(menu, cfg)));
         this.cfg = cfg;
         this.deltaX = deltaX;

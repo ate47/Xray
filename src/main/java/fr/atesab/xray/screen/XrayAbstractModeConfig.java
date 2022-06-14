@@ -7,8 +7,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
+
 
 public class XrayAbstractModeConfig extends XrayScreen {
     private AbstractModeConfig cfg;
@@ -16,7 +16,7 @@ public class XrayAbstractModeConfig extends XrayScreen {
     private int color;
 
     protected XrayAbstractModeConfig(Screen parent, AbstractModeConfig cfg) {
-        super(new TranslatableText("x13.mod.mode.edit"), parent);
+        super(Text.translatable("x13.mod.mode.edit"), parent);
         this.cfg = cfg;
         this.color = cfg.getColor();
     }
@@ -31,22 +31,22 @@ public class XrayAbstractModeConfig extends XrayScreen {
     @Override
     protected void init() {
         addDrawableChild(
-                new ButtonWidget(width / 2 - 100, height / 2 + 24, 200, 20, new TranslatableText("gui.done"), btn -> {
+                new ButtonWidget(width / 2 - 100, height / 2 + 24, 200, 20, Text.translatable("gui.done"), btn -> {
                     cfg.setName(nameBox.getText());
                     cfg.setColor(color);
                     client.setScreen(parent);
                 }));
         addDrawableChild(
-                new ButtonWidget(width / 2 - 100, height / 2 + 48, 200, 20, new TranslatableText("gui.cancel"), btn -> {
+                new ButtonWidget(width / 2 - 100, height / 2 + 48, 200, 20, Text.translatable("gui.cancel"), btn -> {
                     client.setScreen(parent);
                 }));
 
-        nameBox = new TextFieldWidget(textRenderer, width / 2 - 98, height / 2 - 22, 196, 16, new LiteralText(""));
+        nameBox = new TextFieldWidget(textRenderer, width / 2 - 98, height / 2 - 22, 196, 16, Text.literal(""));
         nameBox.setMaxLength(128);
         nameBox.setText(cfg.getModeName());
 
         addDrawableChild(new ColorSelectorWidget(width / 2 - 100, height / 2, 200, 20,
-                new TranslatableText("x13.mod.color.title"), client, this, c -> color = c, () -> color));
+                Text.translatable("x13.mod.color.title"), client, this, c -> color = c, () -> color));
 
         addSelectableChild(nameBox);
         setInitialFocus(nameBox);
