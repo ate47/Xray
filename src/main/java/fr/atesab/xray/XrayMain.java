@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.SimpleOption;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -89,6 +92,10 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 	private int fullbrightColor = 0;
 
+	private final SimpleOption<Double> gammaBypass = new SimpleOption<>("options.gamma", SimpleOption.emptyTooltip(), (optionText, value) -> Text.empty(), SimpleOption.DoubleSliderCallbacks.INSTANCE.withModifier(
+			d -> (double) getInternalFullbrightState(), d -> 1
+	), 0.5, value -> {});
+
 	private final IColorObject fullbrightMode = new IColorObject() {
 		public int getColor() {
 			return fullbrightColor;
@@ -104,6 +111,15 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	 */
 	public XrayMain fullBright() {
 		return fullBright(!fullBrightEnable);
+	}
+
+	/**
+	 * @return the gamma option
+	 */
+	public SimpleOption<Double> getGammaBypass() {
+		// force value
+		gammaBypass.setValue(1.0);
+		return gammaBypass;
 	}
 
 	/**
@@ -168,7 +184,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 	 * @return the internalFullbrightEnable
 	 */
 	public float getInternalFullbrightState() {
-		return 20 * internalFullbrightState / maxFullbrightStates;
+		return 20f * internalFullbrightState / maxFullbrightStates;
 	}
 
 	private static void log(String message) {

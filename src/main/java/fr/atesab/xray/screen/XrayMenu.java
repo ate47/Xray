@@ -59,12 +59,7 @@ public class XrayMenu extends XrayScreen {
                     });
                 }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                /*Text.translatable("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), () -> {
-                    mod.fullBright();
-                }));*/ //Todo 1.19 :/
-                Text.literal("broken"), new ItemStack(Blocks.BARRIER), () -> {
-                    client.player.sendMessage(Text.literal("Fullbright is currently broken."), false);
-                }));
+                Text.translatable("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), mod::fullBright));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 Text.translatable("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
                     client.setScreen(new XrayLocationConfig(this));
