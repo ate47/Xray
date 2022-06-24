@@ -1,4 +1,4 @@
-name: Run Gradle on PRs
+name: Building jars
 
 on: push
 
@@ -17,7 +17,7 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
-      - name: Run tests
+      - name: Build jars
         run: ./gradlew build
       - name: Extract jars
         run: |
@@ -26,6 +26,6 @@ jobs:
       - name: Deploy jar
         uses: actions/upload-artifact@v3
         with:
-          name: "endpoint.jar"
+          name: "temp jars"
           path: "build_jars/*"
 
