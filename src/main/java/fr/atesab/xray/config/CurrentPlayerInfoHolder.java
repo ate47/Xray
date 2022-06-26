@@ -45,25 +45,23 @@ public class CurrentPlayerInfoHolder {
 	}
 	
 	public void update() {
-		if (player == null) {
-			if (mc.player == null)
+		if (mc.player == null)
 				return;
-			player = mc.player;
-		}
+		player = mc.player;
 		level = mc.level;
 		playerPosition = player.position();
 		x = playerPosition.x;
 		y = playerPosition.y;
 		z = playerPosition.z;
 		fx = (int)x;
-		fx = (int)y;
-		fx = (int)z;
+		fy = (int)y;
+		fz = (int)z;
 		playerChunk = player.chunkPosition();
 		playerBlockPosition = player.blockPosition();
 		playerName = player.getGameProfile().getName();
 		biome = level.getPrimaryBiome(playerChunk);
 		cx = playerChunk.x;
-		cx = playerChunk.z;
+		cz = playerChunk.z;
 		lookingBlockPos = LocationUtils.getLookingBlockPos(mc);
 		lookingBlock = level.getBlockState(lookingBlockPos).getBlock();
 		playerDirection = player.getDirection();
