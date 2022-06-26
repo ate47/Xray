@@ -287,11 +287,7 @@ public class XrayMain {
 	public void onHudRender(RenderGameOverlayEvent ev) {
 		Minecraft mc = Minecraft.getInstance();
 		LocalPlayer player = mc.player;
-<<<<<<< HEAD
 		
-=======
-
->>>>>>> branch 'forge-1.17-v2' of https://github.com/ate47/Xray.git
 		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.renderDebug)
 			return;
 
@@ -315,16 +311,10 @@ public class XrayMain {
 		}
 
 		String format = getConfig().getLocationConfig().getFormat();
-<<<<<<< HEAD
 		cpinfo.update();
 		String[] renderStrings = LocationFormatTool.applyAll(format, mc , cpinfo).split(LocationFormatTool.LINE_SEPARATER);
 		for (int lineIndex = 0;lineIndex < renderStrings.length;lineIndex++) {
 			render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER,""), 
-=======
-		String[] renderStrings = LocationFormatTool.applyAll(format, mc).split(LocationFormatTool.LINE_SEPARATER);
-		for (int lineIndex = 0; lineIndex < renderStrings.length; lineIndex++) {
-			render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER, ""),
->>>>>>> branch 'forge-1.17-v2' of https://github.com/ate47/Xray.git
 					5, 5 + render.lineHeight * (lineIndex + (w > 0 ? 1 : 0)), 0xffffffff);
 		}
 	}

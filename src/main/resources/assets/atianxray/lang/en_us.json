@@ -72,10 +72,6 @@
   "x13.mod.cave": "Cave Mode",
   "x13.mod.redstone": "Redstone Mode",
   "x13.mod.fullbright": "Fullbright",
-<<<<<<< HEAD
-  "x13.mod.locationEnable": "Location Data On/Off",
-=======
->>>>>>> branch 'forge-1.17-v2' of https://github.com/ate47/Xray.git
   "x13.mod.config": "Config",
   "x13.mod.modes": "Modes",
   "x13.mod.selector.key.title": "Key selection",
