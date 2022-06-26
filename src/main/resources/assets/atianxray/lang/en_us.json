@@ -66,13 +66,16 @@
   "x13.mod.location.opt.secondsPadding": "Seconds(with 0 Padding)",
   "x13.mod.location.opt.isSlime": "Is Slime Chunk",
   "x13.mod.location.opt.lineFeed": "Start New Line",
-  "x13.mod.location.opt.valueSeparate": "Separete Value",
+  "x13.mod.location.opt.valueSeparate": "Separate Value",
 
   "x13.mod.xray": "Xray Mode",
   "x13.mod.cave": "Cave Mode",
   "x13.mod.redstone": "Redstone Mode",
   "x13.mod.fullbright": "Fullbright",
+<<<<<<< HEAD
   "x13.mod.locationEnable": "Location Data On/Off",
+=======
+>>>>>>> branch 'forge-1.17-v2' of https://github.com/ate47/Xray.git
   "x13.mod.config": "Config",
   "x13.mod.modes": "Modes",
   "x13.mod.selector.key.title": "Key selection",
