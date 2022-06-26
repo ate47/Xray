@@ -25,6 +25,7 @@ import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.config.BlockConfig;
+import fr.atesab.xray.config.CurrentPlayerInfoHolder;
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.config.XrayConfig;
@@ -86,11 +87,13 @@ public class XrayMain {
 
 	private int internalFullbrightState = 0;
 
-	private KeyMapping configKey, fullbrightKey;
+	private KeyMapping configKey, fullbrightKey, locationEnableKey;
 
 	private XrayConfig config;
 
 	private int fullbrightColor = 0;
+	
+	private static CurrentPlayerInfoHolder cpinfo = new CurrentPlayerInfoHolder();
 
 	private final IColorObject fullbrightMode = new IColorObject() {
 		public int getColor() {
@@ -273,6 +276,8 @@ public class XrayMain {
 
 		if (fullbrightKey.consumeClick())
 			fullBright();
+		if (locationEnableKey.consumeClick())
+			config.getLocationConfig().setEnabled(!config.getLocationConfig().isEnabled());
 		if (configKey.consumeClick())
 			client.setScreen(new XrayMenu(null));
 
@@ -280,11 +285,15 @@ public class XrayMain {
 
 	@SubscribeEvent
 	public void onHudRender(RenderGameOverlayEvent ev) {
+		Minecraft mc = Minecraft.getInstance();
+		LocalPlayer player = mc.player;
+		
+		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.renderDebug)
+			return;
+
 		int w = 0;
 		PoseStack stack = ev.getMatrixStack();
-		Minecraft mc = Minecraft.getInstance();
 		Font render = mc.font;
-		LocalPlayer player = mc.player;
 
 		if (config.getLocationConfig().isShowMode()) {
 			for (AbstractModeConfig cfg : config.getModes()) {
@@ -301,9 +310,12 @@ public class XrayMain {
 			}
 		}
 
-		if (config.getLocationConfig().isEnabled() && player != null) {
-			String format = getConfig().getLocationConfig().getFormat();
-			render.draw(stack, LocationFormatTool.applyAll(format, mc), 5 + w, 5, 0xffffffff);
+		String format = getConfig().getLocationConfig().getFormat();
+		cpinfo.update();
+		String[] renderStrings = LocationFormatTool.applyAll(format, mc , cpinfo).split(LocationFormatTool.LINE_SEPARATER);
+		for (int lineIndex = 0;lineIndex < renderStrings.length;lineIndex++) {
+			render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER,""), 
+					5, 5 + render.lineHeight * (lineIndex + (w > 0 ? 1 : 0)), 0xffffffff);
 		}
 	}
 
@@ -388,6 +400,9 @@ public class XrayMain {
 
 		fullbrightKey = new KeyMapping("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
 		ClientRegistry.registerKeyBinding(fullbrightKey);
+
+		locationEnableKey = new KeyMapping("x13.mod.locationEnable", GLFW.GLFW_KEY_J, "key.categories.xray");
+		ClientRegistry.registerKeyBinding(locationEnableKey);
 
 		configKey = new KeyMapping("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
 		ClientRegistry.registerKeyBinding(configKey);
