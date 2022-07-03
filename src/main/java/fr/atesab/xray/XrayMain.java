@@ -25,6 +25,7 @@ import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.config.BlockConfig;
+import fr.atesab.xray.config.CurrentPlayerInfoHolder;
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.config.XrayConfig;
@@ -91,6 +92,8 @@ public class XrayMain {
 	private XrayConfig config;
 
 	private int fullbrightColor = 0;
+	
+	private static CurrentPlayerInfoHolder cpinfo = new CurrentPlayerInfoHolder();
 
 	private final IColorObject fullbrightMode = new IColorObject() {
 		public int getColor() {
@@ -284,7 +287,7 @@ public class XrayMain {
 	public void onHudRender(RenderGameOverlayEvent ev) {
 		Minecraft mc = Minecraft.getInstance();
 		LocalPlayer player = mc.player;
-
+		
 		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.renderDebug)
 			return;
 
@@ -308,9 +311,10 @@ public class XrayMain {
 		}
 
 		String format = getConfig().getLocationConfig().getFormat();
-		String[] renderStrings = LocationFormatTool.applyAll(format, mc).split(LocationFormatTool.LINE_SEPARATER);
-		for (int lineIndex = 0; lineIndex < renderStrings.length; lineIndex++) {
-			render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER, ""),
+		cpinfo.update();
+		String[] renderStrings = LocationFormatTool.applyAll(format, mc , cpinfo).split(LocationFormatTool.LINE_SEPARATER);
+		for (int lineIndex = 0;lineIndex < renderStrings.length;lineIndex++) {
+			render.draw(stack, renderStrings[lineIndex].replace(LocationFormatTool.VALUE_SEPARATER,""), 
 					5, 5 + render.lineHeight * (lineIndex + (w > 0 ? 1 : 0)), 0xffffffff);
 		}
 	}
