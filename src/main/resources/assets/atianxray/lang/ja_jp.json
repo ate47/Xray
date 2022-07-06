@@ -67,7 +67,7 @@
   "x13.mod.location.opt.isSlime": "スライムチャンク",
   "x13.mod.location.opt.lineFeed": "改行",
   "x13.mod.location.opt.valueSeparate": "変数名の分割",
-  "x13.mod.location.Enabled": "座標表示 On/Off",
+  "x13.mod.locationEnable": "座標表示 On/Off",
 
   "x13.mod.xray": "透視モード",
   "x13.mod.cave": "洞窟モード",

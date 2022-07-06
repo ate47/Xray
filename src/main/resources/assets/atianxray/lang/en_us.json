@@ -67,7 +67,7 @@
   "x13.mod.location.opt.isSlime": "Is Slime Chunk",
   "x13.mod.location.opt.lineFeed": "Start New Line",
   "x13.mod.location.opt.valueSeparate": "Separate Value",
-  "x13.mod.location.Enabled": "Location Info On/Off",
+  "x13.mod.locationEnable": "Location Info On/Off",
 
   "x13.mod.xray": "Xray Mode",
   "x13.mod.cave": "Cave Mode",
