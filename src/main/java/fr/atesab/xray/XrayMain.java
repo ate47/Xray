@@ -15,6 +15,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 
+import net.minecraft.client.OptionInstance;
+import net.minecraft.network.chat.Component;
+import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.event.*;
+import net.minecraftforge.eventbus.api.IEventBus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -54,11 +60,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
-import net.minecraftforge.client.ClientRegistry;
-import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -77,10 +78,15 @@ public class XrayMain {
 	public static final URL MOD_ISSUE = XrayUtils.soWhat(() -> new URL("https://github.com/ate47/Xray/issues"));
 	public static final URL MOD_LINK = XrayUtils
 			.soWhat(() -> new URL("https://www.curseforge.com/minecraft/mc-mods/xray-1-13-rift-modloader"));
-	private static int maxFullbrightStates = 20;
+	private static final int maxFullbrightStates = 20;
 	private static final Logger log = LogManager.getLogger(MOD_ID);
 
 	private static XrayMain instance;
+
+	private final OptionInstance<Double> gammaBypass = new OptionInstance<>(
+			"options.gamma", OptionInstance.noTooltip(), (optionText, value) -> Component.empty(), OptionInstance.UnitDouble.INSTANCE.xmap(
+			d -> (double) getInternalFullbrightState(), d -> 1
+	), 0.5, value -> {});
 
 	private boolean fullBrightEnable = false;
 
@@ -172,8 +178,17 @@ public class XrayMain {
 	 * @return the internalFullbrightEnable
 	 */
 	public float getInternalFullbrightState() {
-		return 20 * internalFullbrightState / maxFullbrightStates;
+		return 20f * internalFullbrightState / maxFullbrightStates;
 	}
+	/**
+	 * @return the gamma option
+	 */
+	public OptionInstance<Double> getGammaBypass() {
+		// force value
+		gammaBypass.set(1.0);
+		return gammaBypass;
+	}
+
 
 	private static void log(String message) {
 		log.info("[{}] {}", log.getName(), message);
@@ -224,7 +239,10 @@ public class XrayMain {
 
 	public XrayMain() {
 		instance = this;
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+		bus.addListener(this::setup);
+		bus.addListener(this::registerKeyBinding);
+
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
@@ -260,7 +278,7 @@ public class XrayMain {
 	}
 
 	@SubscribeEvent
-	public void onKeyEvent(KeyInputEvent ev) {
+	public void onKeyEvent(InputEvent.Key ev) {
 		Minecraft client = Minecraft.getInstance();
 		if (client.screen != null)
 			return;
@@ -279,9 +297,9 @@ public class XrayMain {
 	}
 
 	@SubscribeEvent
-	public void onHudRender(RenderGameOverlayEvent ev) {
+	public void onHudRender(RenderGuiOverlayEvent ev) {
 		int w = 0;
-		PoseStack stack = ev.getMatrixStack();
+		PoseStack stack = ev.getPoseStack();
 		Minecraft mc = Minecraft.getInstance();
 		Font render = mc.font;
 		LocalPlayer player = mc.player;
@@ -308,16 +326,22 @@ public class XrayMain {
 	}
 
 	@SubscribeEvent
-	public void onRenderWorld(RenderLevelLastEvent ev) {
+	public void onRenderWorld(RenderLevelStageEvent ev) {
+		if (ev.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) {
+			return;
+		}
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientLevel level = minecraft.level;
 		LocalPlayer player = minecraft.player;
+		if (level == null || player == null) {
+			return;
+		}
 		PoseStack stack = ev.getPoseStack();
 		float delta = ev.getPartialTick();
 		Camera mainCamera = minecraft.gameRenderer.getMainCamera();
 		Vec3 camera = mainCamera.getPosition();
 
-		if (!config.getEspConfigs().stream().filter(ESPConfig::isEnabled).findAny().isPresent()) {
+		if (config.getEspConfigs().stream().noneMatch(ESPConfig::isEnabled)) {
 			return;
 		}
 		BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
@@ -330,6 +354,7 @@ public class XrayMain {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 		stack.pushPose();
+		stack.setIdentity();
 		stack.translate(-camera.x, -camera.y, -camera.z);
 		Vector3f look = mainCamera.getLookVector();
 		float px = (float) (player.xOld + (player.getX() - player.xOld) * delta) + look.x();
@@ -381,20 +406,23 @@ public class XrayMain {
 		modules();
 	}
 
+	private void registerKeyBinding(final RegisterKeyMappingsEvent ev) {
+		ev.register(fullbrightKey);
+		ev.register(configKey);
+	}
+
 	private void setup(final FMLCommonSetupEvent event) {
 		log("Initialization");
 		fullbrightColor = ColorSupplier.DEFAULT.getColor();
 		loadConfigs();
 
 		fullbrightKey = new KeyMapping("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
-		ClientRegistry.registerKeyBinding(fullbrightKey);
 
 		configKey = new KeyMapping("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
-		ClientRegistry.registerKeyBinding(configKey);
 
 		ModList.get().getModContainerById(MOD_ID).ifPresent(con -> {
-			con.registerExtensionPoint(ConfigGuiFactory.class,
-					() -> new ConfigGuiFactory((mc, parent) -> new XrayMenu(parent)));
+			con.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
+					() -> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new XrayMenu(parent)));
 		});
 	}
 }

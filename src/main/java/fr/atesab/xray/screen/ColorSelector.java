@@ -21,8 +21,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -132,7 +131,7 @@ public class ColorSelector extends XrayScreen {
 
     public ColorSelector(Screen parent, Consumer<OptionalInt> setter, OptionalInt color, int defaultColor,
             boolean transparentAsDefault) {
-        super(new TranslatableComponent("x13.mod.color.title"), parent);
+        super(Component.translatable("x13.mod.color.title"), parent);
         int rgba = color.orElse(defaultColor);
         this.color = rgba & 0xFFFFFF; // remove alpha
         this.oldAlphaLayer = rgba & 0xFF000000;
@@ -281,35 +280,35 @@ public class ColorSelector extends XrayScreen {
     @Override
     public void init() {
         addRenderableWidget(
-                new Button(width / 2 - 200, height / 2 + 80, 130, 20, new TranslatableComponent("gui.done"), b -> {
+                new Button(width / 2 - 200, height / 2 + 80, 130, 20, Component.translatable("gui.done"), b -> {
                     complete();
                     getMinecraft().setScreen(parent);
                 }));
         advButton = addRenderableWidget(new Button(width / 2 - 66, height / 2 + 80, 132, 20,
-                new TranslatableComponent("x13.mod.color.advanced"), b -> {
+                Component.translatable("x13.mod.color.advanced"), b -> {
                     advanced ^= true;
-                    advButton.setMessage(new TranslatableComponent(
+                    advButton.setMessage(Component.translatable(
                             advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
                 }));
         addRenderableWidget(
-                new Button(width / 2 + 70, height / 2 + 80, 130, 20, new TranslatableComponent("gui.cancel"), b -> {
+                new Button(width / 2 + 70, height / 2 + 80, 130, 20, Component.translatable("gui.cancel"), b -> {
                     getMinecraft().setScreen(parent);
                 }));
 
         int advWidth = 158 + 200;
         int midAdv = width / 2 + (-158 + 200) / 2;
-        tfr = new EditBox(font, midAdv - 56, height / 2 - 54, 56, 18, new TextComponent(""));
-        tfg = new EditBox(font, midAdv - 56, height / 2 - 26, 56, 18, new TextComponent(""));
-        tfb = new EditBox(font, midAdv - 56, height / 2 + 2, 56, 18, new TextComponent(""));
+        tfr = new EditBox(font, midAdv - 56, height / 2 - 54, 56, 18, Component.literal(""));
+        tfg = new EditBox(font, midAdv - 56, height / 2 - 26, 56, 18, Component.literal(""));
+        tfb = new EditBox(font, midAdv - 56, height / 2 + 2, 56, 18, Component.literal(""));
 
         int rightAdv = width / 2 + 200;
-        tfh = new EditBox(font, rightAdv - 56, height / 2 - 54, 56, 18, new TextComponent(""));
-        tfl = new EditBox(font, rightAdv - 56, height / 2 - 26, 56, 18, new TextComponent(""));
-        tfs = new EditBox(font, rightAdv - 56, height / 2 + 2, 56, 18, new TextComponent(""));
+        tfh = new EditBox(font, rightAdv - 56, height / 2 - 54, 56, 18, Component.literal(""));
+        tfl = new EditBox(font, rightAdv - 56, height / 2 - 26, 56, 18, Component.literal(""));
+        tfs = new EditBox(font, rightAdv - 56, height / 2 + 2, 56, 18, Component.literal(""));
 
         int intHexWidth = (advWidth - 4 - 4) / 2;
-        intColor = new EditBox(font, midAdv - intHexWidth, height / 2 + 40, intHexWidth, 18, new TextComponent(""));
-        hexColor = new EditBox(font, midAdv + 4, height / 2 + 40, intHexWidth, 18, new TextComponent(""));
+        intColor = new EditBox(font, midAdv - intHexWidth, height / 2 + 40, intHexWidth, 18, Component.literal(""));
+        hexColor = new EditBox(font, midAdv + 4, height / 2 + 40, intHexWidth, 18, Component.literal(""));
 
         tfr.setMaxLength(4);
         tfg.setMaxLength(4);

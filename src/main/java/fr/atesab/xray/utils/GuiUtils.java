@@ -645,7 +645,7 @@ public class GuiUtils {
         bufferbuilder.vertex(mat, right, bottom, zLevel)
                 .color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom).endVertex();
         bufferbuilder.end();
-        BufferUploader.end(bufferbuilder);
+        BufferUploader.draw(bufferbuilder.end());
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
     }

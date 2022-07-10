@@ -13,7 +13,7 @@ import fr.atesab.xray.widget.MenuWidget;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.Blocks;
 public class XrayMenu extends XrayScreen {
 
     public XrayMenu(Screen parent) {
-        super(new TranslatableComponent("x13.mod.config"), parent);
+        super(Component.translatable("x13.mod.config"), parent);
     }
 
     @Override
@@ -33,13 +33,13 @@ public class XrayMenu extends XrayScreen {
         XrayMain mod = XrayMain.getMod();
 
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 52, 200, 20, new TranslatableComponent("gui.done"),
+                new Button(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
                         btn -> {
                             minecraft.setScreen(parent);
                         }));
 
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), () -> {
+                Component.translatable("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), () -> {
                     minecraft.setScreen(new XrayBlockModesConfig(this, mod.getConfig().getBlockConfigs().stream()) {
                         @Override
                         protected void save(List<BlockConfig> list) {
@@ -49,7 +49,7 @@ public class XrayMenu extends XrayScreen {
                     });
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), () -> {
+                Component.translatable("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), () -> {
                     minecraft.setScreen(new XrayESPModesConfig(this, mod.getConfig().getEspConfigs().stream()) {
                         @Override
                         protected void save(List<ESPConfig> list) {
@@ -59,15 +59,15 @@ public class XrayMenu extends XrayScreen {
                     });
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), () -> {
+                Component.translatable("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), () -> {
                     mod.fullBright();
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
+                Component.translatable("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
                     minecraft.setScreen(new XrayLocationConfig(this));
                 }));
         addRenderableWidget(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
-                new TranslatableComponent("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
+                Component.translatable("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
                     minecraft.setScreen(new XrayConfigMenu(this));
                 }));
 
@@ -82,7 +82,7 @@ public class XrayMenu extends XrayScreen {
         stack.scale(4, 4, 1);
         drawCenteredString(stack, minecraft.font, XrayMain.MOD_NAME, 0, -minecraft.font.lineHeight, 0xffffff33);
         stack.popPose();
-        drawCenteredString(stack, minecraft.font, new TranslatableComponent("x13.mod.by",
+        drawCenteredString(stack, minecraft.font, Component.translatable("x13.mod.by",
                 Arrays.stream(XrayMain.MOD_AUTHORS).collect(Collectors.joining(
                         ", "))),
                 width / 2, height / 2 - 60, 0xffaaaaaa);

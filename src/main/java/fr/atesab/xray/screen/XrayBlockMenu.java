@@ -13,21 +13,19 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
 public class XrayBlockMenu extends Screen {
-    private static final Component ADD = new TextComponent("+").withStyle(ChatFormatting.GREEN);
-    private static final Component REPLACE = new TranslatableComponent("x13.mod.menu.replace")
+    private static final Component ADD = Component.literal("+").withStyle(ChatFormatting.GREEN);
+    private static final Component REPLACE = Component.translatable("x13.mod.menu.replace")
             .withStyle(ChatFormatting.YELLOW);
-    private static final Component DELETE = new TranslatableComponent("x13.mod.menu.delete")
+    private static final Component DELETE = Component.translatable("x13.mod.menu.delete")
             .withStyle(ChatFormatting.RED);
-    private Screen parent;
-    private BlockConfig mode;
-    private List<Block> config;
-    private List<Block> visible = new ArrayList<>();
+    private final Screen parent;
+    private final BlockConfig mode;
+    private final List<Block> config;
+    private final List<Block> visible = new ArrayList<>();
     private EditBox searchBar;
     private Button nextPage;
     private Button lastPage;
@@ -37,7 +35,7 @@ public class XrayBlockMenu extends Screen {
     private int page = 0;
 
     public XrayBlockMenu(Screen parent, BlockConfig mode) {
-        super(new TextComponent(mode.getName()));
+        super(Component.translatable(mode.getName()));
         this.mode = mode;
         this.parent = parent;
         this.config = new ArrayList<>();
@@ -56,7 +54,7 @@ public class XrayBlockMenu extends Screen {
         int pageTop = height / 2 - sizeY / 2 - 24;
         int pageBottom = height / 2 + sizeY / 2 + 2;
 
-        searchBar = new EditBox(font, width / 2 - sizeX / 2, pageTop + 2, sizeX, 16, new TextComponent("")) {
+        searchBar = new EditBox(font, width / 2 - sizeX / 2, pageTop + 2, sizeX, 16, Component.literal("")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (button == 1 && mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y
@@ -92,22 +90,22 @@ public class XrayBlockMenu extends Screen {
             }
         };
 
-        lastPage = new Button(width / 2 - 126, pageBottom, 20, 20, new TextComponent("<-"), b -> {
+        lastPage = new Button(width / 2 - 126, pageBottom, 20, 20, Component.literal("<-"), b -> {
             page--;
             updateArrows();
         });
 
         Button doneBtn = new Button(width / 2 - 102, pageBottom, 100, 20,
-                new TranslatableComponent("gui.done"), b -> {
+                Component.translatable("gui.done"), b -> {
                     mode.getBlocks().setObjects(config);
                     getMinecraft().setScreen(parent);
                 });
 
         Button cancelBtn = new Button(width / 2 + 2, pageBottom, 100, 20,
-                new TranslatableComponent("gui.cancel"), b -> {
+                Component.translatable("gui.cancel"), b -> {
                     getMinecraft().setScreen(parent);
                 });
-        nextPage = new Button(width / 2 + 106, pageBottom, 20, 20, new TextComponent("->"), b -> {
+        nextPage = new Button(width / 2 + 106, pageBottom, 20, 20, Component.literal("->"), b -> {
             page++;
             updateArrows();
         });
@@ -186,13 +184,13 @@ public class XrayBlockMenu extends Screen {
         }
 
         fill(matrixStack, x, y, x + 18, y + 18, color);
-        font.draw(matrixStack, ADD, x + 18 / 2 - font.width(ADD) / 2, y + 18 / 2 - font.lineHeight / 2, color);
+        font.draw(matrixStack, ADD, x + 18 / 2f - font.width(ADD) / 2f, y + 18 / 2f - font.lineHeight / 2f, color);
 
         super.render(matrixStack, mouseX, mouseY, partialTick);
 
         if (hovered != null) {
             renderTooltip(matrixStack,
-                    Arrays.asList(new TranslatableComponent(hoveredBlock.getDescriptionId()).getVisualOrderText(),
+                    Arrays.asList(Component.translatable(hoveredBlock.getDescriptionId()).getVisualOrderText(),
                             REPLACE.getVisualOrderText(), DELETE.getVisualOrderText()),
                     mouseX, mouseY, font);
         }

@@ -10,7 +10,6 @@ import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EnumElement;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.ItemStack;
@@ -43,7 +42,7 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
         }
 
         Template(String translation, ItemStack icon, Supplier<ESPConfig> cfg) {
-            this.title = new TranslatableComponent(translation);
+            this.title = Component.translatable(translation);
             this.icon = icon;
             this.cfg = cfg;
         }

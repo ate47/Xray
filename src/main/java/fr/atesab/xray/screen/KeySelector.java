@@ -8,10 +8,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.utils.KeyData;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 public class KeySelector extends XrayScreen {
-    private static final TranslatableComponent NONE_KEY = new TranslatableComponent("x13.mod.selector.key.none");
+    private static final MutableComponent NONE_KEY = Component.translatable("x13.mod.selector.key.none");
 
     private Consumer<Optional<KeyData>> keyConsumer;
     private Optional<KeyData> value;
@@ -30,7 +31,7 @@ public class KeySelector extends XrayScreen {
     }
 
     public KeySelector(Screen parent, Optional<KeyData> currentValue, Consumer<Optional<KeyData>> keyConsumer) {
-        super(new TranslatableComponent("x13.mod.selector.key.title"), parent);
+        super(Component.translatable("x13.mod.selector.key.title"), parent);
         value = currentValue;
         this.keyConsumer = keyConsumer;
     }
@@ -58,12 +59,12 @@ public class KeySelector extends XrayScreen {
         keyButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 - 24, 200, 20,
                 NONE_KEY, b -> waitKey()));
         doneButton = addRenderableWidget(new Button(width / 2 - 100, height / 2, 200, 20,
-                new TranslatableComponent("gui.done"), b -> {
+                Component.translatable("gui.done"), b -> {
                     keyConsumer.accept(value);
                     minecraft.setScreen(parent);
                 }));
         cancelButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 24, 200, 20,
-                new TranslatableComponent("gui.cancel"), b -> {
+                Component.translatable("gui.cancel"), b -> {
                     minecraft.setScreen(parent);
                 }));
         setKey(value);
@@ -96,7 +97,7 @@ public class KeySelector extends XrayScreen {
         drawCenteredString(stack, font, getTitle(), width / 2, height / 2 - 30 - font.lineHeight, 0xffffffff);
 
         if (isWaitingKey) {
-            drawCenteredString(stack, font, new TranslatableComponent("x13.mod.selector.key.presskey"), width / 2,
+            drawCenteredString(stack, font, Component.translatable("x13.mod.selector.key.presskey"), width / 2,
                     keyButton.y + keyButton.getHeight() / 2 - font.lineHeight, 0xffffff00);
         }
 

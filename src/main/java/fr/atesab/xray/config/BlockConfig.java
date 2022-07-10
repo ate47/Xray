@@ -16,7 +16,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
@@ -130,7 +129,7 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
         private BlockConfig cfg;
 
         Template(String translation, ItemStack icon, BlockConfig cfg) {
-            this.title = new TranslatableComponent(translation);
+            this.title = Component.translatable(translation);
             this.icon = icon;
             this.cfg = cfg;
         }

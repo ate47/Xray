@@ -5,8 +5,6 @@ import java.util.Optional;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 public record KeyData(int keyCode, int keyScanCode) {
     public KeyData() {
@@ -14,12 +12,12 @@ public record KeyData(int keyCode, int keyScanCode) {
     }
 
     public Component getName() {
-        return new TextComponent("" + GLFW.glfwGetKeyName(keyCode(), keyScanCode()));
+        return Component.literal("" + GLFW.glfwGetKeyName(keyCode(), keyScanCode()));
     }
 
     public static Component getName(Optional<KeyData> data) {
         if (!data.isPresent())
-            return new TranslatableComponent("x13.mod.selector.key.none");
+            return Component.translatable("x13.mod.selector.key.none");
 
         return data.get().getName();
     }

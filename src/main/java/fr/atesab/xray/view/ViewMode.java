@@ -2,7 +2,6 @@ package fr.atesab.xray.view;
 
 import fr.atesab.xray.color.EnumElement;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
@@ -17,14 +16,14 @@ public enum ViewMode implements EnumElement {
     INCLUSIVE("x13.mod.mode.view.inclusive", new ItemStack(Blocks.STONE), (il, v1, reader, pos, face) -> !il
             && reader.getBlockState(pos.offset(face.getStepX(), face.getStepY(), face.getStepZ())).isAir());
 
-    private Viewer viewer;
-    private Component title;
-    private ItemStack icon;
+    private final Viewer viewer;
+    private final Component title;
+    private final ItemStack icon;
 
-    private ViewMode(String translation, ItemStack icon, Viewer viewer) {
+    ViewMode(String translation, ItemStack icon, Viewer viewer) {
         this.viewer = viewer;
         this.icon = icon;
-        this.title = new TranslatableComponent(translation);
+        this.title = Component.translatable(translation);
     }
 
     @Override

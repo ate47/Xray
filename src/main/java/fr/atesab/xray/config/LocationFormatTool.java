@@ -7,7 +7,6 @@ import fr.atesab.xray.color.EnumElement;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
@@ -44,7 +43,7 @@ public enum LocationFormatTool implements EnumElement {
         this.regex = "%" + txt;
         this.action = action;
         this.icon = new ItemStack(icon);
-        this.title = new TranslatableComponent(translation);
+        this.title = Component.translatable(translation);
     }
 
     public String getOption() {

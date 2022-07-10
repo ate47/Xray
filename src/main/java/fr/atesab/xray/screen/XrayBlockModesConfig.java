@@ -17,11 +17,11 @@ import fr.atesab.xray.view.ViewMode;
 import fr.atesab.xray.widget.BlockConfigWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
     private class PagedBlockMode extends PagedElement<BlockConfig> {
-        private BlockConfig cfg;
+        private final BlockConfig cfg;
         private boolean textHover = false;
         private BlockConfigWidget blocks;
 
@@ -48,7 +48,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             x += 60;
             addSubWidget(new Button(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
                 minecraft.setScreen(new EnumSelector<ViewMode>(
-                        new TranslatableComponent("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
+                        Component.translatable("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
 
                     @Override
                     protected void select(ViewMode element) {
@@ -59,9 +59,9 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
                 });
             }));
             x += 68;
-            addSubWidget(new Button(x, 0, 20, 20, new TranslatableComponent("x13.mod.template.little"), btn -> {
+            addSubWidget(new Button(x, 0, 20, 20, Component.translatable("x13.mod.template.little"), btn -> {
                 minecraft.setScreen(new EnumSelector<BlockConfig.Template>(
-                        new TranslatableComponent("x13.mod.template"), XrayBlockModesConfig.this,
+                        Component.translatable("x13.mod.template"), XrayBlockModesConfig.this,
                         BlockConfig.Template.values()) {
 
                     @Override
@@ -120,7 +120,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
     }
 
     public XrayBlockModesConfig(Screen parent, Stream<BlockConfig> stream) {
-        super(new TranslatableComponent("x13.mod.mode"), parent, 24, stream);
+        super(Component.translatable("x13.mod.mode"), parent, 24, stream);
     }
 
     @Override
