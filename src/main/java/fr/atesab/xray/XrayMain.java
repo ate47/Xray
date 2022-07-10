@@ -267,12 +267,15 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 			config.getModes().forEach(mode -> mode.onKeyInput(input));
 		}
 
-		if (fullbrightKey.wasPressed())
+		if (fullbrightKey.wasPressed()) {
 			fullBright();
-		if (locationEnableKey.wasPressed())
+		}
+		if (locationEnableKey.wasPressed()) {
 			config.getLocationConfig().setEnabled(!config.getLocationConfig().isEnabled());
-		if (configKey.wasPressed())
+		}
+		if (configKey.wasPressed()) {
 			client.setScreen(new XrayMenu(null));
+		}
 
 	}
 
