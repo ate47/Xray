@@ -18,7 +18,9 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
       - name: 🏗️ Build jars
-        run: ./gradlew build
+        run: |
+          chmod u+x gradlew
+          ./gradlew build
       - name: 🗜️ Extract jars
         run: |
           mkdir -p build_jars
