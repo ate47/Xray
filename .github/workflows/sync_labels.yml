@@ -1,0 +1,20 @@
+name: Sync labels 🖋️
+
+on:
+  push:
+    paths:
+      - ".github/regen_labels.txt"
+
+jobs:
+  labels:
+    name: Sync 🔃
+    runs-on: ubuntu-latest
+    steps:
+      - uses: EndBug/label-sync@v2
+        with:
+          # If you want to use a config file, you can put its path or URL here, multiple files are also allowed (more info in the paragraphs below)
+          source-repo: ate47/mc_ci
+          # If you want to delete any additional label, set this to true
+          delete-other-labels: false
+          # You can change the token used to change the labels, this is the default one
+          token: ${{ secrets.GITHUB_TOKEN }}
