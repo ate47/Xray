@@ -7,7 +7,7 @@ on:
 
 jobs:
   labels:
-    name: Sync 🔃
+    name: 🔃 Sync
     runs-on: ubuntu-latest
     steps:
       - uses: EndBug/label-sync@v2
