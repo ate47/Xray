@@ -1,6 +1,9 @@
 name: Building jars 🏗️
 
-on: push
+on:
+  push:
+    paths:
+      - "src/**"
 
 jobs:
   build:

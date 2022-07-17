@@ -6,6 +6,34 @@ body:
     attributes:
       value: |
         Thanks for helping to improve this repository!
+  - type: input
+    id: version
+    attributes:
+      label: Mod version
+      description: Mod version
+      placeholder: "1.1.1"
+    validations:
+      required: true
+  - type: input
+    id: version_mc
+    attributes:
+      label: Minecraft version
+      description: Minecraft version
+      placeholder: "1.18"
+    validations:
+      required: true
+  - type: dropdown
+    id: dropdown_ml
+    attributes:
+      label: Mod loader
+      description: Mod loader
+      options:
+        - "Fabric"
+        - "Forge"
+        - "Both"
+        - "Other (write it in the next field)"
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Description of the request
