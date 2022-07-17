@@ -1,0 +1,27 @@
+name: Pull request Compile test 🏗️
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 🪛 Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: 🪛 Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-jdk17-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-jdk17-maven-
+      - name: 🏗️ Build jars
+        run: |
+          chmod u+x gradlew
+          ./gradlew build
