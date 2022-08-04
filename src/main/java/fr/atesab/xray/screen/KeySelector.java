@@ -10,11 +10,12 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import org.lwjgl.glfw.GLFW;
 
 public class KeySelector extends XrayScreen {
     private static final MutableComponent NONE_KEY = Component.translatable("x13.mod.selector.key.none");
 
-    private Consumer<Optional<KeyData>> keyConsumer;
+    private final Consumer<Optional<KeyData>> keyConsumer;
     private Optional<KeyData> value;
     private boolean isWaitingKey = false;
 
@@ -72,15 +73,24 @@ public class KeySelector extends XrayScreen {
     }
 
     @Override
-    public boolean keyPressed(int key, int scanCode, int modifier) {
+    public boolean keyReleased(int key, int scanCode, int modifier) {
         if (isWaitingKey) {
-            if (key == 256) {
+            if (key == GLFW.GLFW_KEY_ESCAPE) {
                 setKey(Optional.empty());
                 return true;
             }
 
-            setKey(Optional.of(new KeyData(key, scanCode)));
-            return true;
+            if (!(
+                    key == GLFW.GLFW_KEY_LEFT_CONTROL || key == GLFW.GLFW_KEY_RIGHT_CONTROL ||
+                            key == GLFW.GLFW_KEY_LEFT_ALT || key == GLFW.GLFW_KEY_RIGHT_ALT ||
+                            key == GLFW.GLFW_KEY_LEFT_SHIFT || key == GLFW.GLFW_KEY_RIGHT_SHIFT
+            )) {
+                boolean alt = hasAltDown();
+                boolean ctrl = hasControlDown();
+                boolean shift = hasShiftDown();
+                setKey(Optional.of(new KeyData(key, scanCode, alt, ctrl, shift)));
+                return true;
+            }
         }
 
         return super.keyPressed(key, scanCode, modifier);

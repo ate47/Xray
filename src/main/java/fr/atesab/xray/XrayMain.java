@@ -92,7 +92,7 @@ public class XrayMain {
 
 	private int internalFullbrightState = 0;
 
-	private KeyMapping configKey, fullbrightKey;
+	private KeyMapping configKey, fullbrightKey, locationEnableKey;
 
 	private XrayConfig config;
 
@@ -289,11 +289,15 @@ public class XrayMain {
 			config.getModes().forEach(mode -> mode.onKeyInput(input));
 		}
 
-		if (fullbrightKey.consumeClick())
+		if (fullbrightKey.consumeClick()) {
 			fullBright();
-		if (configKey.consumeClick())
+		}
+		if (locationEnableKey.consumeClick()) {
+			config.getLocationConfig().setEnabled(!config.getLocationConfig().isEnabled());
+		}
+		if (configKey.consumeClick()) {
 			client.setScreen(new XrayMenu(null));
-
+		}
 	}
 
 	@SubscribeEvent
@@ -303,6 +307,10 @@ public class XrayMain {
 		Minecraft mc = Minecraft.getInstance();
 		Font render = mc.font;
 		LocalPlayer player = mc.player;
+
+		if (!config.getLocationConfig().isEnabled() || player == null) {
+			return;
+		}
 
 		if (config.getLocationConfig().isShowMode()) {
 			for (AbstractModeConfig cfg : config.getModes()) {
@@ -319,10 +327,8 @@ public class XrayMain {
 			}
 		}
 
-		if (config.getLocationConfig().isEnabled() && player != null) {
-			String format = getConfig().getLocationConfig().getFormat();
-			render.draw(stack, LocationFormatTool.applyAll(format, mc), 5 + w, 5, 0xffffffff);
-		}
+		String format = getConfig().getLocationConfig().getFormat();
+		render.draw(stack, LocationFormatTool.applyAll(format, mc), 5 + w, 5, 0xffffffff);
 	}
 
 	@SubscribeEvent
@@ -407,18 +413,19 @@ public class XrayMain {
 	}
 
 	private void registerKeyBinding(final RegisterKeyMappingsEvent ev) {
+		fullbrightKey = new KeyMapping("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
+		configKey = new KeyMapping("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
+		locationEnableKey = new KeyMapping("x13.mod.locationEnable", GLFW.GLFW_KEY_J, "key.categories.xray");
+
 		ev.register(fullbrightKey);
 		ev.register(configKey);
+		ev.register(locationEnableKey);
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
 		log("Initialization");
 		fullbrightColor = ColorSupplier.DEFAULT.getColor();
 		loadConfigs();
-
-		fullbrightKey = new KeyMapping("x13.mod.fullbright", GLFW.GLFW_KEY_H, "key.categories.xray");
-
-		configKey = new KeyMapping("x13.mod.config", GLFW.GLFW_KEY_N, "key.categories.xray");
 
 		ModList.get().getModContainerById(MOD_ID).ifPresent(con -> {
 			con.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
