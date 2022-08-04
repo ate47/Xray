@@ -41,7 +41,7 @@ public class XrayLocationConfig extends XrayScreen {
                 }));
 
         format = new EditBox(font, width / 2 - 98, height / 2 + 2, 196, 16, Component.literal(""));
-        format.setMaxLength(128);
+        format.setMaxLength(256);
         format.setValue(mod.getConfig().getLocationConfig().getFormat());
         format.setResponder(mod.getConfig().getLocationConfig()::setFormat);
         format.setFocus(true);
@@ -72,6 +72,7 @@ public class XrayLocationConfig extends XrayScreen {
         addRenderableWidget(
                 new Button(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
                         btn -> {
+                            save();
                             minecraft.setScreen(parent);
                         }));
 
@@ -99,5 +100,9 @@ public class XrayLocationConfig extends XrayScreen {
         GuiUtils.drawRightString(stack, font, I18n.get("x13.mod.location.format") + ": ", format, 0xffffffff);
         format.render(stack, mouseX, mouseY, delta);
         super.render(stack, mouseX, mouseY, delta);
+    }
+
+    protected void save() {
+        // unimplemenets. save code is in XrayMenu.
     }
 }

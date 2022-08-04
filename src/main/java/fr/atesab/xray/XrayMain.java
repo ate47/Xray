@@ -18,7 +18,6 @@ import com.mojang.math.Vector3f;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.ConfigScreenHandler;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.IEventBus;
 import org.apache.logging.log4j.LogManager;
@@ -217,6 +216,9 @@ public class XrayMain {
 		for (BlockConfig mode : getConfig().getBlockConfigs()) {
 			mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
 		}
+		if (ci.isCancelled())
+			return ci.getReturnValue().booleanValue() ? 0 : 1;
+		return 2;
 	}
 
 	public static String significantNumbers(double d) {
@@ -299,20 +301,14 @@ public class XrayMain {
 
 	@SubscribeEvent
 	public void onHudRender(RenderGuiOverlayEvent ev) {
-		int w = 0;
 		PoseStack stack = ev.getPoseStack();
 		Minecraft mc = Minecraft.getInstance();
 		Font render = mc.font;
 		LocalPlayer player = mc.player;
 
-		if (!config.getLocationConfig().isEnabled() || player == null) {
+		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.renderDebug) {
 			return;
 		}
-
-		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.debugEnabled) {
-			return;
-		}
-
 		int w = 0;
 
 		if (config.getLocationConfig().isShowMode()) {
@@ -332,7 +328,7 @@ public class XrayMain {
 
 		if (config.getLocationConfig().isEnabled()) {
 			String format = LocationFormatTool.applyColor(
-					getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.world)
+					getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.level)
 			);
 			String[] renderStrings = format.split("\n");
 			// write first line with the shift for the mode
@@ -340,7 +336,7 @@ public class XrayMain {
 			// write next lines
 			for (int lineIndex = 1; lineIndex < renderStrings.length; lineIndex++) {
 				render.draw(stack, renderStrings[lineIndex],
-						5, 5 + render.fontHeight * lineIndex, 0xffffffff);
+						5, 5 + render.lineHeight * lineIndex, 0xffffffff);
 			}
 		}
 	}
