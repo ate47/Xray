@@ -50,6 +50,7 @@
   "x13.mod.location.opt.fps": "FPS",
   "x13.mod.location.opt.biome": "バイオーム",
   "x13.mod.location.opt.biomeCategory": "バイオーム分類",
+  "x13.mod.location.opt.biomeTranslate": "バイオーム(日本語)",
   "x13.mod.location.opt.chunkX": "チャンクのX座標",
   "x13.mod.location.opt.chunkZ": "チャンクのZ座標",
   "x13.mod.location.opt.blockLight": "現在位置の明るさ",

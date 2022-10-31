@@ -11,6 +11,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
@@ -40,7 +41,9 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool PLAYER_NAME = register("x13.mod.location.opt.name", Items.NAME_TAG, "name", (mc, player, world) -> player.getGameProfile().getName());
     public static final LocationFormatTool FPS = register("x13.mod.location.opt.fps", Items.ITEM_FRAME, "fps", (mc, player, world) -> mc.fpsDebugString);
     public static final LocationFormatTool BIOME = register("x13.mod.location.opt.biome", Items.OAK_LOG, "bio",
-    		(mc, player, world) -> world.getBiome(player.getBlockPos()).getKey().map(registry -> registry.getValue().toString()).orElse("???"));
+    		(mc, player, world) -> world.getBiome(player.getBlockPos()).getKey().map(registry -> registry.getValue().getPath()).orElse("???"));
+    public static final LocationFormatTool BIOME_TRANSLATE = register("x13.mod.location.opt.biomeTranslate", Items.STRIPPED_OAK_LOG, "biotranslate",
+            (mc, player, world) -> world.getBiome(player.getBlockPos()).getKey().map(registry -> I18n.translate(Util.createTranslationKey("biome",registry.getValue()))).orElse("???"));
     public static final LocationFormatTool PLAYER_CHUNK_X = register("x13.mod.location.opt.chunkX", Items.BOOK, "cx",
     		(mc, player, world) -> String.valueOf(player.getChunkPos().x));
     public static final LocationFormatTool PLAYER_CHUNK_Z = register("x13.mod.location.opt.chunkZ", Items.BOOK, "cz",
@@ -52,7 +55,7 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool LOOKING_BLOCK_LIGHT = register("x13.mod.location.opt.lookingBlockLight", Items.REDSTONE_TORCH, "lookinglight",
     		(mc, player, world) -> String.valueOf(world.getLightLevel(LightType.BLOCK,LocationUtils.getLookingFaceBlockPos(mc, player))));
     public static final LocationFormatTool LOOKINGBLOCK = register("x13.mod.location.opt.lookingBlock", Items.DIAMOND_ORE, "lookingblock",
-    		(mc, player, world) -> Registry.BLOCK.getKey(world.getBlockState(LocationUtils.getLookingBlockPos(mc)).getBlock()).map(k -> k.getRegistry().toString()).orElse("???"));
+    		(mc, player, world) -> Registry.BLOCK.getKey(world.getBlockState(LocationUtils.getLookingBlockPos(mc)).getBlock()).map(b -> b.getValue().getPath()).orElse("???"));
     public static final LocationFormatTool LOOKINGBLOCK_TRANSLATE = register("x13.mod.location.opt.lookingTranslate", Items.DIAMOND_ORE, "lookingtranslate",
     		(mc, player, world) -> I18n.translate(world.getBlockState(LocationUtils.getLookingBlockPos(mc))
                     .getBlock().getTranslationKey()));
@@ -71,7 +74,7 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool TIME_SECONDS_PADDING = register("x13.mod.location.opt.secondsPadding", Items.CLOCK, "ss",
     		(mc, player, world) -> LocationUtils.getTwoDigitNumberFormat().format(((world.getTime() % 1000) / 1000.0 * 3600) % 60));
     public static final LocationFormatTool IS_SLIME = register("x13.mod.location.opt.isSlime", Items.SLIME_BALL, "slime",
-    		(mc, player, world) -> String.valueOf(LocationUtils.isSlimeChunk(mc, player.getChunkPos())));
+    		(mc, player, world) -> LocationUtils.isSlimeChunk(mc, player.getChunkPos()));
     public static final LocationFormatTool NEW_LINE = register("x13.mod.location.opt.lineFeed",Items.WRITABLE_BOOK, "lf",
     		(mc, player, world) -> "\n");
 
@@ -121,7 +124,7 @@ public class LocationFormatTool implements EnumElement {
                     tool.add(new StringToolFunction(format.substring(start, end)));
                 } else {
                     // add only the suffix
-                    tool.add(new StringToolFunction(format.substring(end - idStart, end)));
+                    tool.add(new StringToolFunction(format.substring(start + idStart + 1, end)));
                 }
             }
 
