@@ -1,8 +1,19 @@
 package fr.atesab.xray.config;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.utils.LocationUtils;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -13,11 +24,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.LightLayer;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class LocationFormatTool implements EnumElement {
     private static final String ID_PATTERN = "([A-Za-z0-9_]+)";
@@ -40,7 +46,9 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool PLAYER_NAME = register("x13.mod.location.opt.name", Items.NAME_TAG, "name", (mc, player, world) -> player.getGameProfile().getName());
     public static final LocationFormatTool FPS = register("x13.mod.location.opt.fps", Items.ITEM_FRAME, "fps", (mc, player, world) -> mc.fpsString);
     public static final LocationFormatTool BIOME = register("x13.mod.location.opt.biome", Items.OAK_LOG, "bio",
-    		(mc, player, world) -> world.getBiome(player.blockPosition()).unwrapKey().map(registry -> registry.registry().toString()).orElse("???"));
+    		(mc, player, world) -> world.getBiome(player.blockPosition()).unwrapKey().get().location().getPath());
+    public static final LocationFormatTool BIOME_TRANSLATE = register("x13.mod.location.opt.biomeTranslate", Items.STRIPPED_OAK_LOG, "biotranslate",
+    		(mc, player, world) -> Component.translatable(Util.makeDescriptionId("biome", world.getBiome(player.blockPosition()).unwrapKey().get().location())).getString());
     public static final LocationFormatTool PLAYER_CHUNK_X = register("x13.mod.location.opt.chunkX", Items.BOOK, "cx",
             (mc, player, world) -> String.valueOf(player.chunkPosition().x));
     public static final LocationFormatTool PLAYER_CHUNK_Z = register("x13.mod.location.opt.chunkZ", Items.BOOK, "cz",
@@ -52,7 +60,7 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool LOOKING_BLOCK_LIGHT = register("x13.mod.location.opt.lookingBlockLight", Items.REDSTONE_TORCH, "lookinglight",
     		(mc, player, world) -> String.valueOf(world.getBrightness(LightLayer.BLOCK, LocationUtils.getLookingFaceBlockPos(mc, player))));
     public static final LocationFormatTool LOOKINGBLOCK = register("x13.mod.location.opt.lookingBlock", Items.DIAMOND_ORE, "lookingblock",
-    		(mc, player, world) -> Registry.BLOCK.getKey(world.getBlockState(LocationUtils.getLookingBlockPos(mc)).getBlock()).toString());
+    		(mc, player, world) -> Registry.BLOCK.getKey(world.getBlockState(LocationUtils.getLookingBlockPos(mc)).getBlock()).getPath());
     public static final LocationFormatTool LOOKINGBLOCK_TRANSLATE = register("x13.mod.location.opt.lookingTranslate", Items.DIAMOND_ORE, "lookingtranslate",
     		(mc, player, world) -> I18n.get(world.getBlockState(LocationUtils.getLookingBlockPos(mc))
                     .getBlock().getDescriptionId()));
@@ -127,7 +135,7 @@ public class LocationFormatTool implements EnumElement {
                     tool.add(new StringToolFunction(format.substring(start, end)));
                 } else {
                     // add only the suffix
-                    tool.add(new StringToolFunction(format.substring(end - idStart, end)));
+                    tool.add(new StringToolFunction(format.substring(start + idStart + 1, end)));
                 }
             }
 
