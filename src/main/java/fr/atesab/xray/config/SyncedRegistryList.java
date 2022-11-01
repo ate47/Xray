@@ -8,14 +8,15 @@ import java.util.Objects;
 import fr.atesab.xray.utils.TagOnWriteList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DefaultedRegistry;
+import net.minecraft.util.registry.Registry;
 
 public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Cloneable {
 
     private List<R> objects = new ArrayList<>();
-    private DefaultedRegistry<R> registry;
+    private final Registry<R> registry;
     private boolean synced = false;
 
-    public SyncedRegistryList(DefaultedRegistry<R> registry) {
+    public SyncedRegistryList(Registry<R> registry) {
         super(new ArrayList<>());
         this.registry = registry;
     }
@@ -29,11 +30,11 @@ public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Clo
         }
     }
 
-    public SyncedRegistryList(R[] objects, DefaultedRegistry<R> registry) {
+    public SyncedRegistryList(R[] objects, Registry<R> registry) {
         this(Arrays.asList(objects), registry);
     }
 
-    public SyncedRegistryList(List<R> objects, DefaultedRegistry<R> registry) {
+    public SyncedRegistryList(List<R> objects, Registry<R> registry) {
         super(new ArrayList<>());
         this.registry = registry;
         setObjects(objects);
@@ -45,7 +46,7 @@ public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Clo
         return objects;
     }
 
-    public void setObjects(List<R> objects) {
+    public void setObjects(List<? extends R> objects) {
         setTagEnabled(false);
         this.objects = new ArrayList<>(objects);
         clear();

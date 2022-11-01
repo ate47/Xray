@@ -44,7 +44,7 @@ public class EntityConfigWidget extends ButtonWidget {
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         int fit = (width - 2) / 17;
 
-        Stream<ItemStack> stacks = cfg.getEntities().getIcons();
+        Stream<ItemStack> stacks = Stream.concat(cfg.getEntities().getIcons(), cfg.getBlockEntities().getIcons());
 
         List<ItemStack> view = stacks.limit(fit).toList();
         MinecraftClient client = MinecraftClient.getInstance();

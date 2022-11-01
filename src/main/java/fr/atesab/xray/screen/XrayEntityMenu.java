@@ -3,10 +3,16 @@ package fr.atesab.xray.screen;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import fr.atesab.xray.color.BlockEntityTypeIcon;
 import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EntityTypeInfo;
+import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.config.ESPConfig;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -18,8 +24,46 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
+import javax.lang.model.type.UnionType;
 
 public class XrayEntityMenu extends Screen {
+    public record EntityUnion(EntityType<?> type, BlockEntityType<?> blockType, String text) implements EnumElement {
+        EntityUnion(EntityType<?> type) {
+            this(type, null, computeText(type, null));
+        }
+        EntityUnion(BlockEntityType<?> blockType) {
+            this(null, blockType, computeText(null, blockType));
+        }
+
+        @Override
+        public ItemStack getIcon() {
+            if (type != null) {
+                return EntityTypeIcon.getIcon(type);
+            } else {
+                return BlockEntityTypeIcon.getIcon(blockType);
+            }
+        }
+
+        @Override
+        public Text getTitle() {
+            return Text.translatable(text());
+        }
+
+        static String computeText(EntityType<?> type, BlockEntityType<?> blockType) {
+            if (type != null) {
+                return type.getTranslationKey();
+            } else {
+                 Identifier id = Registry.BLOCK_ENTITY_TYPE.getId(blockType);
+                if (id == null) {
+                    return blockType.getClass().getCanonicalName();
+                }
+                return id.toTranslationKey();
+            }
+        }
+    }
     private static final Text ADD = Text.literal("+").formatted(Formatting.GREEN);
     private static final Text REPLACE = Text.translatable("x13.mod.menu.replace")
             .formatted(Formatting.YELLOW);
@@ -27,8 +71,8 @@ public class XrayEntityMenu extends Screen {
             .formatted(Formatting.RED);
     private Screen parent;
     private ESPConfig mode;
-    private List<EntityType<?>> config;
-    private List<EntityType<?>> visible = new ArrayList<>();
+    private List<EntityUnion> config;
+    private List<EntityUnion> visible = new ArrayList<>();
     private TextFieldWidget searchBar;
     private ButtonWidget nextPage;
     private ButtonWidget lastPage;
@@ -42,7 +86,8 @@ public class XrayEntityMenu extends Screen {
         this.mode = mode;
         this.parent = parent;
         this.config = new ArrayList<>();
-        this.config.addAll(mode.getEntities().getObjects());
+        this.config.addAll(mode.getEntities().getObjects().stream().map(EntityUnion::new).toList());
+        this.config.addAll(mode.getBlockEntities().getObjects().stream().map(EntityUnion::new).toList());
     }
 
     @Override
@@ -101,7 +146,8 @@ public class XrayEntityMenu extends Screen {
 
         ButtonWidget doneBtn = new ButtonWidget(width / 2 - 102, pageBottom, 100, 20,
                 Text.translatable("gui.done"), b -> {
-                    mode.getEntities().setObjects(config);
+                    mode.getEntities().setObjects(config.stream().map(EntityUnion::type).filter(Objects::nonNull).toList());
+                    mode.getBlockEntities().setObjects(config.stream().map(EntityUnion::blockType).filter(Objects::nonNull).toList());
                     client.setScreen(parent);
                 });
 
@@ -134,13 +180,13 @@ public class XrayEntityMenu extends Screen {
     public void updateSearch() {
         String query = searchBar.getText().toString().toLowerCase();
         visible.clear();
-        config.stream().filter(block -> I18n.translate(block.getTranslationKey()).toLowerCase().contains(query))
+        config.stream().filter(block -> I18n.translate(block.text()).toLowerCase().contains(query))
                 .forEach(visible::add);
         page = Math.min(visible.size(), page);
         updateArrows();
     }
 
-    public List<EntityType<?>> getView() {
+    public List<EntityUnion> getView() {
         return visible.subList(page * elementByPage, Math.min((page + 1) * elementByPage, visible.size()));
     }
 
@@ -152,17 +198,17 @@ public class XrayEntityMenu extends Screen {
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;
 
-        List<EntityType<?>> view = getView();
+        List<EntityUnion> view = getView();
         ItemStack hovered = null;
-        EntityType<?> hoveredBlock = null;
+        EntityUnion hoveredBlock = null;
         int i;
         for (i = 0; i < view.size(); i++) {
-            EntityType<?> et = view.get(i);
+            EntityUnion et = view.get(i);
             int x = left + (i % elementsX) * 18;
             int y = top + (i / elementsX) * 18;
 
             int color;
-            ItemStack stack = EntityTypeIcon.getIcon(et);
+            ItemStack stack = et.getIcon();
 
             if (hovered == null && mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
                 color = 0x446666ff;
@@ -195,7 +241,7 @@ public class XrayEntityMenu extends Screen {
 
         if (hovered != null) {
             renderTooltip(matrixStack,
-                    Arrays.asList(Text.translatable(hoveredBlock.getTranslationKey()), REPLACE, DELETE),
+                    Arrays.asList(Text.translatable(hoveredBlock.text()), REPLACE, DELETE),
                     mouseX, mouseY);
         }
     }
@@ -208,22 +254,23 @@ public class XrayEntityMenu extends Screen {
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;
 
-        List<EntityType<?>> view = getView();
+        List<EntityUnion> view = getView();
         int i;
         for (i = 0; i < view.size(); i++) {
-            EntityType<?> b = view.get(i);
+            EntityUnion b = view.get(i);
             int x = left + (i % elementsX) * 18;
             int y = top + (i / elementsX) * 18;
             if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
                 if (button == 0) { // left click: replace
                     client.setScreen(new EntitySelector(this) {
                         @Override
-                        protected void select(EntityTypeInfo selection) {
+                        protected void select(EntityUnion selection) {
                             int index = config.indexOf(b);
-                            if (index == -1) // wtf?
-                                config.add(selection.getType());
-                            else
-                                config.set(index, selection.getType());
+                            if (index == -1) { // wtf?
+                                config.add(selection);
+                            } else {
+                                config.set(index, selection);
+                            }
                             updateSearch();
                         }
                     });
@@ -243,8 +290,8 @@ public class XrayEntityMenu extends Screen {
             // add
             client.setScreen(new EntitySelector(this) {
                 @Override
-                protected void select(EntityTypeInfo selection) {
-                    config.add(selection.getType());
+                protected void select(EntityUnion selection) {
+                    config.add(selection);
                     updateSearch();
                 }
             });

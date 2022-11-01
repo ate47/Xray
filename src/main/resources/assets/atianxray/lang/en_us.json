@@ -30,8 +30,9 @@
   "x13.mod.esp.maxdistance.block": "%s Block(s)",
   "x13.mod.esp.template.player": "Player",
   "x13.mod.esp.template.wither": "Wither",
-  "x13.mod.esp.template.aggresive": "Aggresive",
+  "x13.mod.esp.template.aggresive": "Aggressive",
   "x13.mod.esp.template.passive": "Passive",
+  "x13.mod.esp.template.chest": "Chest",
   "x13.mod.esp.tracer": "Tracer",
   "x13.mod.esp.selector": "Entity selector",
 

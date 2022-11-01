@@ -8,12 +8,14 @@ import com.google.gson.annotations.Expose;
 
 import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EnumElement;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ESPConfig extends AbstractModeConfig implements Cloneable {
@@ -27,10 +29,13 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
             new ESPConfig(0, 0, "Wither", EntityType.WITHER, EntityType.WITHER_SKELETON)
         ),
         AGGRESIVE("x13.mod.esp.template.aggresive", new ItemStack(Items.CREEPER_HEAD), () -> 
-             new ESPConfig(EntityTypeIcon.getEntityOfType(SpawnGroup.MONSTER))
+             new ESPConfig(EntityTypeIcon.getEntityOfType(SpawnGroup.MONSTER), Collections.emptyList())
         ),
-        PASSIVE("x13.mod.esp.template.passive", new ItemStack(Items.POPPY), () -> 
-             new ESPConfig(EntityTypeIcon.getEntityOfType(SpawnGroup.CREATURE))
+        PASSIVE("x13.mod.esp.template.passive", new ItemStack(Items.POPPY), () ->
+                new ESPConfig(EntityTypeIcon.getEntityOfType(SpawnGroup.CREATURE), Collections.emptyList())
+        ),
+        CHEST("x13.mod.esp.template.chest", new ItemStack(Items.CHEST), () ->
+                new ESPConfig(BlockEntityType.CHEST, BlockEntityType.ENDER_CHEST, BlockEntityType.HOPPER, BlockEntityType.TRAPPED_CHEST, BlockEntityType.MOB_SPAWNER)
         );
         // @formatter:on
 
@@ -77,10 +82,12 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
     @Expose
     private SyncedEntityTypeList entities;
     @Expose
+    private SyncedBlockEntityTypeList blockEntities;
+    @Expose
     private boolean tracer = false;
 
     public ESPConfig() {
-        this(Collections.emptyList());
+        this(Collections.emptyList(), Collections.emptyList());
     }
 
     private ESPConfig(ESPConfig other) {
@@ -90,11 +97,18 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
     public ESPConfig(EntityType<?>... entities) {
         super();
         this.entities = new SyncedEntityTypeList(entities);
+        this.blockEntities = new SyncedBlockEntityTypeList();
+    }
+    public ESPConfig(BlockEntityType<?>... entities) {
+        super();
+        this.entities = new SyncedEntityTypeList();
+        this.blockEntities = new SyncedBlockEntityTypeList(entities);
     }
 
-    public ESPConfig(List<EntityType<?>> entities) {
+    public ESPConfig(List<EntityType<?>> entities, List<BlockEntityType<?>> blockEntities) {
         super();
         this.entities = new SyncedEntityTypeList(entities);
+        this.blockEntities = new SyncedBlockEntityTypeList(blockEntities);
     }
 
     public ESPConfig(int key, int ScanCode, String name, EntityType<?>... entities) {
@@ -111,10 +125,15 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
 
         this.tracer = other.tracer;
         this.entities = other.entities.clone();
+        this.blockEntities = other.blockEntities.clone();
     }
 
     public SyncedEntityTypeList getEntities() {
         return entities;
+    }
+
+    public SyncedBlockEntityTypeList getBlockEntities() {
+        return blockEntities;
     }
 
     public boolean hasTracer() {
@@ -133,7 +152,19 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
     public boolean shouldTag(EntityType<?> type) {
         if (!isEnabled())
             return false;
-        String name = Registry.ENTITY_TYPE.getId(type).toString();
-        return entities.contains(name);
+        Identifier id = Registry.ENTITY_TYPE.getId(type);
+        if (id == null) {
+            return false;
+        }
+        return entities.contains(id.toString());
+    }
+    public boolean shouldTag(BlockEntityType<?> type) {
+        if (!isEnabled())
+            return false;
+        Identifier id = Registry.BLOCK_ENTITY_TYPE.getId(type);
+        if (id == null) {
+            return false;
+        }
+        return blockEntities.contains(id.toString());
     }
 }
