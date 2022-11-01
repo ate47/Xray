@@ -72,7 +72,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public class XrayMain {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
-	public static final String[] MOD_AUTHORS = { "ATE47", "ThaEin" };
+	public static final String[] MOD_AUTHORS = { "ATE47", "ThaEin", "ALFECLARE" };
 	public static final URL MOD_SOURCE = XrayUtils.soWhat(() -> new URL("https://github.com/ate47/Xray"));
 	public static final URL MOD_ISSUE = XrayUtils.soWhat(() -> new URL("https://github.com/ate47/Xray/issues"));
 	public static final URL MOD_LINK = XrayUtils
