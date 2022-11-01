@@ -570,7 +570,6 @@ public class GuiUtils {
                 .color(redLeftBottom, greenLeftBottom, blueLeftBottom, alphaLeftBottom).next();
         bufferbuilder.vertex(mat, right, bottom, zLevel)
                 .color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom).next();
-        bufferbuilder.end();
         BufferRenderer.drawWithoutShader(bufferbuilder.end());
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
