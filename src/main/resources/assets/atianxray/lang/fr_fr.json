@@ -92,6 +92,14 @@
   "x13.mod.link.issue": "Problème",
   "x13.mod.by": "Par %s",
 
+  "x13.mod.config.search": "Rechercher",
+  "x13.mod.config.espDamage": "Indicateur de dégats ESP",
+  "x13.mod.config.blockEsp": "Bloc ESP",
+  "x13.mod.config.border": "Bordure ESP",
+  "x13.mod.config.override": "Override config",
+  "x13.mod.config.fly": "Mode vol",
+  "x13.mod.config.zoom": "Zoom",
+
   "x13.mod.on": "On",
   "x13.mod.off": "Off",
   "key.categories.xray": "Xray"

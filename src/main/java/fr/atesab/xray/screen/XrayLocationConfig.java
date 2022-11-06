@@ -17,6 +17,7 @@ import net.minecraft.text.Text;
 public class XrayLocationConfig extends XrayScreen {
 
     private TextFieldWidget format;
+    private int position;
 
     public XrayLocationConfig(Screen parent) {
         super(Text.translatable("x13.mod.showloc"), parent);
@@ -44,6 +45,10 @@ public class XrayLocationConfig extends XrayScreen {
         format.setMaxLength(256);
         format.setText(mod.getConfig().getLocationConfig().getFormat());
         format.setChangedListener(mod.getConfig().getLocationConfig()::setFormat);
+        if (position != 0) {
+            format.setCursor(position);
+            position = 0;
+        }
         addSelectableChild(format);
         setInitialFocus(format);
 
@@ -57,6 +62,8 @@ public class XrayLocationConfig extends XrayScreen {
                                 @Override
                                 protected void select(LocationFormatTool e) {
                                     format.write(e.getOption());
+                                    // store the position for the screen switch
+                                    position = format.getCursor();
                                 }
 
                             });

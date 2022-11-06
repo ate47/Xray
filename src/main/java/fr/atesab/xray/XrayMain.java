@@ -402,7 +402,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
             if ((config.getMaxTracerRange() != 0 && e.squaredDistanceTo(player) > maxDistanceSquared) || player == e)
                 return;
 
-            boolean damage = e instanceof LivingEntity le && le.getRecentDamageSource() != null;
+            boolean damage = !config.isDamageIndicatorDisabled() && e instanceof LivingEntity le && le.getRecentDamageSource() != null;
 
             EntityType<?> type = e.getType();
 
