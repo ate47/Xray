@@ -1,10 +1,6 @@
 package fr.atesab.xray.config;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +30,11 @@ public class XrayConfig implements Cloneable {
         try (Reader r = new FileReader(saveFile)) {
             cfg = GSON.fromJson(r, XrayConfig.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e instanceof FileNotFoundException) {
+                System.out.println("Can't find config file, creating a new config...");
+            } else {
+                e.printStackTrace();
+            }
             cfg = new XrayConfig();
             cfg.reset();
         }

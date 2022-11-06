@@ -20,7 +20,6 @@ import net.minecraft.util.registry.Registry;
 
 public class ESPConfig extends AbstractModeConfig implements Cloneable {
     public enum Template implements EnumElement {
-        // @formatter:off
         BLANK("x13.mod.template.blank", new ItemStack(Items.PAPER), new ESPConfig()),
         PLAYER("x13.mod.esp.template.player", new ItemStack(Items.PLAYER_HEAD), 
             new ESPConfig(0, 0, "Player", EntityType.PLAYER)
@@ -37,11 +36,10 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
         CHEST("x13.mod.esp.template.chest", new ItemStack(Items.CHEST), () ->
                 new ESPConfig(BlockEntityType.CHEST, BlockEntityType.ENDER_CHEST, BlockEntityType.HOPPER, BlockEntityType.TRAPPED_CHEST, BlockEntityType.MOB_SPAWNER)
         );
-        // @formatter:on
 
-        private Text title;
-        private ItemStack icon;
-        private Supplier<ESPConfig> cfg;
+        private final Text title;
+        private final ItemStack icon;
+        private final Supplier<ESPConfig> cfg;
 
         Template(String translation, ItemStack icon, ESPConfig cfg) {
             this(translation, icon, () -> cfg);
@@ -114,6 +112,7 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
     public ESPConfig(int key, int ScanCode, String name, EntityType<?>... entities) {
         super(key, ScanCode, name);
         this.entities = new SyncedEntityTypeList(entities);
+        this.blockEntities = new SyncedBlockEntityTypeList();
     }
 
     @Override
@@ -124,8 +123,16 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
         super.cloneInto(cfg);
 
         this.tracer = other.tracer;
-        this.entities = other.entities.clone();
-        this.blockEntities = other.blockEntities.clone();
+        if (other.entities == null) {
+            this.entities = new SyncedEntityTypeList();
+        } else {
+            this.entities = other.entities.clone();
+        }
+        if (other.blockEntities == null) {
+            this.blockEntities = new SyncedBlockEntityTypeList();
+        } else {
+            this.blockEntities = other.blockEntities.clone();
+        }
     }
 
     public SyncedEntityTypeList getEntities() {
