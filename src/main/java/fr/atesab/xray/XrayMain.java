@@ -17,6 +17,12 @@ import com.mojang.math.Vector3f;
 
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -367,7 +373,7 @@ public class XrayMain {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_LINE_SMOOTH);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		// GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 		stack.pushPose();
 		stack.setIdentity();
@@ -378,22 +384,83 @@ public class XrayMain {
 		float pz = (float) (player.zOld + (player.getZ() - player.zOld) * delta) + look.z();
 
 		int maxDistanceSquared = (config.getMaxTracerRange() * config.getMaxTracerRange());
+		int distance = minecraft.options.getEffectiveRenderDistance();
+		ChunkPos chunkPos = player.chunkPosition();
+		int chunkX = chunkPos.x;
+		int chunkZ = chunkPos.z;
+
+
+		for (int i = chunkX - distance; i <= chunkX + distance; i++) {
+			for (int j = chunkZ - distance; j <= chunkZ + distance; j++) {
+				ChunkAccess chunk = level.getChunk(i, j, ChunkStatus.FULL, false);
+				if (chunk != null) {
+					chunk.getBlockEntitiesPos().forEach(((blockPos) -> {
+						if ((config.getMaxTracerRange() != 0 && blockPos.distSqr(player.blockPosition()) > maxDistanceSquared)) {
+							return;
+						}
+
+						BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
+
+						if (blockEntity == null) {
+							return;
+						}
+
+						BlockEntityType<?> type = blockEntity.getType();
+
+						config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
+							RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
+							float r = c.red() / 255F;
+							float g = c.green() / 255F;
+							float b = c.blue() / 255F;
+							float a = c.alpha() / 255F;
+
+							AABB aabb = new AABB(
+									blockPos.getX(), blockPos.getY(), blockPos.getZ(),
+									blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1
+							);
+
+							LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
+
+							if (esp.hasTracer()) {
+								Vec3 center = aabb.getCenter();
+								RenderUtils.renderSingleLine(stack, buffer, px, py, pz, (float) center.x,
+										(float) center.y, (float) center.z, r, g, b, a);
+							}
+						});
+					}));
+				}
+			}
+		}
+
 		level.entitiesForRendering().forEach(e -> {
 
-			if ((config.getMaxTracerRange() != 0 && e.distanceToSqr(player) > maxDistanceSquared) || player == e)
+			if ((config.getMaxTracerRange() != 0 && e.distanceToSqr(player) > maxDistanceSquared) || player == e) {
 				return;
+			}
 
 			EntityType<?> type = e.getType();
+
+			boolean damage = !config.isDamageIndicatorDisabled() && e instanceof LivingEntity le && le.getLastDamageSource() != null;
 
 			config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
 				double x = e.xOld + (e.getX() - e.xOld) * delta;
 				double y = e.yOld + (e.getY() - e.yOld) * delta;
 				double z = e.zOld + (e.getZ() - e.zOld) * delta;
-				RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
-				float r = c.red() / 255F;
-				float g = c.green() / 255F;
-				float b = c.blue() / 255F;
-				float a = c.alpha() / 255F;
+
+				float r, g, b, a;
+
+				if (damage) {
+					r = 1;
+					g = 0;
+					b = 0;
+					a = 1;
+				} else {
+					RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
+					r = c.red() / 255F;
+					g = c.green() / 255F;
+					b = c.blue() / 255F;
+					a = c.alpha() / 255F;
+				}
 
 				AABB aabb = type.getAABB(x, y, z);
 
@@ -410,7 +477,6 @@ public class XrayMain {
 		stack.popPose();
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LINE_SMOOTH);
 	}
 

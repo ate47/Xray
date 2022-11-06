@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.XrayConfig;
-import fr.atesab.xray.utils.GuiUtils;
+import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.LongItemWidget;
 import net.minecraft.Util;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -50,6 +50,13 @@ public class XrayConfigMenu extends XrayScreen {
             }
 
         });
+        addRenderableWidget(
+                new Button(width / 2 - 100, height / 2 - 24, 200, 20,
+                        XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"), button -> {
+                    cfg.setDamageIndicatorDisabled(!cfg.isDamageIndicatorDisabled());
+                    button.setMessage(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"));
+                })
+        );
         addRenderableWidget(
                 new Button(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
                         btn -> {

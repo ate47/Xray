@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 public class XrayLocationConfig extends XrayScreen {
 
     private EditBox format;
+    private int position;
 
     public XrayLocationConfig(Screen parent) {
         super(Component.translatable("x13.mod.showloc"), parent);
@@ -45,6 +46,11 @@ public class XrayLocationConfig extends XrayScreen {
         format.setValue(mod.getConfig().getLocationConfig().getFormat());
         format.setResponder(mod.getConfig().getLocationConfig()::setFormat);
         format.setFocus(true);
+        if (position != 0) {
+            format.setCursorPosition(position);
+            position = 0;
+        }
+
         addWidget(format);
         setInitialFocus(format);
 
@@ -58,6 +64,8 @@ public class XrayLocationConfig extends XrayScreen {
                                 @Override
                                 protected void select(LocationFormatTool e) {
                                     format.insertText(e.getOption());
+                                    // store the position for the screen switch
+                                    position = format.getCursorPosition();
                                 }
 
                             });

@@ -1,5 +1,6 @@
 package fr.atesab.xray.utils;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 public class XrayUtils {
@@ -32,6 +33,6 @@ public class XrayUtils {
 
     public static Component getToggleable(boolean value, String title) {
         return Component.translatable(title).append(" (")
-                .append(Component.translatable(value ? "x13.mod.on" : "x13.mod.off")).append(")");
+                .append(Component.translatable(value ? "x13.mod.on" : "x13.mod.off").withStyle(value ? ChatFormatting.GREEN : ChatFormatting.RED)).append(")");
     }
 }

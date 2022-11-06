@@ -59,6 +59,8 @@ public class XrayConfig implements Cloneable {
     @Expose
     private int maxTracerRange = 0;
     @Expose
+    private boolean damageIndicatorDisabled;
+    @Expose
     private LocationConfig locationConfig = new LocationConfig();
     private File saveFile;
 
@@ -72,6 +74,7 @@ public class XrayConfig implements Cloneable {
                 BlockConfig::clone)
                 .collect(Collectors.toCollection(ArrayList::new));
         this.maxTracerRange = other.maxTracerRange;
+        this.damageIndicatorDisabled = other.damageIndicatorDisabled;
         this.locationConfig = other.locationConfig.clone();
         this.saveFile = other.saveFile;
     }
@@ -111,12 +114,20 @@ public class XrayConfig implements Cloneable {
         return maxTracerRange;
     }
 
+    public boolean isDamageIndicatorDisabled() {
+        return damageIndicatorDisabled;
+    }
+
     public double getMaxTracerRangeNormalized() {
         return GuiUtils.clamp(maxTracerRange / (double) MAX_TRACER_RANGE, 0, 1.0);
     }
 
     public void setMaxTracerRangeNormalized(double maxTracerRange) {
         this.maxTracerRange = GuiUtils.clamp((int) (maxTracerRange * MAX_TRACER_RANGE), 0, MAX_TRACER_RANGE);
+    }
+
+    public void setDamageIndicatorDisabled(boolean damageIndicatorDisabled) {
+        this.damageIndicatorDisabled = damageIndicatorDisabled;
     }
 
     public File getSaveFile() {

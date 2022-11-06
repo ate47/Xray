@@ -7,7 +7,7 @@ license="The Unlicense"
 	version="${file.jarVersion}"
 	displayName="XrayMod"
 	displayURL="https://www.curseforge.com/minecraft/mc-mods/xray-1-13-rift-modloader"
-	authors="ATE47, ThaEin, ALFECLARE
+	authors="ATE47, ThaEin, ALFECLARE"
 	description="Bored by finding your diamonds legitimately? This mod is for you!"
 	logoFile="logo.png"
 
