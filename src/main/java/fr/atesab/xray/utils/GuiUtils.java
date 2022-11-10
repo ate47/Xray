@@ -17,6 +17,7 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
@@ -29,7 +30,7 @@ import net.minecraft.world.item.ItemStack;
  * Advanced creative tab GuiUtils
  * https://github.com/ate47/AdvancedCreativeTab/blob/1.18-forge/src/main/java/fr/atesab/act/utils/GuiUtils.java
  */
-public class GuiUtils {
+public class GuiUtils extends GuiComponent {
     private static final Random RANDOM = new Random();
 
     public static record HSLResult(int hue, int saturation, int lightness, int alpha) {
@@ -556,18 +557,32 @@ public class GuiUtils {
      * 
      * @since 2.0
      */
-    public static void drawBox(PoseStack p, int x, int y, int width, int height, float z) {
-        z -= 50F;
+    public static void drawBox(PoseStack p, int x, int y, int width, int height, float zLevel) {
         // -267386864 0xF0100010 | 1347420415 0x505000FF | 1344798847 0x5028007F
-        drawGradientRect(p, x - 3, y - 4, x + width + 3, y - 3, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x - 3, y + height + 3, x + width + 3, y + height + 4, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x - 3, y - 3, x + width + 3, y + height + 3, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x - 4, y - 3, x - 3, y + height + 3, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x + width + 3, y - 3, x + width + 4, y + height + 3, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, 0x505000FF, 0x5028007F, z);
-        drawGradientRect(p, x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, 0x505000FF, 0x5028007F, z);
-        drawGradientRect(p, x - 3, y - 3, x + width + 3, y - 3 + 1, 0x505000FF, 0x505000FF, z);
-        drawGradientRect(p, x - 3, y + height + 2, x + width + 3, y + height + 3, 0x5028007F, 0x5028007F, z);
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+                GlStateManager.DestFactor.ZERO);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        Matrix4f mat = p.last().pose();
+        int z = (int) zLevel - 50;
+        fillGradient(mat, bufferbuilder, x - 3, y - 4, x + width + 3, y - 3, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x - 3, y + height + 3, x + width + 3, y + height + 4, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y + height + 3, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x - 4, y - 3, x - 3, y + height + 3, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x + width + 3, y - 3, x + width + 4, y + height + 3, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
+        fillGradient(mat, bufferbuilder, x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
+        fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y - 3 + 1, z, 0x505000FF, 0x505000FF);
+        fillGradient(mat, bufferbuilder, x - 3, y + height + 2, x + width + 3, y + height + 3, z, 0x5028007F, 0x5028007F);
+        BufferUploader.draw(bufferbuilder.end());
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
     }
 
     /**
