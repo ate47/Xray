@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.gui.components.Button;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -14,13 +14,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
-public abstract class BlockSelector extends Screen {
-    private final Screen parent;
+public abstract class BlockSelector extends XrayScreen {
     private final List<Block> blocks;
     private final List<Block> visible = new ArrayList<>();
     private EditBox searchBar;
-    private Button nextPage;
-    private Button lastPage;
+    private XrayButton nextPage;
+    private XrayButton lastPage;
     private int elementByPage = 1;
     private int elementsX = 1;
     private int elementsY = 1;
@@ -28,8 +27,7 @@ public abstract class BlockSelector extends Screen {
 
     @SuppressWarnings("deprecation")
     public BlockSelector(Screen parent) {
-        super(Component.translatable("x13.mod.menu.selector"));
-        this.parent = parent;
+        super(Component.translatable("x13.mod.menu.selector"), parent);
         blocks = new ArrayList<>();
         Registry.BLOCK.forEach(blocks::add);
     }
@@ -82,15 +80,15 @@ public abstract class BlockSelector extends Screen {
             }
         };
 
-        lastPage = new Button(width / 2 - 124, pageBottom, 20, 20, Component.literal("<-"), b -> {
+        lastPage = new XrayButton(width / 2 - 124, pageBottom, 20, 20, Component.literal("<-"), b -> {
             page--;
             updateArrows();
         });
-        Button cancelBtn = new Button(width / 2 - 100, pageBottom, 200, 20, Component.translatable("gui.cancel"),
+        XrayButton cancelBtn = new XrayButton(width / 2 - 100, pageBottom, 200, 20, Component.translatable("gui.cancel"),
                 b -> {
                     getMinecraft().setScreen(parent);
                 });
-        nextPage = new Button(width / 2 + 104, pageBottom, 20, 20, Component.literal("->"), b -> {
+        nextPage = new XrayButton(width / 2 + 104, pageBottom, 20, 20, Component.literal("->"), b -> {
             page++;
             updateArrows();
         });

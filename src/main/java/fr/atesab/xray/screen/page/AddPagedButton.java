@@ -2,11 +2,12 @@ package fr.atesab.xray.screen.page;
 
 import java.util.function.Supplier;
 
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-public class AddPagedButton<E> extends Button {
+public class AddPagedButton<E> extends XrayButton {
     private static final Component ADD_COMPONENT = Component.literal("+").withStyle(ChatFormatting.GREEN);
     private static final Button.OnPress EMPTY_PRESS = btn -> {
     };

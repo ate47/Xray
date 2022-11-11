@@ -7,8 +7,8 @@ import java.util.List;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.config.BlockConfig;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -16,28 +16,26 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
-public class XrayBlockMenu extends Screen {
+public class XrayBlockMenu extends XrayScreen {
     private static final Component ADD = Component.literal("+").withStyle(ChatFormatting.GREEN);
     private static final Component REPLACE = Component.translatable("x13.mod.menu.replace")
             .withStyle(ChatFormatting.YELLOW);
     private static final Component DELETE = Component.translatable("x13.mod.menu.delete")
             .withStyle(ChatFormatting.RED);
-    private final Screen parent;
     private final BlockConfig mode;
     private final List<Block> config;
     private final List<Block> visible = new ArrayList<>();
     private EditBox searchBar;
-    private Button nextPage;
-    private Button lastPage;
+    private XrayButton nextPage;
+    private XrayButton lastPage;
     private int elementByPage = 1;
     private int elementsX = 1;
     private int elementsY = 1;
     private int page = 0;
 
     public XrayBlockMenu(Screen parent, BlockConfig mode) {
-        super(Component.translatable(mode.getName()));
+        super(Component.translatable(mode.getName()), parent);
         this.mode = mode;
-        this.parent = parent;
         this.config = new ArrayList<>();
         this.config.addAll(mode.getBlocks().getObjects());
     }
@@ -90,22 +88,22 @@ public class XrayBlockMenu extends Screen {
             }
         };
 
-        lastPage = new Button(width / 2 - 126, pageBottom, 20, 20, Component.literal("<-"), b -> {
+        lastPage = new XrayButton(width / 2 - 126, pageBottom, 20, 20, Component.literal("<-"), b -> {
             page--;
             updateArrows();
         });
 
-        Button doneBtn = new Button(width / 2 - 102, pageBottom, 100, 20,
+        XrayButton doneBtn = new XrayButton(width / 2 - 102, pageBottom, 100, 20,
                 Component.translatable("gui.done"), b -> {
                     mode.getBlocks().setObjects(config);
                     getMinecraft().setScreen(parent);
                 });
 
-        Button cancelBtn = new Button(width / 2 + 2, pageBottom, 100, 20,
+        XrayButton cancelBtn = new XrayButton(width / 2 + 2, pageBottom, 100, 20,
                 Component.translatable("gui.cancel"), b -> {
                     getMinecraft().setScreen(parent);
                 });
-        nextPage = new Button(width / 2 + 106, pageBottom, 20, 20, Component.literal("->"), b -> {
+        nextPage = new XrayButton(width / 2 + 106, pageBottom, 20, 20, Component.literal("->"), b -> {
             page++;
             updateArrows();
         });

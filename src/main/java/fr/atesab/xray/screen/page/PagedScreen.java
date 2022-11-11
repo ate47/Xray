@@ -12,7 +12,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.screen.XrayScreen;
 import fr.atesab.xray.utils.TagOnWriteList;
-import net.minecraft.client.gui.components.Button;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -35,8 +35,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     private ListIterator<PagedElement<E>> iterator;
     private final TagOnWriteList<PagedElement<E>> elements = new TagOnWriteList<>(new ArrayList<>());
-    private final Button nextButton;
-    private final Button lastButton;
+    private final XrayButton nextButton;
+    private final XrayButton lastButton;
 
     protected PagedScreen(Component title, Screen parent, int elementHeight, Stream<E> stream) {
         super(title, parent);
@@ -45,8 +45,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
         elements.setTagEnabled(false);
         initElements(stream);
         elements.setTagEnabled(true);
-        lastButton = new Button(0, 0, 20, 20, Component.literal("<-"), b -> lastPage());
-        nextButton = new Button(0, 0, 20, 20, Component.literal("->"), b -> nextPage());
+        lastButton = new XrayButton(0, 0, 20, 20, Component.literal("<-"), b -> lastPage());
+        nextButton = new XrayButton(0, 0, 20, 20, Component.literal("->"), b -> nextPage());
     }
 
     protected void removeDoneButton() {
@@ -150,14 +150,14 @@ public abstract class PagedScreen<E> extends XrayScreen {
         addRenderableWidget(lastButton);
         if (doneButton)
             addRenderableWidget(
-                    new Button(width / 2 - 176, height - 24, 172, 20, Component.translatable("gui.done"), b -> {
+                    new XrayButton(width / 2 - 176, height - 24, 172, 20, Component.translatable("gui.done"), b -> {
                         save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
                                 .collect(Collectors.toCollection(ArrayList::new)));
                         minecraft.setScreen(parent);
                     }));
 
         addRenderableWidget(
-                new Button(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20,
+                new XrayButton(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20,
                         Component.translatable("gui.cancel"),
                         b -> {
                             cancel();

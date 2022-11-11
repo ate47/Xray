@@ -11,10 +11,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.HSLResult;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -116,7 +115,7 @@ public class ColorSelector extends XrayScreen {
     private int color;
     private DragState drag = DragState.NONE;
     private boolean advanced = false;
-    private Button advButton;
+    private XrayButton advButton;
     private EditBox tfr, tfg, tfb, tfh, tfs, tfl, intColor, hexColor;
     private final int defaultColor;
     private int localHue;
@@ -276,11 +275,13 @@ public class ColorSelector extends XrayScreen {
         GuiUtils.drawCenterString(matrixStack, font, "x", width / 2 + 190, height / 2 - 100 - getShiftY(), 0xFFFFFFFF, 20);
 
         // history
-        for (int i = 0; i < buffer.length; i++) {
-            int bx = width / 2 - 200 + 20 * i;
-            int by = height / 2 + 104 - getShiftY();
-            GuiUtils.drawHoverableRect(matrixStack, bx, by, bx + 19, by + 19, 0xFF_FF_FF_FF, 0xFF_BB_BB_BB, mouseX, mouseY);
-            GuiUtils.drawRect(matrixStack, bx + 1, by + 1, bx + 18, by + 18, buffer[i] | 0xFF_00_00_00);
+        if (filledBuffer) {
+            for (int i = 0; i < buffer.length; i++) {
+                int bx = width / 2 - 200 + 20 * i;
+                int by = height / 2 + 104 - getShiftY();
+                GuiUtils.drawHoverableRect(matrixStack, bx, by, bx + 19, by + 19, 0xFF_FF_FF_FF, 0xFF_BB_BB_BB, mouseX, mouseY);
+                GuiUtils.drawRect(matrixStack, bx + 1, by + 1, bx + 18, by + 18, buffer[i] | 0xFF_00_00_00);
+            }
         }
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -308,18 +309,18 @@ public class ColorSelector extends XrayScreen {
     @Override
     public void init() {
         addRenderableWidget(
-                new Button(width / 2 - 200, height / 2 + 80 - getShiftY(), 130, 20, Component.translatable("gui.done"), b -> {
+                new XrayButton(width / 2 - 200, height / 2 + 80 - getShiftY(), 130, 20, Component.translatable("gui.done"), b -> {
                     complete();
                     getMinecraft().setScreen(parent);
                 }));
-        advButton = addRenderableWidget(new Button(width / 2 - 66, height / 2 + 80 - getShiftY(), 132, 20,
+        advButton = addRenderableWidget(new XrayButton(width / 2 - 66, height / 2 + 80 - getShiftY(), 132, 20,
                 Component.translatable("x13.mod.color.advanced"), b -> {
                     advanced ^= true;
                     advButton.setMessage(Component.translatable(
                             advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
                 }));
         addRenderableWidget(
-                new Button(width / 2 + 70, height / 2 + 80 - getShiftY(), 130, 20, Component.translatable("gui.cancel"), b -> getMinecraft().setScreen(parent)));
+                new XrayButton(width / 2 + 70, height / 2 + 80 - getShiftY(), 130, 20, Component.translatable("gui.cancel"), b -> getMinecraft().setScreen(parent)));
 
         int advWidth = 158 + 200;
         int midAdv = width / 2 + (-158 + 200) / 2;
@@ -536,14 +537,16 @@ public class ColorSelector extends XrayScreen {
                         return true;
                     }
                 // history
-                for (int i = 0; i < buffer.length; i++) {
-                    int bx = width / 2 - 200 + 20 * i;
-                    int by = height / 2 + 104 - getShiftY();
-                    if (GuiUtils.isHover(bx, by, 19, 19,
-                            (int) mouseX, (int) mouseY)) {
-                        updateColor(buffer[i]);
-                        playDownSound();
-                        return true;
+                if (filledBuffer) {
+                    for (int i = 0; i < buffer.length; i++) {
+                        int bx = width / 2 - 200 + 20 * i;
+                        int by = height / 2 + 104 - getShiftY();
+                        if (GuiUtils.isHover(bx, by, 19, 19,
+                                (int) mouseX, (int) mouseY)) {
+                            updateColor(buffer[i]);
+                            playDownSound();
+                            return true;
+                        }
                     }
                 }
             }

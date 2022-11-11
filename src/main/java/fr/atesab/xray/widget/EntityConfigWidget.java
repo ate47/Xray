@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
-public class EntityConfigWidget extends Button {
+public class EntityConfigWidget extends XrayButton {
     private final ESPConfig cfg;
     private int deltaX;
     private int deltaY;

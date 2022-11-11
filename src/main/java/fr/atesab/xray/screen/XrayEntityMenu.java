@@ -1,7 +1,6 @@
 package fr.atesab.xray.screen;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,20 +9,19 @@ import fr.atesab.xray.color.BlockEntityTypeIcon;
 import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.config.ESPConfig;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class XrayEntityMenu extends Screen {
+public class XrayEntityMenu extends XrayScreen {
     public record EntityUnion(EntityType<?> type, BlockEntityType<?> blockType, String text) implements EnumElement {
         EntityUnion(EntityType<?> type) {
             this(type, null, computeText(type, null));
@@ -63,22 +61,20 @@ public class XrayEntityMenu extends Screen {
             .withStyle(ChatFormatting.YELLOW);
     private static final Component DELETE = Component.translatable("x13.mod.menu.delete")
             .withStyle(ChatFormatting.RED);
-    private Screen parent;
     private ESPConfig mode;
     private List<EntityUnion> config;
     private List<EntityUnion> visible = new ArrayList<>();
     private EditBox searchBar;
-    private Button nextPage;
-    private Button lastPage;
+    private XrayButton nextPage;
+    private XrayButton lastPage;
     private int elementByPage = 1;
     private int elementsX = 1;
     private int elementsY = 1;
     private int page = 0;
 
     public XrayEntityMenu(Screen parent, ESPConfig mode) {
-        super(Component.literal(mode.getName()));
+        super(Component.literal(mode.getName()), parent);
         this.mode = mode;
-        this.parent = parent;
         this.config = new ArrayList<>();
         this.config.addAll(mode.getEntities().getObjects().stream().map(EntityUnion::new).toList());
         this.config.addAll(mode.getBlockEntities().getObjects().stream().map(EntityUnion::new).toList());
@@ -133,23 +129,23 @@ public class XrayEntityMenu extends Screen {
             }
         };
 
-        lastPage = new Button(width / 2 - 126, pageBottom, 20, 20, Component.literal("<-"), b -> {
+        lastPage = new XrayButton(width / 2 - 126, pageBottom, 20, 20, Component.literal("<-"), b -> {
             page--;
             updateArrows();
         });
 
-        Button doneBtn = new Button(width / 2 - 102, pageBottom, 100, 20,
+        XrayButton doneBtn = new XrayButton(width / 2 - 102, pageBottom, 100, 20,
                 Component.translatable("gui.done"), b -> {
             mode.getEntities().setObjects(config.stream().map(EntityUnion::type).filter(Objects::nonNull).toList());
             mode.getBlockEntities().setObjects(config.stream().map(EntityUnion::blockType).filter(Objects::nonNull).toList());
             getMinecraft().setScreen(parent);
         });
 
-        Button cancelBtn = new Button(width / 2 + 2, pageBottom, 100, 20,
+        XrayButton cancelBtn = new XrayButton(width / 2 + 2, pageBottom, 100, 20,
                 Component.translatable("gui.cancel"), b -> {
             getMinecraft().setScreen(parent);
         });
-        nextPage = new Button(width / 2 + 106, pageBottom, 20, 20, Component.literal("->"), b -> {
+        nextPage = new XrayButton(width / 2 + 106, pageBottom, 20, 20, Component.literal("->"), b -> {
             page++;
             updateArrows();
         });

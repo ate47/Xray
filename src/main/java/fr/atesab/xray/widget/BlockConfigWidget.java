@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
-public class BlockConfigWidget extends Button {
+public class BlockConfigWidget extends XrayButton {
     private final BlockConfig cfg;
     private int deltaX;
     private int deltaY;

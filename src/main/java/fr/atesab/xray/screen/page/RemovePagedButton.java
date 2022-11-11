@@ -1,10 +1,11 @@
 package fr.atesab.xray.screen.page;
 
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-public class RemovePagedButton extends Button {
+public class RemovePagedButton extends XrayButton {
     private static final Component REMOVE_COMPONENT = Component.literal("-").withStyle(ChatFormatting.RED);
     private static final Button.OnPress EMPTY_PRESS = btn -> {
     };

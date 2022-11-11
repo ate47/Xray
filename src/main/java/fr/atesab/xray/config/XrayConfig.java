@@ -3,6 +3,7 @@ package fr.atesab.xray.config;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -11,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
+import fr.atesab.xray.color.Skin;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.MergedIterable;
 import fr.atesab.xray.utils.XrayUtils;
@@ -63,6 +65,8 @@ public class XrayConfig implements Cloneable {
     @Expose
     private float espLineWidth = 2;
     @Expose
+    private Skin skin = Skin.XRAY;
+    @Expose
     private boolean damageIndicatorDisabled;
     @Expose
     private LocationConfig locationConfig = new LocationConfig();
@@ -82,6 +86,7 @@ public class XrayConfig implements Cloneable {
         this.locationConfig = other.locationConfig.clone();
         this.saveFile = other.saveFile;
         this.espLineWidth = other.espLineWidth;
+        this.skin = other.skin;
     }
 
     public Iterable<AbstractModeConfig> getModes() {
@@ -105,6 +110,14 @@ public class XrayConfig implements Cloneable {
 
     public void setEspConfigs(List<ESPConfig> espConfigs) {
         this.espConfigs = espConfigs;
+    }
+
+    public void setSkin(Skin skin) {
+        this.skin = skin;
+    }
+
+    public Skin getSkin() {
+        return Objects.requireNonNullElse(skin, Skin.XRAY);
     }
 
     public void setBlockConfigs(List<BlockConfig> blockConfigs) {

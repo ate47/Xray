@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.widget.ColorSelectorWidget;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -31,13 +31,13 @@ public class XrayAbstractModeConfig extends XrayScreen {
     @Override
     protected void init() {
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 24, 200, 20, Component.translatable("gui.done"), btn -> {
+                new XrayButton(width / 2 - 100, height / 2 + 24, 200, 20, Component.translatable("gui.done"), btn -> {
                     cfg.setName(nameBox.getValue());
                     cfg.setColor(color);
                     minecraft.setScreen(parent);
                 }));
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 48, 200, 20, Component.translatable("gui.cancel"), btn -> {
+                new XrayButton(width / 2 - 100, height / 2 + 48, 200, 20, Component.translatable("gui.cancel"), btn -> {
                     minecraft.setScreen(parent);
                 }));
 
