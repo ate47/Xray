@@ -2,6 +2,7 @@ package fr.atesab.xray.config;
 
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.EnumElement;
+import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.LocationUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -11,6 +12,8 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
@@ -18,11 +21,21 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class LocationFormatTool implements EnumElement {
     private static final String ID_PATTERN = "([A-Za-z0-9_]+)";
+    // format:
+    // base color &6
+    // custom color &!RR,GG,BB!
+    // random color &??
+    // random color with frequency &?FREQUENCY?
+    // random color with frequency, shift &?FREQUENCY,SHIFT_PERCENTAGE?
+    private static final Pattern COLOR_PATTERN = Pattern.compile("&([\\da-fk-orA-FK-OR]|(![\\dA-F]{0,2},[\\dA-F]{0,2},[\\dA-F]{0,2}!)|([?](\\d*(,\\d*)?)[?]))");
+    private static final int DEFAULT_FREQUENCY = 3000;
     private static final Pattern ID_PATTERN_MATCHER = Pattern.compile("%" + ID_PATTERN);
     private static final Map<String, LocationFormatTool> TOOLS = new HashMap<>();
 
@@ -210,8 +223,139 @@ public class LocationFormatTool implements EnumElement {
         }
     }
 
-    public static String applyColor(String text) {
-        return text.replaceAll("&([0-9a-fk-or])", Formatting.FORMATTING_CODE_PREFIX + "$1");
+    private static Function<Style, Style> toColorApplier(Function<Style, Style> prev, String colorBlock) {
+        if (colorBlock.length() == 0) {
+            return s -> s.withColor(Formatting.RESET);
+        }
+
+        char start = colorBlock.charAt(0);
+        return switch (start) {
+            // random color with frequency &?FREQUENCY?
+            // random color with frequency, shift &?FREQUENCY,SHIFT_PERCENTAGE?
+            case '?' -> {
+                String data = colorBlock.substring(1, colorBlock.length() -1);
+                long delta;
+                int frequency;
+                if (!data.isEmpty()) {
+                    // random color with shift &?SHIFT_PERCENTAGE?
+                    String[] freDelta = data.split(",");
+                    if (freDelta.length > 0) {
+                        frequency = freDelta[0].isEmpty() ? DEFAULT_FREQUENCY : Integer.parseInt(freDelta[0]);
+                        if (freDelta.length > 1) {
+                            delta = freDelta[1].isEmpty() ? 0 : Long.parseLong(freDelta[1]) * 500;
+                        } else {
+                            delta = 0;
+                        }
+                    } else {
+                        frequency = DEFAULT_FREQUENCY;
+                        delta = 0;
+                    }
+                } else {
+                    // random color &??
+                    frequency = DEFAULT_FREQUENCY;
+                    delta = 0;
+                }
+                int timeColor = GuiUtils.getTimeColor(delta, frequency > 0 ? frequency : DEFAULT_FREQUENCY, 100, 50);
+                yield s -> s.withColor(timeColor);
+            }
+            // custom color &!RR,GG,BB!
+            case '!' -> {
+                String[] colors = colorBlock.substring(1, colorBlock.length() -1).split(",");
+                int r, g, b;
+                if (colors.length > 0) {
+                    r = colors[0].isEmpty() ? 0 : Integer.parseInt(colors[0], 16);
+                    if (colors.length > 1) {
+                        g = colors[1].isEmpty() ? 0 : Integer.parseInt(colors[1], 16);
+                        if (colors.length > 2) {
+                            b = colors[2].isEmpty() ? 0 : Integer.parseInt(colors[2], 16);
+                        } else {
+                            b = 0;
+                        }
+                    } else {
+                        g = 0;
+                        b = 0;
+                    }
+                } else {
+                    r = 0;
+                    g = 0;
+                    b = 0;
+                }
+
+                int rgba = GuiUtils.asRGBA(r, g, b, 0xFF);
+                yield s -> s.withColor(rgba);
+            }
+            // base color &6
+            default -> {
+                Formatting chatFormatting = Objects.requireNonNullElse(Formatting.byCode(start), Formatting.RESET);
+                if (chatFormatting == Formatting.RESET) {
+                    yield s -> s;
+                }
+                if (chatFormatting.isColor()) {
+                    yield s -> s.withColor(chatFormatting);
+                }
+                switch (chatFormatting) {
+                    case OBFUSCATED -> {
+                        yield s -> prev.apply(s).withObfuscated(true);
+                    }
+                    case BOLD -> {
+                        yield s -> prev.apply(s).withBold(true);
+                    }
+                    case STRIKETHROUGH -> {
+                        yield s -> prev.apply(s).withStrikethrough(true);
+                    }
+                    case UNDERLINE -> {
+                        yield s -> prev.apply(s).withUnderline(true);
+                    }
+                    case ITALIC -> {
+                        yield s -> prev.apply(s).withItalic(true);
+                    }
+                    default -> {
+                        yield s -> s.withColor(chatFormatting);
+                    }
+                }
+            }
+        };
+    }
+
+    /**
+     * convert a location text to lines of components
+     * @param text text
+     * @return components
+     */
+    public static Text[] applyColor(String text) {
+        return Stream.of(text.split("\n")).map(l -> {
+            Matcher matcher = COLOR_PATTERN.matcher(l);
+            Function<Style, Style> style = (s) -> s;
+
+            int last = 0;
+            MutableText current = Text.literal("");
+
+            while (matcher.find()) {
+                int start = matcher.start();
+                int end = matcher.end();
+
+                // append previous literal if required
+                if (start != last) {
+                    current = current.append(Text.literal(l.substring(last, start)).styled(style::apply));
+                }
+                // set the new end
+                last = end;
+
+                // get the color info
+                String colorInfoBlock = matcher.group(1);
+                try {
+                    style = toColorApplier(style, colorInfoBlock);
+                } catch (Exception e) {
+                    return Text.literal("error &" + colorInfoBlock + ": " + e.getMessage());
+                }
+            }
+            // append previous literal if required
+            if (last != l.length()) {
+                current = current.append(Text.literal(l.substring(last)).styled(style::apply));
+            }
+
+            return current;
+        }).toArray(Text[]::new);
     }
 
     public static class ListToolFunction implements ToolFunction {

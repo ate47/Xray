@@ -305,18 +305,16 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         }
 
         if (config.getLocationConfig().isEnabled()) {
-            String format = LocationFormatTool.applyColor(
-                    getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.world)
-            );
+			Text[] format = LocationFormatTool.applyColor(
+					getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.world)
+			);
 
-            String[] split = format.split("\n");
+            if (format.length > 0) {
+                buffer.append(format[0]);
 
-            if (split.length > 0) {
-                buffer.append(Text.literal(split[0]));
-
-                for (int i = 1; i < split.length; i++) {
+                for (int i = 1; i < format.length; i++) {
                     buffer.newLine();
-                    buffer.append(Text.literal(split[i]));
+                    buffer.append(format[i]);
                 }
             }
         }
