@@ -8,14 +8,13 @@ import fr.atesab.xray.screen.XrayEntityMenu;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
 
-public class EntityConfigWidget extends ButtonWidget {
-    private ESPConfig cfg;
+public class EntityConfigWidget extends XrayButton {
+    private final ESPConfig cfg;
     private int deltaX;
     private int deltaY;
 

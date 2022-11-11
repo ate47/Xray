@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import fr.atesab.xray.screen.XrayScreen;
 import fr.atesab.xray.utils.TagOnWriteList;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -46,8 +47,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
         elements.setTagEnabled(false);
         initElements(stream);
         elements.setTagEnabled(true);
-        lastButton = new ButtonWidget.Builder(Text.literal("<-"), b -> lastPage()).dimensions(0, 0, 20, 20).build();
-        nextButton = new ButtonWidget.Builder(Text.literal("->"), b -> nextPage()).dimensions(0, 0, 20, 20).build();
+        lastButton = XrayButton.builder(Text.literal("<-"), b -> lastPage()).dimensions(0, 0, 20, 20).build();
+        nextButton = XrayButton.builder(Text.literal("->"), b -> nextPage()).dimensions(0, 0, 20, 20).build();
     }
 
     protected void removeDoneButton() {
@@ -152,14 +153,14 @@ public abstract class PagedScreen<E> extends XrayScreen {
         addDrawableChild(lastButton);
         if (doneButton)
             addDrawableChild(
-                    new ButtonWidget.Builder(Text.translatable("gui.done"), b -> {
+                    XrayButton.builder(Text.translatable("gui.done"), b -> {
                         save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
                                 .collect(Collectors.toCollection(() -> new ArrayList<>())));
                         client.setScreen(parent);
                     }).dimensions(width / 2 - 176, height - 24, 172, 20).build());
 
         addDrawableChild(
-                new ButtonWidget.Builder(Text.translatable("gui.cancel"), b -> {
+                XrayButton.builder(Text.translatable("gui.cancel"), b -> {
                             cancel();
                             client.setScreen(parent);
                         }).dimensions(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20).build());

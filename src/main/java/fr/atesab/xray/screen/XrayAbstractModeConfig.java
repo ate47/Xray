@@ -2,9 +2,9 @@ package fr.atesab.xray.screen;
 
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.widget.ColorSelectorWidget;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -31,13 +31,13 @@ public class XrayAbstractModeConfig extends XrayScreen {
     @Override
     protected void init() {
         addDrawableChild(
-                new ButtonWidget.Builder(Text.translatable("gui.done"), btn -> {
+                XrayButton.builder(Text.translatable("gui.done"), btn -> {
                     cfg.setName(nameBox.getText());
                     cfg.setColor(color);
                     client.setScreen(parent);
                 }).dimensions(width / 2 - 100, height / 2 + 24, 200, 20).build());
         addDrawableChild(
-                new ButtonWidget.Builder(Text.translatable("gui.cancel"), btn -> client.setScreen(parent)).dimensions(width / 2 - 100, height / 2 + 48, 200, 20).build());
+                XrayButton.builder(Text.translatable("gui.cancel"), btn -> client.setScreen(parent)).dimensions(width / 2 - 100, height / 2 + 48, 200, 20).build());
 
         nameBox = new TextFieldWidget(textRenderer, width / 2 - 98, height / 2 - 22, 196, 16, Text.literal(""));
         nameBox.setMaxLength(128);

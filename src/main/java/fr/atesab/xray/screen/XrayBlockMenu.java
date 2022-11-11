@@ -1,6 +1,7 @@
 package fr.atesab.xray.screen;
 
 import fr.atesab.xray.config.BlockConfig;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -90,19 +91,19 @@ public class XrayBlockMenu extends Screen {
             }
         };
 
-        lastPage = new ButtonWidget.Builder(Text.literal("<-"), b -> {
+        lastPage = XrayButton.builder(Text.literal("<-"), b -> {
             page--;
             updateArrows();
         }).dimensions(width / 2 - 126, pageBottom, 20, 20).build();
 
-        ButtonWidget doneBtn = new ButtonWidget.Builder(Text.translatable("gui.done"), b -> {
+        ButtonWidget doneBtn = XrayButton.builder(Text.translatable("gui.done"), b -> {
             mode.getBlocks().setObjects(config);
             client.setScreen(parent);
         }).dimensions(width / 2 - 102, pageBottom, 100, 20).build();
 
-        ButtonWidget cancelBtn = new ButtonWidget.Builder(
+        ButtonWidget cancelBtn = XrayButton.builder(
                 Text.translatable("gui.cancel"), b -> client.setScreen(parent)).dimensions(width / 2 + 2, pageBottom, 100, 20).build();
-        nextPage = new ButtonWidget.Builder(Text.literal("->"), b -> {
+        nextPage = XrayButton.builder(Text.literal("->"), b -> {
             page++;
             updateArrows();
         }).dimensions(width / 2 + 106, pageBottom, 20, 20).build();

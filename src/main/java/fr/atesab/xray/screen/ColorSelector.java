@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.HSLResult;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -317,18 +318,18 @@ public class ColorSelector extends XrayScreen {
 
     @Override
     public void init() {
-        addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.done"), b -> {
+        addDrawableChild(XrayButton.builder(Text.translatable("gui.done"), b -> {
                     complete();
                     client.setScreen(parent);
                 }).dimensions(width / 2 - 200, height / 2 + 80 - getShiftY(), 130, 20).build());
 
-        advButton = addDrawableChild(new ButtonWidget.Builder(Text.translatable("x13.mod.color.advanced"), b -> {
+        advButton = addDrawableChild(XrayButton.builder(Text.translatable("x13.mod.color.advanced"), b -> {
             advanced ^= true;
             advButton.setMessage(Text.translatable(
                     advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
         }).dimensions(width / 2 - 66, height / 2 + 80 - getShiftY(), 132, 20).build());
 
-        addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.cancel"), b -> client.setScreen(parent))
+        addDrawableChild(XrayButton.builder(Text.translatable("gui.cancel"), b -> client.setScreen(parent))
                 .dimensions(width / 2 + 70, height / 2 + 80 - getShiftY(), 130, 20).build());
 
         int advWidth = 158 + 200;

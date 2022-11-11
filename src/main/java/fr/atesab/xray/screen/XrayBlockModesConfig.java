@@ -10,8 +10,8 @@ import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.view.ViewMode;
 import fr.atesab.xray.widget.BlockConfigWidget;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
@@ -39,14 +39,14 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             int x = width / 2 - 125;
             blocks = addSubWidget(new BlockConfigWidget(x, 0, 125, 20, cfg, XrayBlockModesConfig.this));
             x += 129;
-            addSubWidget(new ButtonWidget.Builder(KeyData.getName(cfg.getKey()), btn -> {
+            addSubWidget(XrayButton.builder(KeyData.getName(cfg.getKey()), btn -> {
                 client.setScreen(new KeySelector(XrayBlockModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
                     btn.setMessage(KeyData.getName(cfg.getKey()));
                 }));
             }).dimensions(x, 0, 56, 20).build());
             x += 60;
-            addSubWidget(new ButtonWidget.Builder(cfg.getViewMode().getTitle(), btn -> {
+            addSubWidget(XrayButton.builder(cfg.getViewMode().getTitle(), btn -> {
                 client.setScreen(new EnumSelector<ViewMode>(
                         Text.translatable("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
 
@@ -59,7 +59,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
                 });
             }).dimensions(x, 0, 64, 20).build());
             x += 68;
-            addSubWidget(new ButtonWidget.Builder(Text.translatable("x13.mod.template.little"), btn -> client.setScreen(new EnumSelector<>(
+            addSubWidget(XrayButton.builder(Text.translatable("x13.mod.template.little"), btn -> client.setScreen(new EnumSelector<>(
                     Text.translatable("x13.mod.template"), XrayBlockModesConfig.this,
                     BlockConfig.Template.values()) {
 

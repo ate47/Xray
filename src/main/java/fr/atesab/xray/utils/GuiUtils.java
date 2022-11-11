@@ -293,7 +293,7 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * Draw a String on the screen at middle of an height
-     * 
+     *
      * @param stack        the stack
      * @param textRenderer the textRenderer
      * @param text         the string to render
@@ -301,13 +301,32 @@ public class GuiUtils extends DrawableHelper {
      * @param y            the y location
      * @param color        the color of the text
      * @param height       the height of the text
-     * 
+     *
      * @since 2.0
      * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int)
      * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int)
      */
     public static void drawString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y, int color,
-            int height) {
+                                  int height) {
+        textRenderer.draw(stack, text, x, y + height / 2 - textRenderer.fontHeight / 2, color);
+    }
+    /**
+     * Draw a String on the screen at middle of an height
+     *
+     * @param stack        the stack
+     * @param textRenderer the textRenderer
+     * @param text         the string to render
+     * @param x            the x location
+     * @param y            the y location
+     * @param color        the color of the text
+     * @param height       the height of the text
+     *
+     * @since 2.0
+     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int)
+     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int)
+     */
+    public static void drawString(MatrixStack stack, TextRenderer textRenderer, Text text, int x, int y, int color,
+                                  int height) {
         textRenderer.draw(stack, text, x, y + height / 2 - textRenderer.fontHeight / 2, color);
     }
 
@@ -349,7 +368,7 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * Draw a String centered of a vertical segment
-     * 
+     *
      * @param stack        the stack
      * @param textRenderer the textRenderer
      * @param text         the text
@@ -362,9 +381,45 @@ public class GuiUtils extends DrawableHelper {
      * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
      */
     public static void drawCenterString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y,
-            int color,
-            int height) {
+                                        int color,
+                                        int height) {
         drawString(stack, textRenderer, text, x - textRenderer.getWidth(text) / 2, y, color, height);
+    }
+    /**
+     * Draw a String centered of a vertical segment
+     *
+     * @param stack        the stack
+     * @param textRenderer the textRenderer
+     * @param text         the text
+     * @param x            x text location
+     * @param y            y text location
+     * @param color        text color
+     * @param height       segment length
+     * @since 2.0
+     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
+     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
+     */
+    public static void drawCenterString(MatrixStack stack, TextRenderer textRenderer, Text text, int x, int y,
+                                        int color,
+                                        int height) {
+        drawString(stack, textRenderer, text, x - textRenderer.getWidth(text) / 2, y, color, height);
+    }
+    /**
+     * Draw a String centered of a vertical segment
+     *
+     * @param stack        the stack
+     * @param textRenderer the textRenderer
+     * @param text         the text
+     * @param x            x text location
+     * @param y            y text location
+     * @param color        text color
+     * @since 2.0
+     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
+     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
+     */
+    public static void drawCenterString(MatrixStack stack, TextRenderer textRenderer, Text text, int x, int y,
+                                        int color) {
+        drawString(stack, textRenderer, text, x - textRenderer.getWidth(text) / 2, y, color, textRenderer.fontHeight);
     }
 
     /**

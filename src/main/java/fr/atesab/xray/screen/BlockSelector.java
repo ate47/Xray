@@ -1,5 +1,6 @@
 package fr.atesab.xray.screen;
 
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -81,14 +82,14 @@ public abstract class BlockSelector extends Screen {
             }
         };
 
-        lastPage = new ButtonWidget.Builder(Text.literal("<-"), button -> {
+        lastPage = XrayButton.builder(Text.literal("<-"), button -> {
             page--;
             updateArrows();
         }).dimensions(width / 2 - 124, pageBottom, 20, 20).build();
 
-        ButtonWidget cancelBtn = new ButtonWidget.Builder(Text.translatable("gui.cancel"), button -> client.setScreen(parent)).dimensions(width / 2 - 100, pageBottom, 200, 20).build();
+        ButtonWidget cancelBtn = XrayButton.builder(Text.translatable("gui.cancel"), button -> client.setScreen(parent)).dimensions(width / 2 - 100, pageBottom, 200, 20).build();
 
-        nextPage = new ButtonWidget.Builder(Text.literal("->"), button -> {
+        nextPage = XrayButton.builder(Text.literal("->"), button -> {
             page++;
             updateArrows();
         }).dimensions(width / 2 + 104, pageBottom, 20, 20).build();

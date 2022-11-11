@@ -5,9 +5,9 @@ import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.XrayUtils;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
@@ -26,14 +26,14 @@ public class XrayLocationConfig extends XrayScreen {
     @Override
     protected void init() {
         XrayMain mod = XrayMain.getMod();
-        addDrawableChild(new ButtonWidget.Builder(
+        addDrawableChild(XrayButton.builder(
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(), "x13.mod.location"), b -> {
             mod.getConfig().getLocationConfig().setEnabled(!mod.getConfig().getLocationConfig().isEnabled());
             b.setMessage(XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(),
                     "x13.mod.location"));
         }).dimensions(width / 2 - 100, height / 2 - 48, 200, 20).build());
 
-        addDrawableChild(new ButtonWidget.Builder(
+        addDrawableChild(XrayButton.builder(
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isShowMode(), "x13.mod.location.showmodes"),
                 b -> {
                     mod.getConfig().getLocationConfig().setShowMode(!mod.getConfig().getLocationConfig().isShowMode());
@@ -53,7 +53,7 @@ public class XrayLocationConfig extends XrayScreen {
         setInitialFocus(format);
 
         addDrawableChild(
-                new ButtonWidget.Builder(
+                XrayButton.builder(
                         Text.translatable("x13.mod.location.option"),
                         btn -> client.setScreen(new EnumSelector<>(
                                 Text.translatable("x13.mod.location.option"), this,
@@ -67,21 +67,21 @@ public class XrayLocationConfig extends XrayScreen {
 
                         })).dimensions(width / 2 - 100, height / 2 + 24, 98, 20).build());
         addDrawableChild(
-                new ButtonWidget.Builder(
+                XrayButton.builder(
                         Text.translatable("x13.mod.location.reset"),
                         btn -> {
                             format.setText(LocationConfig.DEFAULT_FORMAT);
                         }).dimensions(width / 2 + 2, height / 2 + 24, 98, 20).build());
 
         addDrawableChild(
-                new ButtonWidget.Builder(
+                XrayButton.builder(
                         Text.translatable("x13.mod.location.hud"),
                         btn -> {
                             client.setScreen(new XrayLocationConfigBoxScreen(this));
                         }).dimensions(width / 2 - 100, height / 2 + 48, 200, 20).build());
 
         addDrawableChild(
-                new ButtonWidget.Builder(Text.translatable("gui.done"),
+                XrayButton.builder(Text.translatable("gui.done"),
                         btn -> {
                             save();
                             client.setScreen(parent);

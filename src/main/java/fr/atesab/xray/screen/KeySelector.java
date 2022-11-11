@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import fr.atesab.xray.utils.KeyData;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -56,12 +57,12 @@ public class KeySelector extends XrayScreen {
 
     @Override
     protected void init() {
-        keyButton = addDrawableChild(new ButtonWidget.Builder(NONE_KEY, b -> waitKey()).dimensions(width / 2 - 100, height / 2 - 24, 200, 20).build());
-        doneButton = addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.done"), b -> {
+        keyButton = addDrawableChild(XrayButton.builder(NONE_KEY, b -> waitKey()).dimensions(width / 2 - 100, height / 2 - 24, 200, 20).build());
+        doneButton = addDrawableChild(XrayButton.builder(Text.translatable("gui.done"), b -> {
                     keyConsumer.accept(value);
                     client.setScreen(parent);
                 }).dimensions(width / 2 - 100, height / 2, 200, 20).build());
-        cancelButton = addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.cancel"), b -> client.setScreen(parent)).dimensions(width / 2 - 100, height / 2 + 24, 200, 20).build());
+        cancelButton = addDrawableChild(XrayButton.builder(Text.translatable("gui.cancel"), b -> client.setScreen(parent)).dimensions(width / 2 - 100, height / 2 + 24, 200, 20).build());
         setKey(value);
         super.init();
     }

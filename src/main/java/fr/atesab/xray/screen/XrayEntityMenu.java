@@ -4,6 +4,7 @@ import fr.atesab.xray.color.BlockEntityTypeIcon;
 import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.config.ESPConfig;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -134,20 +135,20 @@ public class XrayEntityMenu extends Screen {
             }
         };
 
-        lastPage = new ButtonWidget.Builder(Text.literal("<-"), button -> {
+        lastPage = XrayButton.builder(Text.literal("<-"), button -> {
             page--;
             updateArrows();
         }).dimensions(width / 2 - 126, pageBottom, 20, 20).build();
 
-        ButtonWidget doneBtn = new ButtonWidget.Builder(Text.translatable("gui.done"), button -> {
+        ButtonWidget doneBtn = XrayButton.builder(Text.translatable("gui.done"), button -> {
             mode.getEntities().setObjects(config.stream().map(EntityUnion::type).filter(Objects::nonNull).toList());
             mode.getBlockEntities().setObjects(config.stream().map(EntityUnion::blockType).filter(Objects::nonNull).toList());
             client.setScreen(parent);
         }).dimensions(width / 2 - 102, pageBottom, 100, 20).build();
 
-        ButtonWidget cancelBtn = new ButtonWidget.Builder(Text.translatable("gui.cancel"), button -> client.setScreen(parent)).dimensions(width / 2 + 2, pageBottom, 100, 20).build();
+        ButtonWidget cancelBtn = XrayButton.builder(Text.translatable("gui.cancel"), button -> client.setScreen(parent)).dimensions(width / 2 + 2, pageBottom, 100, 20).build();
 
-        nextPage = new ButtonWidget.Builder(Text.literal("->"), button -> {
+        nextPage = XrayButton.builder(Text.literal("->"), button -> {
             page++;
             updateArrows();
         }).dimensions(width / 2 + 106, pageBottom, 20, 20).build();
