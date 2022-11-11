@@ -32,11 +32,11 @@ import org.joml.Matrix4f;
 public class GuiUtils extends DrawableHelper {
     private static final Random RANDOM = new Random();
 
-    public static record HSLResult(int hue, int saturation, int lightness, int alpha) {
-    };
+    public record HSLResult(int hue, int saturation, int lightness, int alpha) {
+    }
 
-    public static record RGBResult(int red, int green, int blue, int alpha) {
-    };
+    public record RGBResult(int red, int green, int blue, int alpha) {
+    }
 
     public static final int COLOR_CONTAINER_BORDER = 0xC2C2C2;
     public static final int COLOR_CONTAINER_SLOT = 0xDADADA;
@@ -696,7 +696,7 @@ public class GuiUtils extends DrawableHelper {
     /**
      * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
      * anywhere in vanilla code.
-     * 
+     *
      * @param x          x location
      * @param y          y location
      * @param u          x uv location
@@ -716,7 +716,7 @@ public class GuiUtils extends DrawableHelper {
     /**
      * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
      * anywhere in vanilla code.
-     * 
+     *
      * @param x          x location
      * @param y          y location
      * @param u          x uv location
@@ -737,7 +737,7 @@ public class GuiUtils extends DrawableHelper {
     /**
      * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
      * anywhere in vanilla code.
-     * 
+     *
      * @param x          x location
      * @param y          y location
      * @param u          x uv location

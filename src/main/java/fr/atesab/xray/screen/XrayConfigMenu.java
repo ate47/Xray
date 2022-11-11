@@ -4,6 +4,7 @@ import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.LongItemWidget;
+import fr.atesab.xray.widget.SliderValueWidget;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
 import java.net.URL;
@@ -37,10 +39,10 @@ public class XrayConfigMenu extends XrayScreen {
                 int range = cfg.getMaxTracerRange();
                 MutableText distance = Text.translatable("x13.mod.esp.maxdistance").append(": ");
                 if (range == 0)
-                    setMessage(distance.append(Text.translatable("x13.mod.esp.maxdistance.infinite")));
+                    setMessage(distance.append(Text.translatable("x13.mod.esp.maxdistance.infinite").formatted(Formatting.YELLOW)));
                 else
                     setMessage(distance
-                            .append(Text.translatable("x13.mod.esp.maxdistance.block", String.valueOf(range))));
+                            .append(Text.translatable("x13.mod.esp.maxdistance.block", String.valueOf(range)).formatted(Formatting.YELLOW)));
             }
 
             @Override
@@ -49,10 +51,34 @@ public class XrayConfigMenu extends XrayScreen {
             }
 
         });
-        addDrawableChild(new ButtonWidget.Builder(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"), button -> {
+        addDrawableChild(ButtonWidget.builder(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"), button -> {
             cfg.setDamageIndicatorDisabled(!cfg.isDamageIndicatorDisabled());
             button.setMessage(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"));
         }).dimensions(width / 2 - 100, height / 2 - 24, 200, 20).build());
+
+        addDrawableChild(new SliderValueWidget(width / 2 - 100, height / 2, 200, 20,
+                Text.translatable("x13.mod.config.espline"), cfg.getEspLineWidthNormalized()) {
+            {
+                updateMessage();
+            }
+            @Override
+            protected void updateMessage() {
+                float range = cfg.getEspLineWidth();
+                setMessage(Text.translatable("x13.mod.config.espline").append(": ")
+                        .append(Text.literal(String.format("%.1f", range)).formatted(Formatting.YELLOW)));
+            }
+
+            @Override
+            protected void applyValue() {
+                cfg.setEspLineWidthNormalized((float) value);
+            }
+
+        });
+        addDrawableChild(
+                ButtonWidget.builder(Text.translatable("gui.done"),
+                        btn -> {
+                            client.setScreen(parent);
+                        }).dimensions(width / 2 - 100, height / 2 + 52, 200, 20).build());
 
         addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.done"), btn -> client.setScreen(parent)).dimensions(width / 2 - 100, height / 2 + 52, 200, 20).build());
 

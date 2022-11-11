@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
@@ -210,7 +211,7 @@ public class LocationFormatTool implements EnumElement {
     }
 
     public static String applyColor(String text) {
-        return text.replaceAll("&([0-9a-fk-or])", "§$1");
+        return text.replaceAll("&([0-9a-fk-or])", Formatting.FORMATTING_CODE_PREFIX + "$1");
     }
 
     public static class ListToolFunction implements ToolFunction {
