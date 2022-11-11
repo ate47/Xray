@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.utils.LocationUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -220,7 +221,7 @@ public class LocationFormatTool implements EnumElement {
     }
 
     public static String applyColor(String text) {
-        return text.replaceAll("&([0-9a-fk-or])", "§$1");
+        return text.replaceAll("&([0-9a-fk-or])", ChatFormatting.PREFIX_CODE + "$1");
     }
 
     public static class ListToolFunction implements ToolFunction {

@@ -8,6 +8,7 @@ import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.LongItemWidget;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
@@ -38,10 +39,10 @@ public class XrayConfigMenu extends XrayScreen {
                 int range = cfg.getMaxTracerRange();
                 MutableComponent distance = Component.translatable("x13.mod.esp.maxdistance").append(": ");
                 if (range == 0)
-                    setMessage(distance.append(Component.translatable("x13.mod.esp.maxdistance.infinite")));
+                    setMessage(distance.append(Component.translatable("x13.mod.esp.maxdistance.infinite").withStyle(ChatFormatting.YELLOW)));
                 else
                     setMessage(distance
-                            .append(Component.translatable("x13.mod.esp.maxdistance.block", String.valueOf(range))));
+                            .append(Component.translatable("x13.mod.esp.maxdistance.block", String.valueOf(range)).withStyle(ChatFormatting.YELLOW)));
             }
 
             @Override
@@ -57,6 +58,24 @@ public class XrayConfigMenu extends XrayScreen {
                     button.setMessage(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"));
                 })
         );
+        addRenderableWidget(new AbstractSliderButton(width / 2 - 100, height / 2, 200, 20,
+                Component.translatable("x13.mod.config.espline"), cfg.getEspLineWidthNormalized()) {
+            {
+                updateMessage();
+            }
+            @Override
+            protected void updateMessage() {
+                float range = cfg.getEspLineWidth();
+                setMessage(Component.translatable("x13.mod.config.espline").append(": ")
+                        .append(Component.literal(String.format("%.1f", range)).withStyle(ChatFormatting.YELLOW)));
+            }
+
+            @Override
+            protected void applyValue() {
+                cfg.setEspLineWidthNormalized((float) value);
+            }
+
+        });
         addRenderableWidget(
                 new Button(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
                         btn -> {

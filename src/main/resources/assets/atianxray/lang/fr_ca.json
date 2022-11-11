@@ -99,6 +99,7 @@
   "x13.mod.config.override": "Override config",
   "x13.mod.config.fly": "Mode vol",
   "x13.mod.config.zoom": "Zoom",
+  "x13.mod.config.espline": "Largeur ligne ESP",
 
   "x13.mod.on": "On",
   "x13.mod.off": "Off",

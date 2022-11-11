@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Vector3f;
 
 import net.minecraft.client.OptionInstance;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
@@ -366,16 +366,26 @@ public class XrayMain {
 		if (config.getEspConfigs().stream().noneMatch(ESPConfig::isEnabled)) {
 			return;
 		}
-		BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
 
-		VertexConsumer buffer = source.getBuffer(RenderType.LINES);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+		// RenderSystem.depthMask(false);
+		RenderSystem.disableDepthTest();
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_LINE);
+		GL11.glLineWidth(config.getEspLineWidth());
+		RenderSystem.depthMask(false);
+		RenderSystem.depthFunc(GL11.GL_NEVER);
+		RenderSystem.disableTexture();
 
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glEnable(GL11.GL_LINE_SMOOTH);
-		// GL11.glDisable(GL11.GL_DEPTH_TEST);
+		Tesselator tessellator = Tesselator.getInstance();
+		BufferBuilder buffer = tessellator.getBuilder();
+		buffer.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
 		stack.pushPose();
+
+		RenderSystem.applyModelViewMatrix();
 		stack.setIdentity();
 		stack.translate(-camera.x, -camera.y, -camera.z);
 		Vector3f look = mainCamera.getLookVector();
@@ -389,45 +399,57 @@ public class XrayMain {
 		int chunkX = chunkPos.x;
 		int chunkZ = chunkPos.z;
 
+		if (config.getEspConfigs().stream().anyMatch(ESPConfig::hasBlockEsp)) {
+			for (int i = chunkX - distance; i <= chunkX + distance; i++) {
+				for (int j = chunkZ - distance; j <= chunkZ + distance; j++) {
+					int ccx = i << 4 + 8;
+					int ccz = j << 4 + 8;
 
-		for (int i = chunkX - distance; i <= chunkX + distance; i++) {
-			for (int j = chunkZ - distance; j <= chunkZ + distance; j++) {
-				ChunkAccess chunk = level.getChunk(i, j, ChunkStatus.FULL, false);
-				if (chunk != null) {
-					chunk.getBlockEntitiesPos().forEach(((blockPos) -> {
-						if ((config.getMaxTracerRange() != 0 && blockPos.distSqr(player.blockPosition()) > maxDistanceSquared)) {
-							return;
-						}
+					int squaredDistanceToChunk = (int) ((px - ccx) * (px - ccx) + (pz - ccz) * (pz - ccz));
 
-						BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
+					// sqrt(2) ~= 3 / 2 "math"
+					if (squaredDistanceToChunk + 8 * 3 / 2 > maxDistanceSquared) {
+						// ignore this chunk, too far
+						continue;
+					}
 
-						if (blockEntity == null) {
-							return;
-						}
-
-						BlockEntityType<?> type = blockEntity.getType();
-
-						config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
-							RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
-							float r = c.red() / 255F;
-							float g = c.green() / 255F;
-							float b = c.blue() / 255F;
-							float a = c.alpha() / 255F;
-
-							AABB aabb = new AABB(
-									blockPos.getX(), blockPos.getY(), blockPos.getZ(),
-									blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1
-							);
-
-							LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
-
-							if (esp.hasTracer()) {
-								Vec3 center = aabb.getCenter();
-								RenderUtils.renderSingleLine(stack, buffer, px, py, pz, (float) center.x,
-										(float) center.y, (float) center.z, r, g, b, a);
+					ChunkAccess chunk = level.getChunk(i, j, ChunkStatus.FULL, false);
+					if (chunk != null) {
+						chunk.getBlockEntitiesPos().forEach(((blockPos) -> {
+							if ((config.getMaxTracerRange() != 0 && blockPos.distSqr(player.blockPosition()) > maxDistanceSquared)) {
+								return;
 							}
-						});
-					}));
+
+							BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
+
+							if (blockEntity == null) {
+								return;
+							}
+
+							BlockEntityType<?> type = blockEntity.getType();
+
+							config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
+								RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
+								float r = c.red() / 255F;
+								float g = c.green() / 255F;
+								float b = c.blue() / 255F;
+								float a = c.alpha() / 255F;
+
+								AABB aabb = new AABB(
+										blockPos.getX(), blockPos.getY(), blockPos.getZ(),
+										blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1
+								);
+
+								LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
+
+								if (esp.hasTracer()) {
+									Vec3 center = aabb.getCenter();
+									RenderUtils.renderSingleLine(stack, buffer, px, py, pz, (float) center.x,
+											(float) center.y, (float) center.z, r, g, b, a);
+								}
+							});
+						}));
+					}
 				}
 			}
 		}
@@ -473,10 +495,16 @@ public class XrayMain {
 				}
 			});
 		});
-		source.endBatch(RenderType.LINES);
+		tessellator.end();
 		stack.popPose();
+		RenderSystem.disableBlend();
+		RenderSystem.enableTexture();
+		RenderSystem.applyModelViewMatrix();
 		RenderSystem.setShaderColor(1, 1, 1, 1);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		RenderSystem.enableDepthTest();
+		RenderSystem.depthMask(true);
+		RenderSystem.lineWidth(1.0F);
+		RenderSystem.depthFunc(GL11.GL_LEQUAL);
 		GL11.glDisable(GL11.GL_LINE_SMOOTH);
 	}
 

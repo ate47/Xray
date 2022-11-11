@@ -33,11 +33,11 @@ import net.minecraft.world.item.ItemStack;
 public class GuiUtils extends GuiComponent {
     private static final Random RANDOM = new Random();
 
-    public static record HSLResult(int hue, int saturation, int lightness, int alpha) {
-    };
+    public record HSLResult(int hue, int saturation, int lightness, int alpha) {
+    }
 
-    public static record RGBResult(int red, int green, int blue, int alpha) {
-    };
+    public record RGBResult(int red, int green, int blue, int alpha) {
+    }
 
     public static final int COLOR_CONTAINER_BORDER = 0xC2C2C2;
     public static final int COLOR_CONTAINER_SLOT = 0xDADADA;
@@ -357,16 +357,16 @@ public class GuiUtils extends GuiComponent {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.vertex((double) x, (double) (y + height), 0.0D)
-                .uv((float) (u * scaleX), (float) ((v + (float) vHeight) * scaleY)).color(red, green, blue, alpha)
+        bufferbuilder.vertex(x, y + height, 0.0D)
+                .uv(u * scaleX, (v + (float) vHeight) * scaleY).color(red, green, blue, alpha)
                 .endVertex();
-        bufferbuilder.vertex((double) (x + width), (double) (y + height), 0.0D)
-                .uv((float) ((u + (float) uWidth) * scaleX), (float) ((v + (float) vHeight) * scaleY))
+        bufferbuilder.vertex(x + width, y + height, 0.0D)
+                .uv((u + (float) uWidth) * scaleX, (v + (float) vHeight) * scaleY)
                 .color(red, green, blue, alpha).endVertex();
-        bufferbuilder.vertex((double) (x + width), (double) y, 0.0D)
-                .uv((float) ((u + (float) uWidth) * scaleX), (float) (v * scaleY)).color(red, green, blue, alpha)
+        bufferbuilder.vertex(x + width, y, 0.0D)
+                .uv((u + (float) uWidth) * scaleX, v * scaleY).color(red, green, blue, alpha)
                 .endVertex();
-        bufferbuilder.vertex((double) x, (double) y, 0.0D).uv((float) (u * scaleX), (float) (v * scaleY))
+        bufferbuilder.vertex(x, y, 0.0D).uv(u * scaleX, v * scaleY)
                 .color(red, green, blue, alpha).endVertex();
         tesselator.end();
     }
@@ -580,7 +580,7 @@ public class GuiUtils extends GuiComponent {
         fillGradient(mat, bufferbuilder, x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
         fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y - 3 + 1, z, 0x505000FF, 0x505000FF);
         fillGradient(mat, bufferbuilder, x - 3, y + height + 2, x + width + 3, y + height + 3, z, 0x5028007F, 0x5028007F);
-        BufferUploader.draw(bufferbuilder.end());
+        tessellator.end();
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
     }

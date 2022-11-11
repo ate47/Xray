@@ -20,10 +20,12 @@ public class XrayConfig implements Cloneable {
             .excludeFieldsWithoutExposeAnnotation().create();
 
     public static final int MAX_TRACER_RANGE = 256;
+    public static final float MAX_TRACER_SIZE = 10;
+    public static final float MIN_TRACER_SIZE = 0.1f;
 
     /**
      * load a config file and save it
-     * 
+     *
      * @param saveFile the save file
      * @return the config
      * @see #save()
@@ -59,6 +61,8 @@ public class XrayConfig implements Cloneable {
     @Expose
     private int maxTracerRange = 0;
     @Expose
+    private float espLineWidth = 2;
+    @Expose
     private boolean damageIndicatorDisabled;
     @Expose
     private LocationConfig locationConfig = new LocationConfig();
@@ -77,6 +81,7 @@ public class XrayConfig implements Cloneable {
         this.damageIndicatorDisabled = other.damageIndicatorDisabled;
         this.locationConfig = other.locationConfig.clone();
         this.saveFile = other.saveFile;
+        this.espLineWidth = other.espLineWidth;
     }
 
     public Iterable<AbstractModeConfig> getModes() {
@@ -130,6 +135,22 @@ public class XrayConfig implements Cloneable {
         this.damageIndicatorDisabled = damageIndicatorDisabled;
     }
 
+    public double getEspLineWidthNormalized() {
+        return GuiUtils.clamp((espLineWidth - MIN_TRACER_SIZE) / (MAX_TRACER_SIZE - MIN_TRACER_SIZE), 0, 1.0);
+    }
+
+    public void setEspLineWidthNormalized(double espLineWidth) {
+        float delta = MAX_TRACER_SIZE - MIN_TRACER_SIZE;
+        this.espLineWidth = MIN_TRACER_SIZE + GuiUtils.clamp((float) (espLineWidth * delta), 0, delta);
+    }
+
+    public float getEspLineWidth() {
+        return espLineWidth <= 0 ? 2 : espLineWidth;
+    }
+
+    public void setEspLineWidth(float espLineWidth) {
+        this.espLineWidth = espLineWidth <= 0 ? 1 : espLineWidth;
+    }
     public File getSaveFile() {
         return saveFile;
     }
@@ -149,7 +170,7 @@ public class XrayConfig implements Cloneable {
 
     /**
      * save the config to a file
-     * 
+     *
      * @see #sync(File)
      */
     public void save() {

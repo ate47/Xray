@@ -174,4 +174,8 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
         }
         return blockEntities.contains(id.toString());
     }
+
+    public boolean hasBlockEsp() {
+        return !blockEntities.isEmpty();
+    }
 }
