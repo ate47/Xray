@@ -333,15 +333,14 @@ public class XrayMain {
 		}
 
 		if (config.getLocationConfig().isEnabled()) {
-			String format = LocationFormatTool.applyColor(
+			Component[] format = LocationFormatTool.applyColor(
 					getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.level)
 			);
-			String[] renderStrings = format.split("\n");
 			// write first line with the shift for the mode
-			render.draw(stack, renderStrings[0],5 + w, 5, 0xffffffff);
+			render.draw(stack, format[0],5 + w, 5, 0xffffffff);
 			// write next lines
-			for (int lineIndex = 1; lineIndex < renderStrings.length; lineIndex++) {
-				render.draw(stack, renderStrings[lineIndex],
+			for (int lineIndex = 1; lineIndex < format.length; lineIndex++) {
+				render.draw(stack, format[lineIndex],
 						5, 5 + render.lineHeight * lineIndex, 0xffffffff);
 			}
 		}

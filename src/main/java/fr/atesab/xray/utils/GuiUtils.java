@@ -234,7 +234,11 @@ public class GuiUtils extends GuiComponent {
     }
 
     public static int getTimeColor(int frequency, int saturation, int lightness) {
-        return 0xff000000 | fromHSL((int) ((System.currentTimeMillis() % (long) frequency) * 360 / frequency),
+        return getTimeColor(0, frequency, saturation, lightness);
+    }
+
+    public static int getTimeColor(long shift, int frequency, int saturation, int lightness) {
+        return 0xff000000 | fromHSL((int) (((System.currentTimeMillis() + shift) % (long) frequency) * 360 / frequency),
                 saturation, lightness);
     }
 
