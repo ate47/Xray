@@ -1,21 +1,21 @@
 package fr.atesab.xray.config;
 
+import fr.atesab.xray.utils.TagOnWriteList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistry;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import fr.atesab.xray.utils.TagOnWriteList;
-import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.resources.ResourceLocation;
-
 public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Cloneable {
 
     private List<R> objects = new ArrayList<>();
-    private DefaultedRegistry<R> registry;
+    private final IForgeRegistry<R> registry;
     private boolean synced = false;
 
-    public SyncedRegistryList(DefaultedRegistry<R> registry) {
+    public SyncedRegistryList(IForgeRegistry<R> registry) {
         super(new ArrayList<>());
         this.registry = registry;
     }
@@ -29,11 +29,11 @@ public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Clo
         }
     }
 
-    public SyncedRegistryList(R[] objects, DefaultedRegistry<R> registry) {
+    public SyncedRegistryList(R[] objects, IForgeRegistry<R> registry) {
         this(Arrays.asList(objects), registry);
     }
 
-    public SyncedRegistryList(List<R> objects, DefaultedRegistry<R> registry) {
+    public SyncedRegistryList(List<R> objects, IForgeRegistry<R> registry) {
         super(new ArrayList<>());
         this.registry = registry;
         setObjects(objects);
@@ -45,7 +45,7 @@ public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Clo
         return objects;
     }
 
-    public void setObjects(List<R> objects) {
+    public void setObjects(List<? extends R> objects) {
         setTagEnabled(false);
         this.objects = new ArrayList<>(objects);
         clear();
@@ -56,7 +56,7 @@ public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Clo
 
     public SyncedRegistryList<R> sync() {
         objects.clear();
-        stream().map(ResourceLocation::new).map(registry::get).filter(Objects::nonNull).forEach(objects::add);
+        stream().map(ResourceLocation::new).map(registry::getValue).filter(Objects::nonNull).forEach(objects::add);
         removeUpdated();
         synced = true;
         return this;

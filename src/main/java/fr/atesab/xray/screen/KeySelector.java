@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.utils.KeyData;
-import net.minecraft.client.gui.components.Button;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -19,9 +19,9 @@ public class KeySelector extends XrayScreen {
     private Optional<KeyData> value;
     private boolean isWaitingKey = false;
 
-    private Button cancelButton;
-    private Button keyButton;
-    private Button doneButton;
+    private XrayButton cancelButton;
+    private XrayButton keyButton;
+    private XrayButton doneButton;
 
     public KeySelector(Screen parent, KeyData key, Consumer<Optional<KeyData>> keyConsumer) {
         this(parent, Optional.of(key), keyConsumer);
@@ -57,14 +57,14 @@ public class KeySelector extends XrayScreen {
 
     @Override
     protected void init() {
-        keyButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 - 24, 200, 20,
+        keyButton = addRenderableWidget(new XrayButton(width / 2 - 100, height / 2 - 24, 200, 20,
                 NONE_KEY, b -> waitKey()));
-        doneButton = addRenderableWidget(new Button(width / 2 - 100, height / 2, 200, 20,
+        doneButton = addRenderableWidget(new XrayButton(width / 2 - 100, height / 2, 200, 20,
                 Component.translatable("gui.done"), b -> {
                     keyConsumer.accept(value);
                     minecraft.setScreen(parent);
                 }));
-        cancelButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 24, 200, 20,
+        cancelButton = addRenderableWidget(new XrayButton(width / 2 - 100, height / 2 + 24, 200, 20,
                 Component.translatable("gui.cancel"), b -> {
                     minecraft.setScreen(parent);
                 }));

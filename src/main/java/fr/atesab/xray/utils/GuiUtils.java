@@ -17,6 +17,7 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
@@ -29,14 +30,14 @@ import net.minecraft.world.item.ItemStack;
  * Advanced creative tab GuiUtils
  * https://github.com/ate47/AdvancedCreativeTab/blob/1.18-forge/src/main/java/fr/atesab/act/utils/GuiUtils.java
  */
-public class GuiUtils {
+public class GuiUtils extends GuiComponent {
     private static final Random RANDOM = new Random();
 
-    public static record HSLResult(int hue, int saturation, int lightness, int alpha) {
-    };
+    public record HSLResult(int hue, int saturation, int lightness, int alpha) {
+    }
 
-    public static record RGBResult(int red, int green, int blue, int alpha) {
-    };
+    public record RGBResult(int red, int green, int blue, int alpha) {
+    }
 
     public static final int COLOR_CONTAINER_BORDER = 0xC2C2C2;
     public static final int COLOR_CONTAINER_SLOT = 0xDADADA;
@@ -233,7 +234,11 @@ public class GuiUtils {
     }
 
     public static int getTimeColor(int frequency, int saturation, int lightness) {
-        return 0xff000000 | fromHSL((int) ((System.currentTimeMillis() % (long) frequency) * 360 / frequency),
+        return getTimeColor(0, frequency, saturation, lightness);
+    }
+
+    public static int getTimeColor(long shift, int frequency, int saturation, int lightness) {
+        return 0xff000000 | fromHSL((int) (((System.currentTimeMillis() + shift) % (long) frequency) * 360 / frequency),
                 saturation, lightness);
     }
 
@@ -356,16 +361,16 @@ public class GuiUtils {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.vertex((double) x, (double) (y + height), 0.0D)
-                .uv((float) (u * scaleX), (float) ((v + (float) vHeight) * scaleY)).color(red, green, blue, alpha)
+        bufferbuilder.vertex(x, y + height, 0.0D)
+                .uv(u * scaleX, (v + (float) vHeight) * scaleY).color(red, green, blue, alpha)
                 .endVertex();
-        bufferbuilder.vertex((double) (x + width), (double) (y + height), 0.0D)
-                .uv((float) ((u + (float) uWidth) * scaleX), (float) ((v + (float) vHeight) * scaleY))
+        bufferbuilder.vertex(x + width, y + height, 0.0D)
+                .uv((u + (float) uWidth) * scaleX, (v + (float) vHeight) * scaleY)
                 .color(red, green, blue, alpha).endVertex();
-        bufferbuilder.vertex((double) (x + width), (double) y, 0.0D)
-                .uv((float) ((u + (float) uWidth) * scaleX), (float) (v * scaleY)).color(red, green, blue, alpha)
+        bufferbuilder.vertex(x + width, y, 0.0D)
+                .uv((u + (float) uWidth) * scaleX, v * scaleY).color(red, green, blue, alpha)
                 .endVertex();
-        bufferbuilder.vertex((double) x, (double) y, 0.0D).uv((float) (u * scaleX), (float) (v * scaleY))
+        bufferbuilder.vertex(x, y, 0.0D).uv(u * scaleX, v * scaleY)
                 .color(red, green, blue, alpha).endVertex();
         tesselator.end();
     }
@@ -556,18 +561,32 @@ public class GuiUtils {
      * 
      * @since 2.0
      */
-    public static void drawBox(PoseStack p, int x, int y, int width, int height, float z) {
-        z -= 50F;
+    public static void drawBox(PoseStack p, int x, int y, int width, int height, float zLevel) {
         // -267386864 0xF0100010 | 1347420415 0x505000FF | 1344798847 0x5028007F
-        drawGradientRect(p, x - 3, y - 4, x + width + 3, y - 3, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x - 3, y + height + 3, x + width + 3, y + height + 4, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x - 3, y - 3, x + width + 3, y + height + 3, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x - 4, y - 3, x - 3, y + height + 3, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x + width + 3, y - 3, x + width + 4, y + height + 3, 0xF0100010, 0xF0100010, z);
-        drawGradientRect(p, x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, 0x505000FF, 0x5028007F, z);
-        drawGradientRect(p, x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, 0x505000FF, 0x5028007F, z);
-        drawGradientRect(p, x - 3, y - 3, x + width + 3, y - 3 + 1, 0x505000FF, 0x505000FF, z);
-        drawGradientRect(p, x - 3, y + height + 2, x + width + 3, y + height + 3, 0x5028007F, 0x5028007F, z);
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+                GlStateManager.DestFactor.ZERO);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        Matrix4f mat = p.last().pose();
+        int z = (int) zLevel - 50;
+        fillGradient(mat, bufferbuilder, x - 3, y - 4, x + width + 3, y - 3, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x - 3, y + height + 3, x + width + 3, y + height + 4, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y + height + 3, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x - 4, y - 3, x - 3, y + height + 3, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x + width + 3, y - 3, x + width + 4, y + height + 3, z, 0xF0100010, 0xF0100010);
+        fillGradient(mat, bufferbuilder, x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
+        fillGradient(mat, bufferbuilder, x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
+        fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y - 3 + 1, z, 0x505000FF, 0x505000FF);
+        fillGradient(mat, bufferbuilder, x - 3, y + height + 2, x + width + 3, y + height + 3, z, 0x5028007F, 0x5028007F);
+        tessellator.end();
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
     }
 
     /**
@@ -644,7 +663,6 @@ public class GuiUtils {
                 .color(redLeftBottom, greenLeftBottom, blueLeftBottom, alphaLeftBottom).endVertex();
         bufferbuilder.vertex(mat, right, bottom, zLevel)
                 .color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom).endVertex();
-        bufferbuilder.end();
         BufferUploader.draw(bufferbuilder.end());
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();

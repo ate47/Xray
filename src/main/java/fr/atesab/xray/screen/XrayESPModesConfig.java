@@ -14,7 +14,7 @@ import fr.atesab.xray.screen.page.RemovePagedButton;
 import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.EntityConfigWidget;
-import net.minecraft.client.gui.components.Button;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -38,7 +38,7 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
             int x = width / 2 - 125;
             entities = addSubWidget(new EntityConfigWidget(x, 0, 115, 20, cfg, XrayESPModesConfig.this));
             x += 119;
-            addSubWidget(new Button(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
+            addSubWidget(new XrayButton(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
                 minecraft.setScreen(new KeySelector(XrayESPModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
                     btn.setMessage(KeyData.getName(cfg.getKey()));
@@ -46,12 +46,12 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
             }));
             x += 60;
             addSubWidget(
-                    new Button(x, 0, 74, 20, XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"), btn -> {
+                    new XrayButton(x, 0, 74, 20, XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"), btn -> {
                         cfg.setTracer(!cfg.hasTracer());
                         btn.setMessage(XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"));
                     }));
             x += 78;
-            addSubWidget(new Button(x, 0, 20, 20, Component.translatable("x13.mod.template.little"), btn -> {
+            addSubWidget(new XrayButton(x, 0, 20, 20, Component.translatable("x13.mod.template.little"), btn -> {
                 minecraft.setScreen(new EnumSelector<ESPConfig.Template>(
                         Component.translatable("x13.mod.template"), XrayESPModesConfig.this,
                         ESPConfig.Template.values()) {

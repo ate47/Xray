@@ -10,8 +10,8 @@ import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.widget.MenuWidget;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +33,7 @@ public class XrayMenu extends XrayScreen {
         XrayMain mod = XrayMain.getMod();
 
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
+                new XrayButton(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
                         btn -> {
                             minecraft.setScreen(parent);
                         }));

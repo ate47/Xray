@@ -30,8 +30,9 @@
   "x13.mod.esp.maxdistance.block": "%s Block(s)",
   "x13.mod.esp.template.player": "Player",
   "x13.mod.esp.template.wither": "Wither",
-  "x13.mod.esp.template.aggresive": "Aggresive",
+  "x13.mod.esp.template.aggresive": "Aggressive",
   "x13.mod.esp.template.passive": "Passive",
+  "x13.mod.esp.template.chest": "Chest",
   "x13.mod.esp.tracer": "Tracer",
   "x13.mod.esp.selector": "Entity selector",
 
@@ -90,6 +91,16 @@
   "x13.mod.link.source": "Source",
   "x13.mod.link.issue": "Issue",
   "x13.mod.by": "By %s",
+
+  "x13.mod.config.search": "Search",
+  "x13.mod.config.espDamage": "ESP damage indicator",
+  "x13.mod.config.blockEsp": "Block ESP",
+  "x13.mod.config.border": "ESP border",
+  "x13.mod.config.override": "Override config",
+  "x13.mod.config.fly": "Fly mode",
+  "x13.mod.config.zoom": "Zoom",
+  "x13.mod.config.espline": "ESP lines width",
+  "x13.mod.config.skin": "Skin",
 
   "x13.mod.on": "On",
   "x13.mod.off": "Off",

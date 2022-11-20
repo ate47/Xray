@@ -7,8 +7,8 @@ import fr.atesab.xray.color.EntityTypeIcon;
 import net.minecraft.core.Registry;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
-@SuppressWarnings("deprecation")
 public class SyncedEntityTypeList extends SyncedRegistryList<EntityType<?>> {
 
     private SyncedEntityTypeList(SyncedRegistryList<EntityType<?>> other) {
@@ -16,15 +16,15 @@ public class SyncedEntityTypeList extends SyncedRegistryList<EntityType<?>> {
     }
 
     public SyncedEntityTypeList() {
-        super(Registry.ENTITY_TYPE);
+        super(ForgeRegistries.ENTITY_TYPES);
     }
 
     public SyncedEntityTypeList(EntityType<?>... objects) {
-        super(objects, Registry.ENTITY_TYPE);
+        super(objects, ForgeRegistries.ENTITY_TYPES);
     }
 
     public SyncedEntityTypeList(List<EntityType<?>> objects) {
-        super(objects, Registry.ENTITY_TYPE);
+        super(objects, ForgeRegistries.ENTITY_TYPES);
     }
 
     public Stream<ItemStack> getIcons() {

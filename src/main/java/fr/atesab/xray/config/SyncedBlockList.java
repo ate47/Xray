@@ -4,8 +4,8 @@ import java.util.List;
 
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.registries.ForgeRegistries;
 
-@SuppressWarnings("deprecation")
 public class SyncedBlockList extends SyncedRegistryList<Block> {
 
     private SyncedBlockList(SyncedRegistryList<Block> other) {
@@ -13,15 +13,15 @@ public class SyncedBlockList extends SyncedRegistryList<Block> {
     }
 
     public SyncedBlockList() {
-        super(Registry.BLOCK);
+        super(ForgeRegistries.BLOCKS);
     }
 
     public SyncedBlockList(Block... objects) {
-        super(objects, Registry.BLOCK);
+        super(objects, ForgeRegistries.BLOCKS);
     }
 
     public SyncedBlockList(List<Block> objects) {
-        super(objects, Registry.BLOCK);
+        super(objects, ForgeRegistries.BLOCKS);
     }
 
     @Override

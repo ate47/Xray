@@ -5,12 +5,14 @@ import java.net.URL;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.XrayMain;
+import fr.atesab.xray.color.Skin;
 import fr.atesab.xray.config.XrayConfig;
-import fr.atesab.xray.utils.GuiUtils;
+import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.LongItemWidget;
+import fr.atesab.xray.widget.XrayButton;
+import fr.atesab.xray.widget.XraySlider;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -27,7 +29,7 @@ public class XrayConfigMenu extends XrayScreen {
     @Override
     protected void init() {
         XrayConfig cfg = XrayMain.getMod().getConfig();
-        addRenderableWidget(new AbstractSliderButton(width / 2 - 100, height / 2 - 48, 200, 20,
+        addRenderableWidget(new XraySlider(width / 2 - 100, height / 2 - 48, 200, 20,
                 Component.translatable("x13.mod.esp.maxdistance"), cfg.getMaxTracerRangeNormalized()) {
             {
                 updateMessage();
@@ -38,10 +40,10 @@ public class XrayConfigMenu extends XrayScreen {
                 int range = cfg.getMaxTracerRange();
                 MutableComponent distance = Component.translatable("x13.mod.esp.maxdistance").append(": ");
                 if (range == 0)
-                    setMessage(distance.append(Component.translatable("x13.mod.esp.maxdistance.infinite")));
+                    setMessage(distance.append(Component.translatable("x13.mod.esp.maxdistance.infinite").withStyle(ChatFormatting.YELLOW)));
                 else
                     setMessage(distance
-                            .append(Component.translatable("x13.mod.esp.maxdistance.block", String.valueOf(range))));
+                            .append(Component.translatable("x13.mod.esp.maxdistance.block", String.valueOf(range)).withStyle(ChatFormatting.YELLOW)));
             }
 
             @Override
@@ -51,7 +53,39 @@ public class XrayConfigMenu extends XrayScreen {
 
         });
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
+                new XrayButton(width / 2 - 100, height / 2 - 24, 200, 20,
+                        XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"), button -> {
+                    cfg.setDamageIndicatorDisabled(!cfg.isDamageIndicatorDisabled());
+                    button.setMessage(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"));
+                })
+        );
+        addRenderableWidget(new XraySlider(width / 2 - 100, height / 2, 200, 20,
+                Component.translatable("x13.mod.config.espline"), cfg.getEspLineWidthNormalized()) {
+            {
+                updateMessage();
+            }
+            @Override
+            protected void updateMessage() {
+                float range = cfg.getEspLineWidth();
+                setMessage(Component.translatable("x13.mod.config.espline").append(": ")
+                        .append(Component.literal(String.format("%.1f", range)).withStyle(ChatFormatting.YELLOW)));
+            }
+
+            @Override
+            protected void applyValue() {
+                cfg.setEspLineWidthNormalized((float) value);
+            }
+
+        });
+
+        addRenderableWidget(new XrayButton(width / 2 - 100, height / 2 + 24, 200, 20, Component.translatable("x13.mod.config.skin").append(": ").append(Component.literal(cfg.getSkin().getTitle()).withStyle(ChatFormatting.YELLOW)), btn -> {
+            Skin[] skins = Skin.values();
+            cfg.setSkin(skins[(cfg.getSkin().ordinal() + 1) % skins.length]);
+            btn.setMessage(Component.translatable("x13.mod.config.skin").append(": ").append(Component.literal(cfg.getSkin().getTitle()).withStyle(ChatFormatting.YELLOW)));
+        }));
+
+        addRenderableWidget(
+                new XrayButton(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
                         btn -> {
                             minecraft.setScreen(parent);
                         }));

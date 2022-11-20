@@ -1,12 +1,9 @@
 package fr.atesab.xray.config;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -15,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
+import fr.atesab.xray.color.Skin;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.MergedIterable;
 import fr.atesab.xray.utils.XrayUtils;
@@ -24,10 +22,12 @@ public class XrayConfig implements Cloneable {
             .excludeFieldsWithoutExposeAnnotation().create();
 
     public static final int MAX_TRACER_RANGE = 256;
+    public static final float MAX_TRACER_SIZE = 10;
+    public static final float MIN_TRACER_SIZE = 0.1f;
 
     /**
      * load a config file and save it
-     * 
+     *
      * @param saveFile the save file
      * @return the config
      * @see #save()
@@ -37,7 +37,11 @@ public class XrayConfig implements Cloneable {
         try (Reader r = new FileReader(saveFile)) {
             cfg = GSON.fromJson(r, XrayConfig.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e instanceof FileNotFoundException) {
+                System.out.println("Can't find config file, creating a new config...");
+            } else {
+                e.printStackTrace();
+            }
             cfg = new XrayConfig();
             cfg.reset();
         }
@@ -59,6 +63,12 @@ public class XrayConfig implements Cloneable {
     @Expose
     private int maxTracerRange = 0;
     @Expose
+    private float espLineWidth = 2;
+    @Expose
+    private Skin skin = Skin.XRAY;
+    @Expose
+    private boolean damageIndicatorDisabled;
+    @Expose
     private LocationConfig locationConfig = new LocationConfig();
     private File saveFile;
 
@@ -72,8 +82,11 @@ public class XrayConfig implements Cloneable {
                 BlockConfig::clone)
                 .collect(Collectors.toCollection(ArrayList::new));
         this.maxTracerRange = other.maxTracerRange;
+        this.damageIndicatorDisabled = other.damageIndicatorDisabled;
         this.locationConfig = other.locationConfig.clone();
         this.saveFile = other.saveFile;
+        this.espLineWidth = other.espLineWidth;
+        this.skin = other.skin;
     }
 
     public Iterable<AbstractModeConfig> getModes() {
@@ -99,6 +112,14 @@ public class XrayConfig implements Cloneable {
         this.espConfigs = espConfigs;
     }
 
+    public void setSkin(Skin skin) {
+        this.skin = skin;
+    }
+
+    public Skin getSkin() {
+        return Objects.requireNonNullElse(skin, Skin.XRAY);
+    }
+
     public void setBlockConfigs(List<BlockConfig> blockConfigs) {
         this.blockConfigs = blockConfigs;
     }
@@ -111,6 +132,10 @@ public class XrayConfig implements Cloneable {
         return maxTracerRange;
     }
 
+    public boolean isDamageIndicatorDisabled() {
+        return damageIndicatorDisabled;
+    }
+
     public double getMaxTracerRangeNormalized() {
         return GuiUtils.clamp(maxTracerRange / (double) MAX_TRACER_RANGE, 0, 1.0);
     }
@@ -119,6 +144,26 @@ public class XrayConfig implements Cloneable {
         this.maxTracerRange = GuiUtils.clamp((int) (maxTracerRange * MAX_TRACER_RANGE), 0, MAX_TRACER_RANGE);
     }
 
+    public void setDamageIndicatorDisabled(boolean damageIndicatorDisabled) {
+        this.damageIndicatorDisabled = damageIndicatorDisabled;
+    }
+
+    public double getEspLineWidthNormalized() {
+        return GuiUtils.clamp((espLineWidth - MIN_TRACER_SIZE) / (MAX_TRACER_SIZE - MIN_TRACER_SIZE), 0, 1.0);
+    }
+
+    public void setEspLineWidthNormalized(double espLineWidth) {
+        float delta = MAX_TRACER_SIZE - MIN_TRACER_SIZE;
+        this.espLineWidth = MIN_TRACER_SIZE + GuiUtils.clamp((float) (espLineWidth * delta), 0, delta);
+    }
+
+    public float getEspLineWidth() {
+        return espLineWidth <= 0 ? 2 : espLineWidth;
+    }
+
+    public void setEspLineWidth(float espLineWidth) {
+        this.espLineWidth = espLineWidth <= 0 ? 1 : espLineWidth;
+    }
     public File getSaveFile() {
         return saveFile;
     }
@@ -138,7 +183,7 @@ public class XrayConfig implements Cloneable {
 
     /**
      * save the config to a file
-     * 
+     *
      * @see #sync(File)
      */
     public void save() {

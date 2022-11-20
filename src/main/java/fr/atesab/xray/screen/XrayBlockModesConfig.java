@@ -15,7 +15,7 @@ import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.view.ViewMode;
 import fr.atesab.xray.widget.BlockConfigWidget;
-import net.minecraft.client.gui.components.Button;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -39,15 +39,15 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             int x = width / 2 - 125;
             blocks = addSubWidget(new BlockConfigWidget(x, 0, 125, 20, cfg, XrayBlockModesConfig.this));
             x += 129;
-            addSubWidget(new Button(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
+            addSubWidget(new XrayButton(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
                 minecraft.setScreen(new KeySelector(XrayBlockModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
                     btn.setMessage(KeyData.getName(cfg.getKey()));
                 }));
             }));
             x += 60;
-            addSubWidget(new Button(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
-                minecraft.setScreen(new EnumSelector<ViewMode>(
+            addSubWidget(new XrayButton(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
+                minecraft.setScreen(new EnumSelector<>(
                         Component.translatable("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
 
                     @Override
@@ -59,7 +59,7 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
                 });
             }));
             x += 68;
-            addSubWidget(new Button(x, 0, 20, 20, Component.translatable("x13.mod.template.little"), btn -> {
+            addSubWidget(new XrayButton(x, 0, 20, 20, Component.translatable("x13.mod.template.little"), btn -> {
                 minecraft.setScreen(new EnumSelector<BlockConfig.Template>(
                         Component.translatable("x13.mod.template"), XrayBlockModesConfig.this,
                         BlockConfig.Template.values()) {

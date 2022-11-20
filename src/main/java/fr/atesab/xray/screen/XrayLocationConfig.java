@@ -7,8 +7,8 @@ import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.config.LocationFormatTool;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.XrayUtils;
+import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 public class XrayLocationConfig extends XrayScreen {
 
     private EditBox format;
+    private int position;
 
     public XrayLocationConfig(Screen parent) {
         super(Component.translatable("x13.mod.showloc"), parent);
@@ -25,14 +26,14 @@ public class XrayLocationConfig extends XrayScreen {
     @Override
     protected void init() {
         XrayMain mod = XrayMain.getMod();
-        addRenderableWidget(new Button(width / 2 - 100, height / 2 - 48, 200, 20,
+        addRenderableWidget(new XrayButton(width / 2 - 100, height / 2 - 48, 200, 20,
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(), "x13.mod.location"), b -> {
                     mod.getConfig().getLocationConfig().setEnabled(!mod.getConfig().getLocationConfig().isEnabled());
                     b.setMessage(XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(),
                             "x13.mod.location"));
                 }));
 
-        addRenderableWidget(new Button(width / 2 - 100, height / 2 - 24, 200, 20,
+        addRenderableWidget(new XrayButton(width / 2 - 100, height / 2 - 24, 200, 20,
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isShowMode(), "x13.mod.location.showmodes"),
                 b -> {
                     mod.getConfig().getLocationConfig().setShowMode(!mod.getConfig().getLocationConfig().isShowMode());
@@ -45,11 +46,16 @@ public class XrayLocationConfig extends XrayScreen {
         format.setValue(mod.getConfig().getLocationConfig().getFormat());
         format.setResponder(mod.getConfig().getLocationConfig()::setFormat);
         format.setFocus(true);
+        if (position != 0) {
+            format.setCursorPosition(position);
+            position = 0;
+        }
+
         addWidget(format);
         setInitialFocus(format);
 
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 24, 98, 20,
+                new XrayButton(width / 2 - 100, height / 2 + 24, 98, 20,
                         Component.translatable("x13.mod.location.option"),
                         btn -> {
                             minecraft.setScreen(new EnumSelector<>(
@@ -58,19 +64,21 @@ public class XrayLocationConfig extends XrayScreen {
                                 @Override
                                 protected void select(LocationFormatTool e) {
                                     format.insertText(e.getOption());
+                                    // store the position for the screen switch
+                                    position = format.getCursorPosition();
                                 }
 
                             });
                         }));
         addRenderableWidget(
-                new Button(width / 2 + 2, height / 2 + 24, 98, 20,
+                new XrayButton(width / 2 + 2, height / 2 + 24, 98, 20,
                         Component.translatable("x13.mod.location.reset"),
                         btn -> {
                             format.setValue(LocationConfig.DEFAULT_FORMAT);
                         }));
 
         addRenderableWidget(
-                new Button(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
+                new XrayButton(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
                         btn -> {
                             save();
                             minecraft.setScreen(parent);

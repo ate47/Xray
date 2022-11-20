@@ -11,12 +11,18 @@ import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Vector3f;
 
 import net.minecraft.client.OptionInstance;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -72,7 +78,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public class XrayMain {
 	public static final String MOD_ID = "atianxray";
 	public static final String MOD_NAME = "Xray";
-	public static final String[] MOD_AUTHORS = { "ATE47", "ThaEin" };
+	public static final String[] MOD_AUTHORS = { "ATE47", "ThaEin", "ALFECLARE" };
 	public static final URL MOD_SOURCE = XrayUtils.soWhat(() -> new URL("https://github.com/ate47/Xray"));
 	public static final URL MOD_ISSUE = XrayUtils.soWhat(() -> new URL("https://github.com/ate47/Xray/issues"));
 	public static final URL MOD_LINK = XrayUtils
@@ -327,15 +333,14 @@ public class XrayMain {
 		}
 
 		if (config.getLocationConfig().isEnabled()) {
-			String format = LocationFormatTool.applyColor(
+			Component[] format = LocationFormatTool.applyColor(
 					getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.level)
 			);
-			String[] renderStrings = format.split("\n");
 			// write first line with the shift for the mode
-			render.draw(stack, renderStrings[0],5 + w, 5, 0xffffffff);
+			render.draw(stack, format[0],5 + w, 5, 0xffffffff);
 			// write next lines
-			for (int lineIndex = 1; lineIndex < renderStrings.length; lineIndex++) {
-				render.draw(stack, renderStrings[lineIndex],
+			for (int lineIndex = 1; lineIndex < format.length; lineIndex++) {
+				render.draw(stack, format[lineIndex],
 						5, 5 + render.lineHeight * lineIndex, 0xffffffff);
 			}
 		}
@@ -360,16 +365,26 @@ public class XrayMain {
 		if (config.getEspConfigs().stream().noneMatch(ESPConfig::isEnabled)) {
 			return;
 		}
-		BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
 
-		VertexConsumer buffer = source.getBuffer(RenderType.LINES);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+		// RenderSystem.depthMask(false);
+		RenderSystem.disableDepthTest();
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_LINE);
+		GL11.glLineWidth(config.getEspLineWidth());
+		RenderSystem.depthMask(false);
+		RenderSystem.depthFunc(GL11.GL_NEVER);
+		RenderSystem.disableTexture();
 
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glEnable(GL11.GL_LINE_SMOOTH);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		Tesselator tessellator = Tesselator.getInstance();
+		BufferBuilder buffer = tessellator.getBuilder();
+		buffer.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
 		stack.pushPose();
+
+		RenderSystem.applyModelViewMatrix();
 		stack.setIdentity();
 		stack.translate(-camera.x, -camera.y, -camera.z);
 		Vector3f look = mainCamera.getLookVector();
@@ -378,22 +393,95 @@ public class XrayMain {
 		float pz = (float) (player.zOld + (player.getZ() - player.zOld) * delta) + look.z();
 
 		int maxDistanceSquared = (config.getMaxTracerRange() * config.getMaxTracerRange());
+		int distance = minecraft.options.getEffectiveRenderDistance();
+		ChunkPos chunkPos = player.chunkPosition();
+		int chunkX = chunkPos.x;
+		int chunkZ = chunkPos.z;
+
+		if (config.getEspConfigs().stream().anyMatch(ESPConfig::hasBlockEsp)) {
+			for (int i = chunkX - distance; i <= chunkX + distance; i++) {
+				for (int j = chunkZ - distance; j <= chunkZ + distance; j++) {
+					int ccx = i << 4 + 8;
+					int ccz = j << 4 + 8;
+
+					int squaredDistanceToChunk = (int) ((px - ccx) * (px - ccx) + (pz - ccz) * (pz - ccz));
+
+					// sqrt(2) ~= 3 / 2 "math"
+					if (squaredDistanceToChunk + 8 * 3 / 2 > maxDistanceSquared) {
+						// ignore this chunk, too far
+						continue;
+					}
+
+					ChunkAccess chunk = level.getChunk(i, j, ChunkStatus.FULL, false);
+					if (chunk != null) {
+						chunk.getBlockEntitiesPos().forEach(((blockPos) -> {
+							if ((config.getMaxTracerRange() != 0 && blockPos.distSqr(player.blockPosition()) > maxDistanceSquared)) {
+								return;
+							}
+
+							BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
+
+							if (blockEntity == null) {
+								return;
+							}
+
+							BlockEntityType<?> type = blockEntity.getType();
+
+							config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
+								RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
+								float r = c.red() / 255F;
+								float g = c.green() / 255F;
+								float b = c.blue() / 255F;
+								float a = c.alpha() / 255F;
+
+								AABB aabb = new AABB(
+										blockPos.getX(), blockPos.getY(), blockPos.getZ(),
+										blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1
+								);
+
+								LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
+
+								if (esp.hasTracer()) {
+									Vec3 center = aabb.getCenter();
+									RenderUtils.renderSingleLine(stack, buffer, px, py, pz, (float) center.x,
+											(float) center.y, (float) center.z, r, g, b, a);
+								}
+							});
+						}));
+					}
+				}
+			}
+		}
+
 		level.entitiesForRendering().forEach(e -> {
 
-			if ((config.getMaxTracerRange() != 0 && e.distanceToSqr(player) > maxDistanceSquared) || player == e)
+			if ((config.getMaxTracerRange() != 0 && e.distanceToSqr(player) > maxDistanceSquared) || player == e) {
 				return;
+			}
 
 			EntityType<?> type = e.getType();
+
+			boolean damage = !config.isDamageIndicatorDisabled() && e instanceof LivingEntity le && le.getLastDamageSource() != null;
 
 			config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
 				double x = e.xOld + (e.getX() - e.xOld) * delta;
 				double y = e.yOld + (e.getY() - e.yOld) * delta;
 				double z = e.zOld + (e.getZ() - e.zOld) * delta;
-				RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
-				float r = c.red() / 255F;
-				float g = c.green() / 255F;
-				float b = c.blue() / 255F;
-				float a = c.alpha() / 255F;
+
+				float r, g, b, a;
+
+				if (damage) {
+					r = 1;
+					g = 0;
+					b = 0;
+					a = 1;
+				} else {
+					RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
+					r = c.red() / 255F;
+					g = c.green() / 255F;
+					b = c.blue() / 255F;
+					a = c.alpha() / 255F;
+				}
 
 				AABB aabb = type.getAABB(x, y, z);
 
@@ -406,11 +494,16 @@ public class XrayMain {
 				}
 			});
 		});
-		source.endBatch(RenderType.LINES);
+		tessellator.end();
 		stack.popPose();
+		RenderSystem.disableBlend();
+		RenderSystem.enableTexture();
+		RenderSystem.applyModelViewMatrix();
 		RenderSystem.setShaderColor(1, 1, 1, 1);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glDisable(GL11.GL_BLEND);
+		RenderSystem.enableDepthTest();
+		RenderSystem.depthMask(true);
+		RenderSystem.lineWidth(1.0F);
+		RenderSystem.depthFunc(GL11.GL_LEQUAL);
 		GL11.glDisable(GL11.GL_LINE_SMOOTH);
 	}
 
