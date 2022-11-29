@@ -371,11 +371,10 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		stack.push();
 
 		RenderSystem.applyModelViewMatrix();
-		stack.loadIdentity();
 		stack.translate(-camera.x, -camera.y, -camera.z);
 		Vector3f look = mainCamera.getHorizontalPlane();
 		float px = (float) (player.prevX + (player.getX() - player.prevX) * delta) + look.x();
-		float py = (float) (player.prevY + (player.getY() - player.prevY) * delta) + player.getStandingEyeHeight() + look.y();
+		float py = (float) (player.prevY + (player.getY() - player.prevY) * delta) + player.getEyeHeight(player.getPose()) + look.y();
 		float pz = (float) (player.prevZ + (player.getZ() - player.prevZ) * delta) + look.z();
 
 		int maxDistanceSquared = (config.getMaxTracerRange() * config.getMaxTracerRange());

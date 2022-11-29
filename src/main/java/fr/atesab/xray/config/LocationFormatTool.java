@@ -20,7 +20,13 @@ import net.minecraft.util.Util;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +44,13 @@ public class LocationFormatTool implements EnumElement {
     private static final int DEFAULT_FREQUENCY = 3000;
     private static final Pattern ID_PATTERN_MATCHER = Pattern.compile("%" + ID_PATTERN);
     private static final Map<String, LocationFormatTool> TOOLS = new HashMap<>();
+
+    public static long currentDayTime;
+    public static double currentTimeOfDay;
+    public static long currentDays;
+    public static long currentHours;
+    public static long currentMinutes;
+    public static long currentSeconds;
 
     public static final ToolFunction EMPTY_FUNCTION = (mc, player, world) -> "";
     public static final LocationFormatTool PLAYER_LOCATION_X = register("x13.mod.location.opt.x", Items.BOOK, "x",
@@ -64,9 +77,9 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool PLAYER_CHUNK_Z = register("x13.mod.location.opt.chunkZ", Items.BOOK, "cz",
     		(mc, player, world) -> String.valueOf(player.getChunkPos().z));
     public static final LocationFormatTool BLOCK_LIGHT = register("x13.mod.location.opt.blockLight", Items.TORCH, "blocklight",
-    		(mc, player, world) -> String.valueOf(world.getLightLevel(LightType.BLOCK,player.getBlockPos().add(1,0,0))));
+    		(mc, player, world) -> String.valueOf(world.getLightLevel(LightType.BLOCK,player.getBlockPos().add(0.5, 0.5, 0.5))));
     public static final LocationFormatTool SKY_LIGHT = register("x13.mod.location.opt.skyLight", Items.ELYTRA, "skylight",
-    		(mc, player, world) -> String.valueOf(world.getLightLevel(LightType.SKY,player.getBlockPos())));
+    		(mc, player, world) -> String.valueOf(world.getLightLevel(LightType.SKY,player.getBlockPos().add(0.5, 0.5, 0.5))));
     public static final LocationFormatTool LOOKING_BLOCK_LIGHT = register("x13.mod.location.opt.lookingBlockLight", Items.REDSTONE_TORCH, "lookinglight",
     		(mc, player, world) -> String.valueOf(world.getLightLevel(LightType.BLOCK,LocationUtils.getLookingFaceBlockPos(mc, player))));
     public static final LocationFormatTool LOOKINGBLOCK = register("x13.mod.location.opt.lookingBlock", Items.DIAMOND_ORE, "lookingblock",
@@ -77,17 +90,17 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool FACING = register("x13.mod.location.opt.facing", Items.COMPASS, "face",
     		(mc, player, world) -> player.getHorizontalFacing().getName());
     public static final LocationFormatTool DAYS_COUNT = register("x13.mod.location.opt.daysCount", Items.CLOCK, "d",
-    		(mc, player, world) -> String.valueOf((world.getTime() / 24000)));
+    		(mc, player, world) -> String.valueOf(currentDays));
     public static final LocationFormatTool TIME_OF_DAY = register("x13.mod.location.opt.timeOfDay", Items.CLOCK, "timeday",
-    		(mc, player, world) -> String.valueOf((world.getTime() % 24000) / 24000.0));
+    		(mc, player, world) -> String.valueOf(currentTimeOfDay));
     public static final LocationFormatTool  TIME_HOURS_PADDING = register("x13.mod.location.opt.hoursPadding", Items.CLOCK, "hh",
-    		(mc, player, world) -> LocationUtils.getTwoDigitNumberFormat().format(((world.getTime() + 6000) % 24000) / 1000));
+    		(mc, player, world) -> LocationUtils.getTwoDigitNumberFormat().format(currentHours));
     public static final LocationFormatTool TIME_HOURS = register("x13.mod.location.opt.hours", Items.CLOCK, "h",
-    		(mc, player, world) -> String.valueOf(((world.getTime() + 6000) % 24000) / 1000));
+    		(mc, player, world) -> String.valueOf(currentHours));
     public static final LocationFormatTool TIME_MINUTES_PADDING = register("x13.mod.location.opt.minutesPadding", Items.CLOCK, "mm",
-    		(mc, player, world) -> LocationUtils.getTwoDigitNumberFormat().format(((world.getTime() % 1000) / 1000.0 * 60)));
+    		(mc, player, world) -> LocationUtils.getTwoDigitNumberFormat().format(currentMinutes));
     public static final LocationFormatTool TIME_SECONDS_PADDING = register("x13.mod.location.opt.secondsPadding", Items.CLOCK, "ss",
-    		(mc, player, world) -> LocationUtils.getTwoDigitNumberFormat().format(((world.getTime() % 1000) / 1000.0 * 3600) % 60));
+    		(mc, player, world) -> LocationUtils.getTwoDigitNumberFormat().format(currentSeconds));
     public static final LocationFormatTool IS_SLIME = register("x13.mod.location.opt.isSlime", Items.SLIME_BALL, "slime",
     		(mc, player, world) -> LocationUtils.isSlimeChunk(mc, player.getChunkPos()));
     public static final LocationFormatTool NEW_LINE = register("x13.mod.location.opt.lineFeed",Items.WRITABLE_BOOK, "lf",
@@ -372,6 +385,7 @@ public class LocationFormatTool implements EnumElement {
         @Override
         public String apply(MinecraftClient client, ClientPlayerEntity player, World world) {
             StringBuilder bld = new StringBuilder();
+        	updateTimeField(client, player, world);
 
             for (ToolFunction func : functions) {
                 bld.append(func.apply(client, player, world));
@@ -393,5 +407,20 @@ public class LocationFormatTool implements EnumElement {
                 default -> new ListToolFunction(List.of(functions.toArray(ToolFunction[]::new)));
             };
         }
+    }
+
+    private static void updateTimeField(MinecraftClient client, ClientPlayerEntity player, World world) {
+    	if (currentDayTime == world.getTimeOfDay())
+    		return;
+    	currentDayTime = world.getTimeOfDay();
+    	long fixedDayTime = currentDayTime + 6000;
+    	currentDays = Math.floorDiv(fixedDayTime, 24000);
+    	long fixedTime = Math.floorMod(fixedDayTime, 24000);
+    	currentTimeOfDay = (float) (fixedDayTime / 24000);
+    	currentHours = Math.floorDiv(fixedTime, 1000);
+    	long fixedMinutes = Math.floorMod(fixedTime, 1000); //0-999
+    	currentMinutes = Math.floorDiv(fixedMinutes * 60, 1000);
+    	long fixedSeconds = Math.floorMod(fixedMinutes * 60, 1000);
+    	currentSeconds = Math.floorDiv(fixedSeconds * 60, 1000);
     }
 }
