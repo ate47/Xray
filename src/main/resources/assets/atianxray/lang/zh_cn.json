@@ -92,6 +92,14 @@
   "x13.mod.link.issue": "问题",
   "x13.mod.by": "作者: %s",
 
+  "x13.mod.config.search": "搜索",
+  "x13.mod.config.espDamage": "ESP受伤提示",
+  "x13.mod.config.blockEsp": "方块ESP",
+  "x13.mod.config.border": "ESP轮廓",
+  "x13.mod.config.override": "覆盖配置",
+  "x13.mod.config.fly": "飞行模式",
+  "x13.mod.config.zoom": "缩放",
+
   "x13.mod.on": "启用",
   "x13.mod.off": "关闭",
   "key.categories.xray": "Xray"
