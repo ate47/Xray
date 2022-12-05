@@ -1,10 +1,6 @@
 name: Building jars 🏗️
 
-on:
-  push:
-    paths:
-      - "src/**"
-  workflow_dispatch:
+on: [push]
 
 jobs:
   build:
