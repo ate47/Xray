@@ -1,9 +1,5 @@
 package fr.atesab.xray.screen;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import fr.atesab.xray.config.BlockConfig;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.Screen;
@@ -12,10 +8,12 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-
 import net.minecraft.text.Text;
-
 import net.minecraft.util.Formatting;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class XrayBlockMenu extends Screen {
     private static final Text ADD = Text.literal("+").formatted(Formatting.GREEN);
@@ -59,8 +57,8 @@ public class XrayBlockMenu extends Screen {
                 Text.literal("")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (button == 1 && mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y
-                        && mouseY <= this.y + this.height) {
+                if (button == 1 && mouseX >= this.getX() && mouseX <= this.getX() + this.width && mouseY >= this.getY()
+                        && mouseY <= this.getY() + this.height) {
                     setText("");
                     return true;
                 }
@@ -92,25 +90,22 @@ public class XrayBlockMenu extends Screen {
             }
         };
 
-        lastPage = new ButtonWidget(width / 2 - 126, pageBottom, 20, 20, Text.literal("<-"), b -> {
+        lastPage = new ButtonWidget.Builder(Text.literal("<-"), b -> {
             page--;
             updateArrows();
-        });
+        }).dimensions(width / 2 - 126, pageBottom, 20, 20).build();
 
-        ButtonWidget doneBtn = new ButtonWidget(width / 2 - 102, pageBottom, 100, 20,
-                Text.translatable("gui.done"), b -> {
-                    mode.getBlocks().setObjects(config);
-                    client.setScreen(parent);
-                });
+        ButtonWidget doneBtn = new ButtonWidget.Builder(Text.translatable("gui.done"), b -> {
+            mode.getBlocks().setObjects(config);
+            client.setScreen(parent);
+        }).dimensions(width / 2 - 102, pageBottom, 100, 20).build();
 
-        ButtonWidget cancelBtn = new ButtonWidget(width / 2 + 2, pageBottom, 100, 20,
-                Text.translatable("gui.cancel"), b -> {
-                    client.setScreen(parent);
-                });
-        nextPage = new ButtonWidget(width / 2 + 106, pageBottom, 20, 20, Text.literal("->"), b -> {
+        ButtonWidget cancelBtn = new ButtonWidget.Builder(
+                Text.translatable("gui.cancel"), b -> client.setScreen(parent)).dimensions(width / 2 + 2, pageBottom, 100, 20).build();
+        nextPage = new ButtonWidget.Builder(Text.literal("->"), b -> {
             page++;
             updateArrows();
-        });
+        }).dimensions(width / 2 + 106, pageBottom, 20, 20).build();
 
         addSelectableChild(searchBar);
         addDrawableChild(lastPage);

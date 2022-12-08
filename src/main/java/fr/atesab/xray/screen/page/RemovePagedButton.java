@@ -13,7 +13,7 @@ public class RemovePagedButton extends ButtonWidget {
     private PagedScreen<?> parent;
 
     public RemovePagedButton(PagedScreen<?> parent, int x, int y, int w, int h) {
-        super(x, y, w, h, REMOVE_COMPONENT, EMPTY_PRESS);
+        super(x, y, w, h, REMOVE_COMPONENT, EMPTY_PRESS, DEFAULT_NARRATION_SUPPLIER);
         this.parent = parent;
     }
 

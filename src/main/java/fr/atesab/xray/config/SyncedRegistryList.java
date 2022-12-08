@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Objects;
 
 import fr.atesab.xray.utils.TagOnWriteList;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DefaultedRegistry;
-import net.minecraft.util.registry.Registry;
 
 public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Cloneable {
 

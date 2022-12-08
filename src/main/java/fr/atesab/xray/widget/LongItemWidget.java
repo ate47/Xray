@@ -33,8 +33,8 @@ public class LongItemWidget extends PressableWidget {
     }
 
     @Override
-    public void appendNarrations(NarrationMessageBuilder narrationElementOutput) {
-        this.appendDefaultNarrations(narrationElementOutput);
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+        this.appendDefaultNarrations(builder);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class LongItemWidget extends PressableWidget {
             color = 0x22ffffff;
         }
 
-        DrawableHelper.fill(stack, x, y, x + width, y + height, color);
+        DrawableHelper.fill(stack, getX(), getY(), getX() + width, getY() + height, color);
 
         Text message = getMessage();
         TextRenderer textRenderer = client.textRenderer;
@@ -56,10 +56,10 @@ public class LongItemWidget extends PressableWidget {
 
         int deltaH = (getHeight() - 16);
 
-        renderer.renderGuiItemIcon(itemStack, x + deltaH / 2 + deltaX, y + deltaH / 2 + deltaY);
+        renderer.renderGuiItemIcon(itemStack, getX() + deltaH / 2 + deltaX, getY() + deltaH / 2 + deltaY);
         int textColor = this.active ? 16777215 : 10526880;
         textRenderer.draw(stack,
-                message, x + deltaH + 16 + 2, y + getHeight() / 2 - textRenderer.fontHeight / 2,
+                message, getX() + deltaH + 16 + 2, getY() + getHeight() / 2f - textRenderer.fontHeight / 2f,
                 textColor);
     }
 

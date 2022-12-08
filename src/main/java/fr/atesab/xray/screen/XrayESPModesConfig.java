@@ -1,8 +1,5 @@
 package fr.atesab.xray.screen;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.screen.page.AddPagedButton;
 import fr.atesab.xray.screen.page.AddPagedElement;
@@ -16,6 +13,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 
 public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
@@ -38,38 +38,33 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
             int x = width / 2 - 125;
             entities = addSubWidget(new EntityConfigWidget(x, 0, 115, 20, cfg, XrayESPModesConfig.this));
             x += 119;
-            addSubWidget(new ButtonWidget(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
-                client.setScreen(new KeySelector(XrayESPModesConfig.this, cfg.getKey(), oKey -> {
-                    cfg.setKey(oKey);
-                    btn.setMessage(KeyData.getName(cfg.getKey()));
-                }));
-            }));
+            addSubWidget(new ButtonWidget.Builder(KeyData.getName(cfg.getKey()), btn -> client.setScreen(new KeySelector(XrayESPModesConfig.this, cfg.getKey(), oKey -> {
+                cfg.setKey(oKey);
+                btn.setMessage(KeyData.getName(cfg.getKey()));
+            }))).dimensions(x, 0, 56, 20).build());
             x += 60;
-            addSubWidget(
-                    new ButtonWidget(x, 0, 74, 20, XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"),
-                            btn -> {
-                                cfg.setTracer(!cfg.hasTracer());
-                                btn.setMessage(XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"));
-                            }));
+            addSubWidget(new ButtonWidget.Builder(XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"),
+                    btn -> {
+                        cfg.setTracer(!cfg.hasTracer());
+                        btn.setMessage(XrayUtils.getToggleable(cfg.hasTracer(), "x13.mod.esp.tracer"));
+                    }).dimensions(x, 0, 74, 20).build());
             x += 78;
-            addSubWidget(new ButtonWidget(x, 0, 20, 20, Text.translatable("x13.mod.template.little"), btn -> {
-                client.setScreen(new EnumSelector<ESPConfig.Template>(
-                        Text.translatable("x13.mod.template"), XrayESPModesConfig.this,
-                        ESPConfig.Template.values()) {
+            addSubWidget(new ButtonWidget.Builder(Text.translatable("x13.mod.template.little"), btn -> client.setScreen(new EnumSelector<>(
+                    Text.translatable("x13.mod.template"), XrayESPModesConfig.this,
+                    ESPConfig.Template.values()) {
 
-                    @Override
-                    protected void select(ESPConfig.Template template) {
-                        String oldName = cfg.getModeName();
-                        int color = cfg.getColor();
-                        Optional<KeyData> key = cfg.getKey();
-                        template.cloneInto(cfg);
-                        cfg.setName(oldName);
-                        cfg.setColor(color);
-                        cfg.setKey(key);
-                    }
+                @Override
+                protected void select(ESPConfig.Template template) {
+                    String oldName = cfg.getModeName();
+                    int color = cfg.getColor();
+                    Optional<KeyData> key = cfg.getKey();
+                    template.cloneInto(cfg);
+                    cfg.setName(oldName);
+                    cfg.setColor(color);
+                    cfg.setKey(key);
+                }
 
-                });
-            }));
+            })).dimensions(x, 0, 20, 20).build());
             x += 24;
 
             addSubWidget(new AddPagedButton<>(XrayESPModesConfig.this,

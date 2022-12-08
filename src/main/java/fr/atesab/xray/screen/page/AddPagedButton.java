@@ -16,7 +16,7 @@ public class AddPagedButton<E> extends ButtonWidget {
     private Supplier<PagedElement<E>> eSupplier;
 
     public AddPagedButton(PagedScreen<E> parent, int x, int y, int w, int h, Supplier<PagedElement<E>> eSupplier) {
-        super(x, y, w, h, ADD_COMPONENT, EMPTY_PRESS);
+        super(x, y, w, h, ADD_COMPONENT, EMPTY_PRESS, DEFAULT_NARRATION_SUPPLIER);
         this.parent = parent;
         this.eSupplier = eSupplier;
     }

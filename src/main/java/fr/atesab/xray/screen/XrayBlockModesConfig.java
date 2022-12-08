@@ -1,8 +1,5 @@
 package fr.atesab.xray.screen;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.screen.page.AddPagedButton;
 import fr.atesab.xray.screen.page.AddPagedElement;
@@ -17,6 +14,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 
 public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
@@ -39,14 +39,14 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
             int x = width / 2 - 125;
             blocks = addSubWidget(new BlockConfigWidget(x, 0, 125, 20, cfg, XrayBlockModesConfig.this));
             x += 129;
-            addSubWidget(new ButtonWidget(x, 0, 56, 20, KeyData.getName(cfg.getKey()), btn -> {
+            addSubWidget(new ButtonWidget.Builder(KeyData.getName(cfg.getKey()), btn -> {
                 client.setScreen(new KeySelector(XrayBlockModesConfig.this, cfg.getKey(), oKey -> {
                     cfg.setKey(oKey);
                     btn.setMessage(KeyData.getName(cfg.getKey()));
                 }));
-            }));
+            }).dimensions(x, 0, 56, 20).build());
             x += 60;
-            addSubWidget(new ButtonWidget(x, 0, 64, 20, cfg.getViewMode().getTitle(), btn -> {
+            addSubWidget(new ButtonWidget.Builder(cfg.getViewMode().getTitle(), btn -> {
                 client.setScreen(new EnumSelector<ViewMode>(
                         Text.translatable("x13.mod.mode.view.title"), getParentScreen(), ViewMode.values()) {
 
@@ -57,26 +57,24 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
                     }
 
                 });
-            }));
+            }).dimensions(x, 0, 64, 20).build());
             x += 68;
-            addSubWidget(new ButtonWidget(x, 0, 20, 20, Text.translatable("x13.mod.template.little"), btn -> {
-                client.setScreen(new EnumSelector<BlockConfig.Template>(
-                        Text.translatable("x13.mod.template"), XrayBlockModesConfig.this,
-                        BlockConfig.Template.values()) {
+            addSubWidget(new ButtonWidget.Builder(Text.translatable("x13.mod.template.little"), btn -> client.setScreen(new EnumSelector<>(
+                    Text.translatable("x13.mod.template"), XrayBlockModesConfig.this,
+                    BlockConfig.Template.values()) {
 
-                    @Override
-                    protected void select(BlockConfig.Template template) {
-                        String oldName = cfg.getModeName();
-                        int color = cfg.getColor();
-                        Optional<KeyData> key = cfg.getKey();
-                        template.cloneInto(cfg);
-                        cfg.setName(oldName);
-                        cfg.setColor(color);
-                        cfg.setKey(key);
-                    }
+                @Override
+                protected void select(BlockConfig.Template template) {
+                    String oldName = cfg.getModeName();
+                    int color = cfg.getColor();
+                    Optional<KeyData> key = cfg.getKey();
+                    template.cloneInto(cfg);
+                    cfg.setName(oldName);
+                    cfg.setColor(color);
+                    cfg.setKey(key);
+                }
 
-                });
-            }));
+            })).dimensions(x, 0, 20, 20).build());
             x += 24;
 
             addSubWidget(new AddPagedButton<>(XrayBlockModesConfig.this,

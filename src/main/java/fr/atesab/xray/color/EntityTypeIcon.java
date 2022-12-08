@@ -11,7 +11,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public record EntityTypeIcon(EntityType<?> entity, ItemStack icon) {
 
@@ -86,6 +86,6 @@ public record EntityTypeIcon(EntityType<?> entity, ItemStack icon) {
 
     @SuppressWarnings("deprecation")
     public static List<EntityType<?>> getEntityOfType(SpawnGroup cat) {
-        return Registry.ENTITY_TYPE.stream().filter(type -> type.getSpawnGroup() == cat).toList();
+        return Registries.ENTITY_TYPE.stream().filter(type -> type.getSpawnGroup() == cat).toList();
     }
 }

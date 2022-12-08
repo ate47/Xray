@@ -56,17 +56,12 @@ public class KeySelector extends XrayScreen {
 
     @Override
     protected void init() {
-        keyButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 - 24, 200, 20,
-                NONE_KEY, b -> waitKey()));
-        doneButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2, 200, 20,
-                Text.translatable("gui.done"), b -> {
+        keyButton = addDrawableChild(new ButtonWidget.Builder(NONE_KEY, b -> waitKey()).dimensions(width / 2 - 100, height / 2 - 24, 200, 20).build());
+        doneButton = addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.done"), b -> {
                     keyConsumer.accept(value);
                     client.setScreen(parent);
-                }));
-        cancelButton = addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 24, 200, 20,
-                Text.translatable("gui.cancel"), b -> {
-                    client.setScreen(parent);
-                }));
+                }).dimensions(width / 2 - 100, height / 2, 200, 20).build());
+        cancelButton = addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.cancel"), b -> client.setScreen(parent)).dimensions(width / 2 - 100, height / 2 + 24, 200, 20).build());
         setKey(value);
         super.init();
     }
@@ -108,7 +103,7 @@ public class KeySelector extends XrayScreen {
 
         if (isWaitingKey) {
             drawCenteredText(stack, textRenderer, Text.translatable("x13.mod.selector.key.presskey"), width / 2,
-                    keyButton.y + keyButton.getHeight() / 2 - textRenderer.fontHeight, 0xffffff00);
+                    keyButton.getY() + keyButton.getHeight() / 2 - textRenderer.fontHeight, 0xffffff00);
         }
 
         super.render(stack, mouseX, mouseY, delta);

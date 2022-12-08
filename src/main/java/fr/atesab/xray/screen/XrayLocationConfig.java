@@ -7,8 +7,8 @@ import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.XrayUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -26,20 +26,20 @@ public class XrayLocationConfig extends XrayScreen {
     @Override
     protected void init() {
         XrayMain mod = XrayMain.getMod();
-        addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 - 48, 200, 20,
+        addDrawableChild(new ButtonWidget.Builder(
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(), "x13.mod.location"), b -> {
-                    mod.getConfig().getLocationConfig().setEnabled(!mod.getConfig().getLocationConfig().isEnabled());
-                    b.setMessage(XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(),
-                            "x13.mod.location"));
-                }));
+            mod.getConfig().getLocationConfig().setEnabled(!mod.getConfig().getLocationConfig().isEnabled());
+            b.setMessage(XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(),
+                    "x13.mod.location"));
+        }).dimensions(width / 2 - 100, height / 2 - 48, 200, 20).build());
 
-        addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 - 24, 200, 20,
+        addDrawableChild(new ButtonWidget.Builder(
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isShowMode(), "x13.mod.location.showmodes"),
                 b -> {
                     mod.getConfig().getLocationConfig().setShowMode(!mod.getConfig().getLocationConfig().isShowMode());
                     b.setMessage(XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isShowMode(),
                             "x13.mod.location.showmodes"));
-                }));
+                }).dimensions(width / 2 - 100, height / 2 - 24, 200, 20).build());
 
         format = new TextFieldWidget(textRenderer, width / 2 - 98, height / 2 + 2, 196, 16, Text.literal(""));
         format.setMaxLength(256);
@@ -53,34 +53,32 @@ public class XrayLocationConfig extends XrayScreen {
         setInitialFocus(format);
 
         addDrawableChild(
-                new ButtonWidget(width / 2 - 100, height / 2 + 24, 98, 20,
+                new ButtonWidget.Builder(
                         Text.translatable("x13.mod.location.option"),
-                        btn -> {
-                            client.setScreen(new EnumSelector<>(
-                                    Text.translatable("x13.mod.location.option"), this,
-                                    LocationFormatTool.values()) {
-                                @Override
-                                protected void select(LocationFormatTool e) {
-                                    format.write(e.getOption());
-                                    // store the position for the screen switch
-                                    position = format.getCursor();
-                                }
+                        btn -> client.setScreen(new EnumSelector<>(
+                                Text.translatable("x13.mod.location.option"), this,
+                                LocationFormatTool.values()) {
+                            @Override
+                            protected void select(LocationFormatTool e) {
+                                format.write(e.getOption());
+                                // store the position for the screen switch
+                                position = format.getCursor();
+                            }
 
-                            });
-                        }));
+                        })).dimensions(width / 2 - 100, height / 2 + 24, 98, 20).build());
         addDrawableChild(
-                new ButtonWidget(width / 2 + 2, height / 2 + 24, 98, 20,
+                new ButtonWidget.Builder(
                         Text.translatable("x13.mod.location.reset"),
                         btn -> {
                             format.setText(LocationConfig.DEFAULT_FORMAT);
-                        }));
+                        }).dimensions(width / 2 + 2, height / 2 + 24, 98, 20).build());
 
         addDrawableChild(
-                new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, Text.translatable("gui.done"),
+                new ButtonWidget.Builder(Text.translatable("gui.done"),
                         btn -> {
-                        	save();
+                            save();
                             client.setScreen(parent);
-                        }));
+                        }).dimensions(width / 2 - 100, height / 2 + 52, 200, 20).build());
 
         super.init();
     }
@@ -110,6 +108,6 @@ public class XrayLocationConfig extends XrayScreen {
     }
 
     protected void save() {
-    	// unimplemenets. save code is in XrayMenu.
+        // unimplemenets. save code is in XrayMenu.
     }
 }

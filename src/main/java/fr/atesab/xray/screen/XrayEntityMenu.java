@@ -1,17 +1,9 @@
 package fr.atesab.xray.screen;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import fr.atesab.xray.color.BlockEntityTypeIcon;
 import fr.atesab.xray.color.EntityTypeIcon;
-import fr.atesab.xray.color.EntityTypeInfo;
 import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.config.ESPConfig;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -20,20 +12,22 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
-
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
-
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
-import javax.lang.model.type.UnionType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class XrayEntityMenu extends Screen {
     public record EntityUnion(EntityType<?> type, BlockEntityType<?> blockType, String text) implements EnumElement {
         EntityUnion(EntityType<?> type) {
             this(type, null, computeText(type, null));
         }
+
         EntityUnion(BlockEntityType<?> blockType) {
             this(null, blockType, computeText(null, blockType));
         }
@@ -56,7 +50,7 @@ public class XrayEntityMenu extends Screen {
             if (type != null) {
                 return type.getTranslationKey();
             } else {
-                 Identifier id = Registry.BLOCK_ENTITY_TYPE.getId(blockType);
+                Identifier id = Registries.BLOCK_ENTITY_TYPE.getId(blockType);
                 if (id == null) {
                     return blockType.getClass().getCanonicalName();
                 }
@@ -64,6 +58,7 @@ public class XrayEntityMenu extends Screen {
             }
         }
     }
+
     private static final Text ADD = Text.literal("+").formatted(Formatting.GREEN);
     private static final Text REPLACE = Text.translatable("x13.mod.menu.replace")
             .formatted(Formatting.YELLOW);
@@ -106,8 +101,8 @@ public class XrayEntityMenu extends Screen {
                 Text.literal("")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (button == 1 && mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y
-                        && mouseY <= this.y + this.height) {
+                if (button == 1 && mouseX >= this.getX() && mouseX <= this.getX() + this.width && mouseY >= this.getY()
+                        && mouseY <= this.getY() + this.height) {
                     setText("");
                     return true;
                 }
@@ -139,26 +134,23 @@ public class XrayEntityMenu extends Screen {
             }
         };
 
-        lastPage = new ButtonWidget(width / 2 - 126, pageBottom, 20, 20, Text.literal("<-"), b -> {
+        lastPage = new ButtonWidget.Builder(Text.literal("<-"), button -> {
             page--;
             updateArrows();
-        });
+        }).dimensions(width / 2 - 126, pageBottom, 20, 20).build();
 
-        ButtonWidget doneBtn = new ButtonWidget(width / 2 - 102, pageBottom, 100, 20,
-                Text.translatable("gui.done"), b -> {
-                    mode.getEntities().setObjects(config.stream().map(EntityUnion::type).filter(Objects::nonNull).toList());
-                    mode.getBlockEntities().setObjects(config.stream().map(EntityUnion::blockType).filter(Objects::nonNull).toList());
-                    client.setScreen(parent);
-                });
+        ButtonWidget doneBtn = new ButtonWidget.Builder(Text.translatable("gui.done"), button -> {
+            mode.getEntities().setObjects(config.stream().map(EntityUnion::type).filter(Objects::nonNull).toList());
+            mode.getBlockEntities().setObjects(config.stream().map(EntityUnion::blockType).filter(Objects::nonNull).toList());
+            client.setScreen(parent);
+        }).dimensions(width / 2 - 102, pageBottom, 100, 20).build();
 
-        ButtonWidget cancelBtn = new ButtonWidget(width / 2 + 2, pageBottom, 100, 20,
-                Text.translatable("gui.cancel"), b -> {
-                    client.setScreen(parent);
-                });
-        nextPage = new ButtonWidget(width / 2 + 106, pageBottom, 20, 20, Text.literal("->"), b -> {
+        ButtonWidget cancelBtn = new ButtonWidget.Builder(Text.translatable("gui.cancel"), button -> client.setScreen(parent)).dimensions(width / 2 + 2, pageBottom, 100, 20).build();
+
+        nextPage = new ButtonWidget.Builder(Text.literal("->"), button -> {
             page++;
             updateArrows();
-        });
+        }).dimensions(width / 2 + 106, pageBottom, 20, 20).build();
 
         addSelectableChild(searchBar);
         addDrawableChild(lastPage);

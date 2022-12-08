@@ -26,7 +26,7 @@ public class BlockConfigWidget extends ButtonWidget {
     public BlockConfigWidget(int x, int y, int width, int height, BlockConfig cfg, Screen menu, int deltaX,
             int deltaY) {
         super(x, y, width, height, Text.empty(),
-                b -> MinecraftClient.getInstance().setScreen(new XrayBlockMenu(menu, cfg)));
+                b -> MinecraftClient.getInstance().setScreen(new XrayBlockMenu(menu, cfg)), DEFAULT_NARRATION_SUPPLIER);
         this.cfg = cfg;
         this.deltaX = deltaX;
         this.deltaY = deltaY;
@@ -49,14 +49,14 @@ public class BlockConfigWidget extends ButtonWidget {
         List<Block> view = blocks.subList(0, Math.min(fit, blocks.size()));
         MinecraftClient client = MinecraftClient.getInstance();
 
-        if (mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height) {
-            DrawableHelper.fill(matrices, x, y, x + width, y + height, 0x33ffaa00);
+        if (mouseX >= this.getX() && mouseX <= this.getX() + this.width && mouseY >= this.getY() && mouseY <= this.getY() + this.height) {
+            DrawableHelper.fill(matrices, getX(), getY(), getX() + width, getY() + height, 0x33ffaa00);
         } else {
-            DrawableHelper.fill(matrices, x, y, x + width, y + height, 0x33ffffff);
+            DrawableHelper.fill(matrices, getX(), getY(), getX() + width, getY() + height, 0x33ffffff);
         }
 
-        int left = this.x + this.width / 2 - view.size() * 17 / 2;
-        int top = this.y + this.height / 2 - 15 / 2;
+        int left = this.getX() + this.width / 2 - view.size() * 17 / 2;
+        int top = this.getY() + this.height / 2 - 15 / 2;
         for (Block b : view) {
             client.getItemRenderer().renderGuiItemIcon(new ItemStack(b), left + deltaX, top + deltaY);
             left += 17;

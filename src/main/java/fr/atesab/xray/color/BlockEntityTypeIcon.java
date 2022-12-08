@@ -4,8 +4,8 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +57,7 @@ public record BlockEntityTypeIcon(BlockEntityType<?> entity, ItemStack icon) {
     }
 
     public static BlockEntityTypeIcon register(BlockEntityType<?> type, ItemStack icon) {
-        Identifier id = Registry.BLOCK_ENTITY_TYPE.getId(type);
+        Identifier id = Registries.BLOCK_ENTITY_TYPE.getId(type);
         if (id != null) {
             ICONS.put(id.toTranslationKey(), icon);
         }
@@ -67,7 +67,7 @@ public record BlockEntityTypeIcon(BlockEntityType<?> entity, ItemStack icon) {
 
     @SuppressWarnings("deprecation")
     public static ItemStack getIcon(BlockEntityType<?> type) {
-        Identifier id = Registry.BLOCK_ENTITY_TYPE.getId(type);
+        Identifier id = Registries.BLOCK_ENTITY_TYPE.getId(type);
         if (id == null) {
             return DEFAULT_ICON;
         }
