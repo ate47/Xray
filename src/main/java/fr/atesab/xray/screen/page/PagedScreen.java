@@ -46,8 +46,8 @@ public abstract class PagedScreen<E> extends XrayScreen {
         elements.setTagEnabled(false);
         initElements(stream);
         elements.setTagEnabled(true);
-        lastButton = new ButtonWidget(0, 0, 20, 20, Text.literal("<-"), b -> lastPage());
-        nextButton = new ButtonWidget(0, 0, 20, 20, Text.literal("->"), b -> nextPage());
+        lastButton = new ButtonWidget.Builder(Text.literal("<-"), b -> lastPage()).dimensions(0, 0, 20, 20).build();
+        nextButton = new ButtonWidget.Builder(Text.literal("->"), b -> nextPage()).dimensions(0, 0, 20, 20).build();
     }
 
     protected void removeDoneButton() {
@@ -144,26 +144,25 @@ public abstract class PagedScreen<E> extends XrayScreen {
     protected void init() {
         int btn = 172;
         int buttonSize = doneButton ? btn * 2 + 4 : btn;
-        lastButton.x = width / 2 - buttonSize / 2 - 26;
-        nextButton.x = width / 2 + buttonSize / 2 + 4;
-        lastButton.y = nextButton.y = height - 24;
+        lastButton.setX(width / 2 - buttonSize / 2 - 26);
+        nextButton.setX(width / 2 + buttonSize / 2 + 4);
+        nextButton.setY(height - 24);
+        lastButton.setY(nextButton.getY());
 
         addDrawableChild(lastButton);
         if (doneButton)
             addDrawableChild(
-                    new ButtonWidget(width / 2 - 176, height - 24, 172, 20, Text.translatable("gui.done"), b -> {
+                    new ButtonWidget.Builder(Text.translatable("gui.done"), b -> {
                         save(getElements().stream().map(PagedElement::save).filter(Objects::nonNull)
                                 .collect(Collectors.toCollection(() -> new ArrayList<>())));
                         client.setScreen(parent);
-                    }));
+                    }).dimensions(width / 2 - 176, height - 24, 172, 20).build());
 
         addDrawableChild(
-                new ButtonWidget(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20,
-                        Text.translatable("gui.cancel"),
-                        b -> {
+                new ButtonWidget.Builder(Text.translatable("gui.cancel"), b -> {
                             cancel();
                             client.setScreen(parent);
-                        }));
+                        }).dimensions(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20).build());
 
         addDrawableChild(nextButton);
 

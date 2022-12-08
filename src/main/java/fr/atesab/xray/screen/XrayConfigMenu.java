@@ -1,7 +1,5 @@
 package fr.atesab.xray.screen;
 
-import java.net.URL;
-
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.utils.XrayUtils;
@@ -14,9 +12,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.MutableText;
-
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+
+import java.net.URL;
 
 public class XrayConfigMenu extends XrayScreen {
 
@@ -50,38 +49,35 @@ public class XrayConfigMenu extends XrayScreen {
             }
 
         });
-        addDrawableChild(
-                new ButtonWidget(width / 2 - 100, height / 2 - 24, 200, 20,
-                        XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"), button -> {
-                    cfg.setDamageIndicatorDisabled(!cfg.isDamageIndicatorDisabled());
-                    button.setMessage(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"));
-                })
-        );
-        addDrawableChild(
-                new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, Text.translatable("gui.done"),
-                        btn -> {
-                            client.setScreen(parent);
-                        }));
+        addDrawableChild(new ButtonWidget.Builder(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"), button -> {
+            cfg.setDamageIndicatorDisabled(!cfg.isDamageIndicatorDisabled());
+            button.setMessage(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"));
+        }).dimensions(width / 2 - 100, height / 2 - 24, 200, 20).build());
+
+        addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.done"), btn -> client.setScreen(parent)).dimensions(width / 2 - 100, height / 2 + 52, 200, 20).build());
 
         addDrawableChild(new LongItemWidget(width * 0 / 3, height - 20, width / 3, 20,
                 Text.translatable("x13.mod.link.mod"), new ItemStack(Blocks.GOLD_ORE), () -> {
-                    openLink(XrayMain.MOD_LINK);
-                }));
+            openLink(XrayMain.MOD_LINK);
+        }));
+
         addDrawableChild(new LongItemWidget(width * 1 / 3, height - 20, width / 3, 20,
                 Text.translatable("x13.mod.link.issue"), new ItemStack(Blocks.TNT), () -> {
-                    openLink(XrayMain.MOD_ISSUE);
-                }));
+            openLink(XrayMain.MOD_ISSUE);
+        }));
+
         addDrawableChild(new LongItemWidget(width * 2 / 3, height - 20, width - width * 2 / 3, 20,
                 Text.translatable("x13.mod.link.source"), new ItemStack(Items.PAPER), () -> {
-                    openLink(XrayMain.MOD_SOURCE);
-                }));
+            openLink(XrayMain.MOD_SOURCE);
+        }));
+
         super.init();
     }
 
     private void openLink(URL url) {
         try {
             Util.getOperatingSystem().open(url);
-        } catch (Exception e) {
+        } catch (Exception ignore) {
         }
     }
 

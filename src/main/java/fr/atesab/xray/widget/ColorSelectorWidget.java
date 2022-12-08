@@ -30,7 +30,7 @@ public class ColorSelectorWidget extends PressableWidget {
     }
 
     @Override
-    public void appendNarrations(NarrationMessageBuilder builder) {
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
         this.appendDefaultNarrations(builder);
     }
 
@@ -44,11 +44,11 @@ public class ColorSelectorWidget extends PressableWidget {
             color |= 0x88000000;
         }
 
-        DrawableHelper.fill(stack, x, y, x + width, y + height, color);
+        DrawableHelper.fill(stack, getX(), getY(), getX() + width, getY() + height, color);
 
         Text message = getMessage();
         TextRenderer textRenderer = client.textRenderer;
-        drawCenteredText(stack, textRenderer, message, x + width / 2, y + height / 2 - textRenderer.fontHeight / 2,
+        drawCenteredText(stack, textRenderer, message, getX() + width / 2, getY() + height / 2 - textRenderer.fontHeight / 2,
                 0xFFFFFFFF);
     }
 

@@ -35,14 +35,15 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.*;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -120,7 +121,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
     public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
         // BLOCK
-        return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId).map(Objects::toString).collect(collector);
+        return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registries.BLOCK::getId).map(Objects::toString).collect(collector);
     }
 
     /**
@@ -329,7 +330,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
             return;
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         // RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
@@ -343,11 +344,10 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
         RenderSystem.applyModelViewMatrix();
         stack.translate(-camera.x, -camera.y, -camera.z);
-        Vec3f look = mainCamera.getHorizontalPlane();
-        float px = (float) (player.prevX + (player.getX() - player.prevX) * delta) + look.getX();
-        float py = (float) (player.prevY + (player.getY() - player.prevY) * delta) + look.getY()
-                + player.getStandingEyeHeight();
-        float pz = (float) (player.prevZ + (player.getZ() - player.prevZ) * delta) + look.getZ();
+        Vector3f look = mainCamera.getHorizontalPlane();
+        float px = (float) (player.prevX + (player.getX() - player.prevX) * delta) + look.x();
+        float py = (float) (player.prevY + (player.getY() - player.prevY) * delta) + look.y() + player.getStandingEyeHeight();
+        float pz = (float) (player.prevZ + (player.getZ() - player.prevZ) * delta) + look.z();
 
         int maxDistanceSquared = (config.getMaxTracerRange() * config.getMaxTracerRange());
         int distance = minecraft.options.getClampedViewDistance();

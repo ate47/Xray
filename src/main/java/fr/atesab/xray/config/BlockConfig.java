@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.google.gson.annotations.Expose;
 
+import net.minecraft.registry.Registries;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -21,7 +22,6 @@ import net.minecraft.text.Text;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 
 public class BlockConfig extends AbstractModeConfig implements SideRenderer, Cloneable {
@@ -209,7 +209,7 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
         if (!isEnabled())
             return;
 
-        String name = Registry.BLOCK.getId(adjacentState.getBlock()).toString();
+        String name = Registries.BLOCK.getId(adjacentState.getBlock()).toString();
         boolean present = blocks.contains(name);
         boolean shouldRender = viewMode.getViewer().shouldRenderSide(present, adjacentState, blockState,
                 blockAccess, pos);

@@ -1,11 +1,6 @@
 package fr.atesab.xray.screen;
 
-import java.util.OptionalInt;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
-
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.HSLResult;
@@ -23,12 +18,14 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-
-
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+
+import java.util.OptionalInt;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 public class ColorSelector extends XrayScreen {
 
@@ -135,12 +132,12 @@ public class ColorSelector extends XrayScreen {
     }
 
     public ColorSelector(Screen parent, Consumer<OptionalInt> setter, OptionalInt color,
-            boolean transparentAsDefault) {
+                         boolean transparentAsDefault) {
         this(parent, setter, color, color.orElse(0), transparentAsDefault);
     }
 
     public ColorSelector(Screen parent, Consumer<OptionalInt> setter, OptionalInt color, int defaultColor,
-            boolean transparentAsDefault) {
+                         boolean transparentAsDefault) {
         super(Text.translatable("x13.mod.color.title"), parent);
         int rgba = color.orElse(defaultColor);
         this.color = rgba & 0xFFFFFF; // remove alpha
@@ -179,7 +176,7 @@ public class ColorSelector extends XrayScreen {
 
         if (!advanced) {
             // S PICKER
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShaderTexture(0, getPickerSResource());
             GuiUtils.drawScaledCustomSizeModalRect(width / 2 + 180, height / 2 - 76, 0, 0, PICKER_S_SIZE_X,
@@ -193,7 +190,7 @@ public class ColorSelector extends XrayScreen {
                     height / 2 - 76 + saturationDelta + 1, 0xff999999);
 
             // HL Picker
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShaderTexture(0, getPickerHlResource());
             GuiUtils.drawScaledCustomSizeModalRect(width / 2 - 158, height / 2 - 76, 0, 0, PICKER_HL_SIZE_X,
@@ -231,11 +228,11 @@ public class ColorSelector extends XrayScreen {
                     0xffffffff);
 
             GuiUtils.drawString(matrixStack, textRenderer, I18n.translate("x13.mod.color.intColor") + ":",
-                    intColor.x,
-                    intColor.y - 4 - 10, 0xffffffff, 10);
+                    intColor.getX(),
+                    intColor.getY() - 4 - 10, 0xffffffff, 10);
             GuiUtils.drawString(matrixStack, textRenderer, I18n.translate("x13.mod.color.hexColor") + ":",
-                    hexColor.x,
-                    hexColor.y - 4 - 10, 0xffffffff, 10);
+                    hexColor.getX(),
+                    hexColor.getY() - 4 - 10, 0xffffffff, 10);
 
             tfr.render(matrixStack, mouseX, mouseY, partialTicks);
             tfg.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -293,21 +290,18 @@ public class ColorSelector extends XrayScreen {
 
     @Override
     public void init() {
-        addDrawableChild(
-                new ButtonWidget(width / 2 - 200, height / 2 + 80, 130, 20, Text.translatable("gui.done"), b -> {
+        addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.done"), b -> {
                     complete();
                     client.setScreen(parent);
-                }));
-        advButton = addDrawableChild(new ButtonWidget(width / 2 - 66, height / 2 + 80, 132, 20,
-                Text.translatable("x13.mod.color.advanced"), b -> {
-                    advanced ^= true;
-                    advButton.setMessage(Text.translatable(
-                            advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
-                }));
-        addDrawableChild(
-                new ButtonWidget(width / 2 + 70, height / 2 + 80, 130, 20, Text.translatable("gui.cancel"), b -> {
-                    client.setScreen(parent);
-                }));
+                }).dimensions(width / 2 - 200, height / 2 + 80, 130, 20).build());
+
+        advButton = addDrawableChild(new ButtonWidget.Builder(Text.translatable("x13.mod.color.advanced"), b -> {
+            advanced ^= true;
+            advButton.setMessage(Text.translatable(
+                    advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
+        }).dimensions(width / 2 - 66, height / 2 + 80, 132, 20).build());
+
+        addDrawableChild(new ButtonWidget.Builder(Text.translatable("gui.cancel"), b -> client.setScreen(parent)).dimensions(width / 2 + 70, height / 2 + 80, 130, 20).build());
 
         int advWidth = 158 + 200;
         int midAdv = width / 2 + (-158 + 200) / 2;
@@ -565,12 +559,12 @@ public class ColorSelector extends XrayScreen {
                 int lightness = GuiUtils.clamp(mouseY - (height / 2 - 76), 0, 76 * 2) * 100 / (76 * 2);
                 updateColor(hue, pickerSaturation, lightness);
             }
-                break;
+            break;
             case S: {
                 int saturation = GuiUtils.clamp(mouseY - (height / 2 - 76), 0, 76 * 2) * 100 / (76 * 2);
                 updateColor(pickerHue, saturation, pickerLightness);
             }
-                break;
+            break;
             default:
                 break;
         }

@@ -1,8 +1,5 @@
 package fr.atesab.xray.screen;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -10,10 +7,11 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-
-
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BlockSelector extends Screen {
     private Screen parent;
@@ -31,7 +29,7 @@ public abstract class BlockSelector extends Screen {
         super(Text.translatable("x13.mod.menu.selector"));
         this.parent = parent;
         blocks = new ArrayList<>();
-        Registry.BLOCK.forEach(blocks::add);
+        Registries.BLOCK.forEach(blocks::add);
     }
 
     @Override
@@ -50,8 +48,8 @@ public abstract class BlockSelector extends Screen {
                 Text.literal("")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (button == 1 && mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y
-                        && mouseY <= this.y + this.height) {
+                if (button == 1 && mouseX >= this.getX() && mouseX <= this.getX() + this.width && mouseY >= this.getY()
+                        && mouseY <= this.getY() + this.height) {
                     setText("");
                     return true;
                 }
@@ -83,19 +81,17 @@ public abstract class BlockSelector extends Screen {
             }
         };
 
-        lastPage = new ButtonWidget(width / 2 - 124, pageBottom, 20, 20, Text.literal("<-"), b -> {
+        lastPage = new ButtonWidget.Builder(Text.literal("<-"), button -> {
             page--;
             updateArrows();
-        });
-        ButtonWidget cancelBtn = new ButtonWidget(width / 2 - 100, pageBottom, 200, 20,
-                Text.translatable("gui.cancel"),
-                b -> {
-                    client.setScreen(parent);
-                });
-        nextPage = new ButtonWidget(width / 2 + 104, pageBottom, 20, 20, Text.literal("->"), b -> {
+        }).dimensions(width / 2 - 124, pageBottom, 20, 20).build();
+
+        ButtonWidget cancelBtn = new ButtonWidget.Builder(Text.translatable("gui.cancel"), button -> client.setScreen(parent)).dimensions(width / 2 - 100, pageBottom, 200, 20).build();
+
+        nextPage = new ButtonWidget.Builder(Text.literal("->"), button -> {
             page++;
             updateArrows();
-        });
+        }).dimensions(width / 2 + 104, pageBottom, 20, 20).build();
 
         addSelectableChild(searchBar);
         addDrawableChild(lastPage);
@@ -190,7 +186,7 @@ public abstract class BlockSelector extends Screen {
     /**
      * save the selected block (only call when a Block is selected, doesn't call
      * after a cancel)
-     * 
+     *
      * @param selection the selected block
      */
     protected abstract void save(Block selection);

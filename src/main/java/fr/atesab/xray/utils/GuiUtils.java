@@ -22,7 +22,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 
 /**
  * Advanced creative tab GuiUtils
@@ -247,7 +247,7 @@ public class GuiUtils extends DrawableHelper {
      * @since 2.0
      */
     public static boolean isHover(ClickableWidget widget, int mouseX, int mouseY) {
-        return isHover(widget.x, widget.y, widget.getWidth(), widget.getHeight(), mouseX, mouseY);
+        return isHover(widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), mouseX, mouseY);
     }
 
     /**
@@ -298,8 +298,8 @@ public class GuiUtils extends DrawableHelper {
      * @param height       the height of the text
      * 
      * @since 2.0
-     * @see #drawCenterString(TextRenderer, String, int, int, int, int)
-     * @see #drawRightString(TextRenderer, String, int, int, int, int)
+     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int)
+     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int)
      */
     public static void drawString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y, int color,
             int height) {
@@ -317,8 +317,8 @@ public class GuiUtils extends DrawableHelper {
      * @param color        the color of the text
      * 
      * @since 2.0
-     * @see #drawCenterString(TextRenderer, String, int, int, int, int)
-     * @see #drawRightString(TextRenderer, String, int, int, int, int)
+     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
+     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int)
      */
     public static void drawString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y, int color) {
         drawString(stack, textRenderer, text, x, y, color, textRenderer.fontHeight);
@@ -334,8 +334,8 @@ public class GuiUtils extends DrawableHelper {
      * @param y            y text location
      * @param color        text color
      * @since 2.0
-     * @see #drawCenterString(TextRenderer, String, int, int, int, int)
-     * @see #drawRightString(TextRenderer, String, int, int, int)
+     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int)
+     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int, int)
      */
     public static void drawCenterString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y,
             int color) {
@@ -353,8 +353,8 @@ public class GuiUtils extends DrawableHelper {
      * @param color        text color
      * @param height       segment length
      * @since 2.0
-     * @see #drawCenterString(TextRenderer, String, int, int, int)
-     * @see #drawString(TextRenderer, String, int, int, int, int)
+     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
+     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
      */
     public static void drawCenterString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y,
             int color,
@@ -373,8 +373,8 @@ public class GuiUtils extends DrawableHelper {
      * @param color        the color of the text
      * 
      * @since 2.0
-     * @see #drawCenterString(TextRenderer, String, int, int, int)
-     * @see #drawRightString(TextRenderer, String, int, int, int, int)
+     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
+     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
      */
 
     public static void drawRightString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y,
@@ -394,8 +394,8 @@ public class GuiUtils extends DrawableHelper {
      * @param height       the height of the text
      * 
      * @since 2.0
-     * @see #drawString(TextRenderer, String, int, int, int, int)
-     * @see #drawCenterString(TextRenderer, String, int, int, int, int)
+     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
+     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int)
      */
     public static void drawRightString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y,
             int color,
@@ -413,13 +413,13 @@ public class GuiUtils extends DrawableHelper {
      * @param color        the color of the text
      * 
      * @since 2.0
-     * @see #drawRightString(TextRenderer, String, int, int, int)
-     * @see #drawRightString(TextRenderer, String, int, int, int, int)
+     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int)
+     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int, int)
      */
     public static void drawRightString(MatrixStack stack, TextRenderer textRenderer, String text,
             ClickableWidget field,
             int color) {
-        drawRightString(stack, textRenderer, text, field.x, field.y, color, field.getHeight());
+        drawRightString(stack, textRenderer, text, field.getX(), field.getY(), color, field.getHeight());
     }
 
     /**
@@ -434,12 +434,12 @@ public class GuiUtils extends DrawableHelper {
      * @param offsetY      the y offset
      * 
      * @since 2.0
-     * @see #drawRightString(TextRenderer, String, ClickableWidget, int)
+     * @see #drawRightString(MatrixStack, TextRenderer, String, ClickableWidget, int)
      */
     public static void drawRightString(MatrixStack stack,
             TextRenderer textRenderer, String text, ClickableWidget field, int color, int offsetX,
             int offsetY) {
-        drawRightString(stack, textRenderer, text, field.x + offsetX, field.y + offsetY, color, field.getHeight());
+        drawRightString(stack, textRenderer, text, field.getX() + offsetX, field.getY() + offsetY, color, field.getHeight());
     }
 
     /**
@@ -489,7 +489,7 @@ public class GuiUtils extends DrawableHelper {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA,
                 GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE,
                 GlStateManager.DstFactor.ZERO);
@@ -570,7 +570,7 @@ public class GuiUtils extends DrawableHelper {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA,
                 GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE,
                 GlStateManager.DstFactor.ZERO);
@@ -584,7 +584,7 @@ public class GuiUtils extends DrawableHelper {
                 .color(redLeftBottom, greenLeftBottom, blueLeftBottom, alphaLeftBottom).next();
         bufferbuilder.vertex(mat, right, bottom, zLevel)
                 .color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom).next();
-        BufferRenderer.drawWithoutShader(bufferbuilder.end());
+        BufferRenderer.drawWithGlobalProgram(bufferbuilder.end());
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
     }

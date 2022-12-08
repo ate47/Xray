@@ -13,10 +13,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ESPConfig extends AbstractModeConfig implements Cloneable {
     public enum Template implements EnumElement {
@@ -159,7 +159,7 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
     public boolean shouldTag(EntityType<?> type) {
         if (!isEnabled())
             return false;
-        Identifier id = Registry.ENTITY_TYPE.getId(type);
+        Identifier id = Registries.ENTITY_TYPE.getId(type);
         if (id == null) {
             return false;
         }
@@ -168,7 +168,7 @@ public class ESPConfig extends AbstractModeConfig implements Cloneable {
     public boolean shouldTag(BlockEntityType<?> type) {
         if (!isEnabled())
             return false;
-        Identifier id = Registry.BLOCK_ENTITY_TYPE.getId(type);
+        Identifier id = Registries.BLOCK_ENTITY_TYPE.getId(type);
         if (id == null) {
             return false;
         }

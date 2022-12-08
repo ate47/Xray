@@ -1,9 +1,5 @@
 package fr.atesab.xray.screen;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
@@ -16,6 +12,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+
+import java.util.List;
 
 
 public class XrayMenu extends XrayScreen {
@@ -33,46 +31,46 @@ public class XrayMenu extends XrayScreen {
         XrayMain mod = XrayMain.getMod();
 
         addDrawableChild(
-                new ButtonWidget(width / 2 - 100, height / 2 + 52, 200, 20, Text.translatable("gui.done"),
+                new ButtonWidget.Builder(Text.translatable("gui.done"),
                         btn -> {
                             client.setScreen(parent);
-                        }));
+                        }).dimensions(width / 2 - 100, height / 2 + 52, 200, 20).build());
 
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 Text.translatable("x13.mod.mode"), new ItemStack(Blocks.DIAMOND_ORE), () -> {
-                    client.setScreen(new XrayBlockModesConfig(this, mod.getConfig().getBlockConfigs().stream()) {
-                        @Override
-                        protected void save(List<BlockConfig> list) {
-                            mod.getConfig().setBlockConfigs(list);
-                            mod.saveConfigs();
-                        }
-                    });
-                }));
+            client.setScreen(new XrayBlockModesConfig(this, mod.getConfig().getBlockConfigs().stream()) {
+                @Override
+                protected void save(List<BlockConfig> list) {
+                    mod.getConfig().setBlockConfigs(list);
+                    mod.saveConfigs();
+                }
+            });
+        }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 Text.translatable("x13.mod.esp"), new ItemStack(Blocks.CREEPER_HEAD), () -> {
-                    client.setScreen(new XrayESPModesConfig(this, mod.getConfig().getEspConfigs().stream()) {
-                        @Override
-                        protected void save(List<ESPConfig> list) {
-                            mod.getConfig().setEspConfigs(list);
-                            mod.saveConfigs();
-                        }
-                    });
-                }));
+            client.setScreen(new XrayESPModesConfig(this, mod.getConfig().getEspConfigs().stream()) {
+                @Override
+                protected void save(List<ESPConfig> list) {
+                    mod.getConfig().setEspConfigs(list);
+                    mod.saveConfigs();
+                }
+            });
+        }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 Text.translatable("x13.mod.fullbright"), new ItemStack(Blocks.GLOWSTONE), mod::fullBright));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 Text.translatable("x13.mod.showloc"), new ItemStack(Items.PAPER), () -> {
             client.setScreen(new XrayLocationConfig(this) {
-                    	@Override
-						protected void save() {
-                            mod.saveConfigs();
-                        }
-                    });
-                }));
+                @Override
+                protected void save() {
+                    mod.saveConfigs();
+                }
+            });
+        }));
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,
                 Text.translatable("x13.mod.config"), new ItemStack(Items.REDSTONE), () -> {
             client.setScreen(new XrayConfigMenu(this));
-                }));
+        }));
 
         super.init();
     }
