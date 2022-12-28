@@ -107,6 +107,10 @@ public class XrayConfig implements Cloneable {
         return locationConfig;
     }
 
+    public void setLocationConfig(LocationConfig locationConfig) {
+        this.locationConfig = locationConfig;
+    }
+
     public int getMaxTracerRange() {
         return maxTracerRange;
     }

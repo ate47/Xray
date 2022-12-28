@@ -21,6 +21,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.joml.Matrix4f;
 
@@ -440,6 +441,77 @@ public class GuiUtils extends DrawableHelper {
             TextRenderer textRenderer, String text, ClickableWidget field, int color, int offsetX,
             int offsetY) {
         drawRightString(stack, textRenderer, text, field.getX() + offsetX, field.getY() + offsetY, color, field.getHeight());
+    }
+
+    /**
+     * Render a scaled component (left aligned)
+     *
+     * @param matrixStack stack
+     * @param x x
+     * @param y y
+     * @param height text height
+     * @param component text
+     * @param color color
+     */
+    public static void drawTextComponentScaled(MatrixStack matrixStack, int x, int y, int height,
+                                              Text component, int color) {
+        MinecraftClient minecraft = MinecraftClient.getInstance();
+        TextRenderer font = minecraft.textRenderer;
+        float scaleX = (float) height / font.fontHeight;
+        float scaleY = (float) height / font.fontHeight;
+        matrixStack.translate(x, y, 0);
+        matrixStack.scale(scaleX, scaleY, 1f);
+        font.draw(matrixStack, component, 0, 0f, color);
+        matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
+        matrixStack.translate(-x, -y, 0);
+    }
+
+    /**
+     * Render a scaled component (center aligned)
+     *
+     * @param matrixStack stack
+     * @param x x
+     * @param y y
+     * @param height text height
+     * @param component text
+     * @param color color
+     */
+    public static void drawCenteredTextComponentScaled(MatrixStack matrixStack, int x, int y, int height,
+                                                      Text component, int color) {
+        MinecraftClient minecraft = MinecraftClient.getInstance();
+        TextRenderer font = minecraft.textRenderer;
+        float scaleX = (float) height / font.fontHeight;
+        float scaleY = (float) height / font.fontHeight;
+        matrixStack.translate(x, y, 0);
+        matrixStack.scale(scaleX, scaleY, 1f);
+        float size = font.getWidth(component);
+        font.draw(matrixStack, component, -size / 2.0f, 0f, color);
+        matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
+        matrixStack.translate(-x, -y, 0);
+    }
+
+    /**
+     * Render a scaled component (right aligned)
+     *
+     * @param matrixStack stack
+     * @param x x
+     * @param y y
+     * @param height text height
+     * @param component text
+     * @param color color
+     */
+    public static void drawRightTextComponentScaled(MatrixStack matrixStack, int x, int y, int height,
+                                                   Text component, int color) {
+        MinecraftClient minecraft = MinecraftClient.getInstance();
+        TextRenderer font = minecraft.textRenderer;
+        float scaleX = (float) height / font.fontHeight;
+        float scaleY = (float) height / font.fontHeight;
+        matrixStack.translate(x, y, 0);
+        matrixStack.scale(scaleX, scaleY, 1f);
+        float size = font.getWidth(component);
+        font.draw(matrixStack, component, -size, 0f, color);
+        matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
+        matrixStack.translate(-x, -y, 0);
     }
 
     /**

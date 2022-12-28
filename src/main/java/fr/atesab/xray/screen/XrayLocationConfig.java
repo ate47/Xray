@@ -74,11 +74,18 @@ public class XrayLocationConfig extends XrayScreen {
                         }).dimensions(width / 2 + 2, height / 2 + 24, 98, 20).build());
 
         addDrawableChild(
+                new ButtonWidget.Builder(
+                        Text.translatable("x13.mod.location.hud"),
+                        btn -> {
+                            client.setScreen(new XrayLocationConfigBoxScreen(this));
+                        }).dimensions(width / 2 - 100, height / 2 + 48, 200, 20).build());
+
+        addDrawableChild(
                 new ButtonWidget.Builder(Text.translatable("gui.done"),
                         btn -> {
                             save();
                             client.setScreen(parent);
-                        }).dimensions(width / 2 - 100, height / 2 + 52, 200, 20).build());
+                        }).dimensions(width / 2 - 100, height / 2 + 76, 200, 20).build());
 
         super.init();
     }

@@ -3,6 +3,7 @@ package fr.atesab.xray;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
+import fr.atesab.xray.color.TextHudBuffer;
 import fr.atesab.xray.config.*;
 import fr.atesab.xray.screen.XrayMenu;
 import fr.atesab.xray.utils.GuiUtils;
@@ -50,10 +51,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -284,20 +282,25 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
             return;
         }
 
-        int w = 0;
+        TextHudBuffer buffer = new TextHudBuffer();
 
+        // TODO: add option to render the modes one line/mode
+        buffer.newLine();
         if (config.getLocationConfig().isShowMode()) {
             for (AbstractModeConfig cfg : config.getModes()) {
-                if (!cfg.isEnabled())
+                if (!cfg.isEnabled()) {
                     continue;
-                String s = "[" + cfg.getModeName() + "] ";
-                render.draw(stack, s, 5 + w, 5, cfg.getColor());
-                w += render.getWidth(s);
+                }
+                buffer.append(
+                        Text.literal("[" + cfg.getModeName() + "] ")
+                        .styled(s -> s.withColor(cfg.getColor()))
+                );
             }
-            if (w == 0 && fullBrightEnable) {
-                String s = "[" + fullbrightMode.getModeName() + "] ";
-                render.draw(stack, s, 5 + w, 5, fullbrightMode.getColor());
-                w += render.getWidth(s);
+            if (fullBrightEnable) {
+                buffer.append(
+                        Text.literal("[" + fullbrightMode.getModeName() + "] ")
+                                .styled(s -> s.withColor(fullbrightMode.getColor()))
+                );
             }
         }
 
@@ -305,15 +308,26 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
             String format = LocationFormatTool.applyColor(
                     getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.world)
             );
-            String[] renderStrings = format.split("\n");
-            // write first line with the shift for the mode
-            render.draw(stack, renderStrings[0], 5 + w, 5, 0xffffffff);
-            // write next lines
-            for (int lineIndex = 1; lineIndex < renderStrings.length; lineIndex++) {
-                render.draw(stack, renderStrings[lineIndex],
-                        5, 5 + render.fontHeight * lineIndex, 0xffffffff);
+
+            String[] split = format.split("\n");
+
+            if (split.length > 0) {
+                buffer.append(Text.literal(split[0]));
+
+                for (int i = 1; i < split.length; i++) {
+                    buffer.newLine();
+                    buffer.append(Text.literal(split[i]));
+                }
             }
         }
+
+        buffer.draw(
+                stack,
+                mc.getWindow().getScaledWidth(),
+                mc.getWindow().getScaledHeight(),
+                config.getLocationConfig(),
+                render
+        );
     }
 
     @Override
