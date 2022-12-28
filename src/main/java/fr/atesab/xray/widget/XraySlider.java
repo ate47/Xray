@@ -4,11 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.Skin;
 import fr.atesab.xray.utils.GuiUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 
 public abstract class XraySlider extends AbstractSliderButton {
 
@@ -26,5 +23,15 @@ public abstract class XraySlider extends AbstractSliderButton {
 
     public double getValue() {
         return value;
+    }
+
+    public void setValue(double value) {
+        double d = this.value;
+        this.value = GuiUtils.clamp(value, 0.0, 1.0);
+        if (d != this.value) {
+            this.applyValue();
+        }
+
+        this.updateMessage();
     }
 }
