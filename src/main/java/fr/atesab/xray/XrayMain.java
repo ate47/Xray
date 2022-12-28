@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents.AfterEntities;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -36,10 +37,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.apache.logging.log4j.LogManager;
@@ -55,7 +58,7 @@ import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTick, AfterEntities {
+public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTick, AfterEntities, PlayerBlockBreakEvents.After {
     public static final String MOD_ID = "atianxray";
     public static final String MOD_NAME = "Xray";
     public static final String[] MOD_AUTHORS = {"ATE47", "ThaEin", "ALFECLARE"};
@@ -333,12 +336,15 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         MinecraftClient minecraft = MinecraftClient.getInstance();
         ClientWorld level = minecraft.world;
         ClientPlayerEntity player = minecraft.player;
+        if (level == null || player == null) {
+            return;
+        }
         MatrixStack stack = context.matrixStack();
         float delta = context.tickDelta();
         Camera mainCamera = minecraft.gameRenderer.getCamera();
         Vec3d camera = mainCamera.getPos();
 
-        if (player == null || level == null || config.getEspConfigs().stream().noneMatch(ESPConfig::isEnabled)) {
+        if (config.getEspConfigs().stream().noneMatch(ESPConfig::isEnabled)) {
             return;
         }
 
@@ -404,44 +410,45 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 								return;
 							}
 
-							BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
+                            BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
 
-							if (blockEntity == null) {
-								return;
-							}
+                            if (blockEntity == null) {
+                                return;
+                            }
 
-							BlockEntityType<?> type = blockEntity.getType();
+                            BlockEntityType<?> type = blockEntity.getType();
 
-							config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
-								RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
-								float r = c.red() / 255F;
-								float g = c.green() / 255F;
-								float b = c.blue() / 255F;
-								float a = c.alpha() / 255F;
+                            config.getEspConfigs().stream().filter(esp -> esp.shouldTag(type)).forEach(esp -> {
+                                RGBResult c = GuiUtils.rgbaFromRGBA(esp.getColor());
+                                float r = c.red() / 255F;
+                                float g = c.green() / 255F;
+                                float b = c.blue() / 255F;
+                                float a = c.alpha() / 255F;
 
-								Box aabb = new Box(
-										blockPos.getX(), blockPos.getY(), blockPos.getZ(),
-										blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1
-								);
+                                Box aabb = new Box(
+                                        blockPos.getX(), blockPos.getY(), blockPos.getZ(),
+                                        blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1
+                                );
 
-								WorldRenderer.drawBox(stack, buffer, aabb, r, g, b, a);
+                                WorldRenderer.drawBox(stack, buffer, aabb, r, g, b, a);
 
-								if (esp.hasTracer()) {
-									Vec3d center = aabb.getCenter();
-									RenderUtils.renderSingleLine(stack, buffer, px, py, pz, (float) center.x,
-											(float) center.y, (float) center.z, r, g, b, a);
-								}
-							});
-						}));
-					}
-				}
-			}
-		}
+                                if (esp.hasTracer()) {
+                                    Vec3d center = aabb.getCenter();
+                                    RenderUtils.renderSingleLine(stack, buffer, px, py, pz, (float) center.x,
+                                            (float) center.y, (float) center.z, r, g, b, a);
+                                }
+                            });
+                        }));
+                    }
+                }
+            }
+        }
 
         level.getEntities().forEach(e -> {
 
-            if ((config.getMaxTracerRange() != 0 && e.squaredDistanceTo(player) > maxDistanceSquared) || player == e)
+            if ((config.getMaxTracerRange() != 0 && e.squaredDistanceTo(player) > maxDistanceSquared) || player == e) {
                 return;
+            }
 
             boolean damage = !config.isDamageIndicatorDisabled() && e instanceof LivingEntity le && le.getRecentDamageSource() != null;
 
@@ -517,5 +524,11 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         HudRenderCallback.EVENT.register(this);
         ClientTickEvents.END_CLIENT_TICK.register(this);
         WorldRenderEvents.AFTER_ENTITIES.register(this);
+        PlayerBlockBreakEvents.AFTER.register(this);
+    }
+
+    @Override
+    public void afterBlockBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+        state.getBlock();
     }
 }

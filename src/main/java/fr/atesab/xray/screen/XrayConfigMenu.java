@@ -51,36 +51,18 @@ public class XrayConfigMenu extends XrayScreen {
             }
 
         });
-        addDrawableChild(XrayButton.builder(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"), button -> {
-            cfg.setDamageIndicatorDisabled(!cfg.isDamageIndicatorDisabled());
-            button.setMessage(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"));
-        }).dimensions(width / 2 - 100, height / 2 - 24, 200, 20).build());
-
-        addDrawableChild(new XraySlider(width / 2 - 100, height / 2, 200, 20,
-                Text.translatable("x13.mod.config.espline"), cfg.getEspLineWidthNormalized()) {
-            {
-                updateMessage();
-            }
-            @Override
-            protected void updateMessage() {
-                float range = cfg.getEspLineWidth();
-                setMessage(Text.translatable("x13.mod.config.espline").append(": ")
-                        .append(Text.literal(String.format("%.1f", range)).formatted(Formatting.YELLOW)));
-            }
-
-            @Override
-            protected void applyValue() {
-                cfg.setEspLineWidthNormalized((float) value);
-            }
-
-        });
-
-        addDrawableChild(XrayButton.builder(Text.translatable("x13.mod.config.skin").append(": ").append(Text.literal(cfg.getSkin().getTitle()).formatted(Formatting.YELLOW)), btn -> {
-            Skin[] skins = Skin.values();
-            cfg.setSkin(skins[(cfg.getSkin().ordinal() + 1) % skins.length]);
-            btn.setMessage(Text.translatable("x13.mod.config.skin").append(": ").append(Text.literal(cfg.getSkin().getTitle()).formatted(Formatting.YELLOW)));
-        }).dimensions(width / 2 - 100, height / 2 + 24, 200, 20).build());
-
+        addDrawableChild(
+                XrayButton.builder(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"), button -> {
+                    cfg.setDamageIndicatorDisabled(!cfg.isDamageIndicatorDisabled());
+                    button.setMessage(XrayUtils.getToggleable(!cfg.isDamageIndicatorDisabled(), "x13.mod.config.espDamage"));
+                }).dimensions(width / 2 - 100, height / 2 - 24, 200, 20).build()
+        );
+        addDrawableChild(
+                XrayButton.builder(XrayUtils.getToggleable(cfg.isBlockESP(), "x13.mod.config.blockEsp"), button -> {
+                    cfg.setBlockESP(cfg.isBlockESP());
+                    button.setMessage(XrayUtils.getToggleable(cfg.isBlockESP(), "x13.mod.config.blockEsp"));
+                }).dimensions(width / 2 - 100, height / 2, 200, 20).build()
+        );
         addDrawableChild(
                 XrayButton.builder(Text.translatable("gui.done"),
                         btn -> {

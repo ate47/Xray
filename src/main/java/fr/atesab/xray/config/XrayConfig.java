@@ -60,6 +60,8 @@ public class XrayConfig implements Cloneable {
     @Expose
     private int maxTracerRange = 0;
     @Expose
+    private boolean blockESP;
+    @Expose
     private float espLineWidth = 2;
     @Expose
     private Skin skin = Skin.XRAY;
@@ -78,6 +80,7 @@ public class XrayConfig implements Cloneable {
         this.blockConfigs = other.blockConfigs.stream().map(
                 BlockConfig::clone)
                 .collect(Collectors.toCollection(ArrayList::new));
+        this.blockESP = other.blockESP;
         this.maxTracerRange = other.maxTracerRange;
         this.damageIndicatorDisabled = other.damageIndicatorDisabled;
         this.locationConfig = other.locationConfig.clone();
@@ -137,6 +140,14 @@ public class XrayConfig implements Cloneable {
         return damageIndicatorDisabled;
     }
 
+    public float getEspLineWidth() {
+        return espLineWidth <= 0 ? 1 : espLineWidth;
+    }
+
+    public void setEspLineWidth(float espLineWidth) {
+        this.espLineWidth = espLineWidth <= 0 ? 1 : espLineWidth;
+    }
+
     public double getMaxTracerRangeNormalized() {
         return GuiUtils.clamp(maxTracerRange / (double) MAX_TRACER_RANGE, 0, 1.0);
     }
@@ -158,15 +169,15 @@ public class XrayConfig implements Cloneable {
         this.espLineWidth = MIN_TRACER_SIZE + GuiUtils.clamp((float) (espLineWidth * delta), 0, delta);
     }
 
-    public float getEspLineWidth() {
-        return espLineWidth <= 0 ? 2 : espLineWidth;
-    }
-
-    public void setEspLineWidth(float espLineWidth) {
-        this.espLineWidth = espLineWidth <= 0 ? 1 : espLineWidth;
-    }
     public File getSaveFile() {
         return saveFile;
+    }
+    public void setBlockESP(boolean blockESP) {
+        this.blockESP = blockESP;
+    }
+
+    public boolean isBlockESP() {
+        return blockESP;
     }
 
     /**

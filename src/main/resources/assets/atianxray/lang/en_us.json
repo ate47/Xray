@@ -109,7 +109,7 @@
 
   "x13.mod.config.search": "Search",
   "x13.mod.config.espDamage": "ESP damage indicator",
-  "x13.mod.config.blockEsp": "Block ESP",
+  "x13.mod.config.blockEsp": "Block ESP (ALPHA)",
   "x13.mod.config.border": "ESP border",
   "x13.mod.config.override": "Override config",
   "x13.mod.config.fly": "Fly mode",

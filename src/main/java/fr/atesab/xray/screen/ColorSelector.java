@@ -403,7 +403,7 @@ public class ColorSelector extends XrayScreen {
             else if (hexColor.isFocused())
                 try {
                     String s = hexColor.getText().substring(1);
-                    updateColor(s.isEmpty() ? 0 : Integer.parseInt(s, 16));
+                    updateColor(s.isEmpty() ? 0 : Integer.valueOf(s, 16));
                 } catch (Exception ignored) {
                 }
             else if (intColor.isFocused())
@@ -430,50 +430,42 @@ public class ColorSelector extends XrayScreen {
                 try {
                     updateRed(tfr.getText().isEmpty() ? 0 : Integer.parseInt(tfr.getText()));
                 } catch (Exception ignored) {
-
                 }
             else if (tfg.isFocused())
                 try {
                     updateGreen(tfg.getText().isEmpty() ? 0 : Integer.parseInt(tfg.getText()));
                 } catch (Exception ignored) {
-
                 }
             else if (tfb.isFocused())
                 try {
                     updateBlue(tfb.getText().isEmpty() ? 0 : Integer.parseInt(tfb.getText()));
                 } catch (Exception ignored) {
-
                 }
             else if (tfh.isFocused())
                 try {
                     updateHue(tfh.getText().isEmpty() ? 0 : Integer.parseInt(tfh.getText()));
                 } catch (Exception ignored) {
-
                 }
             else if (tfs.isFocused())
                 try {
                     updateSaturation(tfs.getText().isEmpty() ? 0 : Integer.parseInt(tfs.getText()));
                 } catch (Exception ignored) {
-
                 }
             else if (tfl.isFocused())
                 try {
                     updateLightness(tfl.getText().isEmpty() ? 0 : Integer.parseInt(tfl.getText()));
                 } catch (Exception ignored) {
-
                 }
             else if (hexColor.isFocused())
                 try {
                     String s = hexColor.getText().substring(1);
-                    updateColor(s.isEmpty() ? 0 : Integer.parseInt(s, 16));
+                    updateColor(s.isEmpty() ? 0 : Integer.valueOf(s, 16));
                 } catch (Exception ignored) {
-
                 }
             else if (intColor.isFocused())
                 try {
                     updateColor(intColor.getText().isEmpty() ? 0 : Integer.parseInt(intColor.getText()));
                 } catch (Exception ignored) {
-
                 }
         }
         return super.keyPressed(key, scanCode, modifiers);

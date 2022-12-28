@@ -7,6 +7,6 @@ import net.minecraft.block.BlockState;
 
 @FunctionalInterface
 public interface Viewer {
-    public boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, BlockView blockState,
+    boolean shouldRenderSide(boolean blockInList, BlockState adjacentState, BlockView blockState,
             BlockPos blockAccess, Direction pos);
 }
