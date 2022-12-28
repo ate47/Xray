@@ -78,7 +78,14 @@ public class XrayLocationConfig extends XrayScreen {
                         }));
 
         addRenderableWidget(
-                new XrayButton(width / 2 - 100, height / 2 + 52, 200, 20, Component.translatable("gui.done"),
+                new XrayButton(width / 2 - 100, height / 2 + 48, 200, 20,
+                        Component.translatable("x13.mod.location.hud"),
+                        btn -> {
+                            minecraft.setScreen(new XrayLocationConfigBoxScreen(this));
+                        }));
+
+        addRenderableWidget(
+                new XrayButton(width / 2 - 100, height / 2 + 76, 200, 20, Component.translatable("gui.done"),
                         btn -> {
                             save();
                             minecraft.setScreen(parent);

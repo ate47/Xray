@@ -35,6 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
+import fr.atesab.xray.color.TextHudBuffer;
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
@@ -313,36 +314,52 @@ public class XrayMain {
 		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.renderDebug) {
 			return;
 		}
-		int w = 0;
 
-		if (config.getLocationConfig().isShowMode()) {
-			for (AbstractModeConfig cfg : config.getModes()) {
-				if (!cfg.isEnabled())
-					continue;
-				String s = "[" + cfg.getModeName() + "] ";
-				render.draw(stack, s, 5 + w, 5, cfg.getColor());
-				w += render.width(s);
-			}
-			if (w == 0 && fullBrightEnable) {
-				String s = "[" + fullbrightMode.getModeName() + "] ";
-				render.draw(stack, s, 5 + w, 5, fullbrightMode.getColor());
-				w += render.width(s);
-			}
-		}
+		TextHudBuffer buffer = new TextHudBuffer();
+
+        // TODO: add option to render the modes one line/mode
+        buffer.newLine();
+        if (config.getLocationConfig().isShowMode()) {
+            for (AbstractModeConfig cfg : config.getModes()) {
+                if (!cfg.isEnabled()) {
+                    continue;
+                }
+                buffer.append(
+						Component.literal("[" + cfg.getModeName() + "] ")
+                        .withStyle(s -> s.withColor(cfg.getColor()))
+                );
+            }
+            if (fullBrightEnable) {
+                buffer.append(
+						Component.literal("[" + fullbrightMode.getModeName() + "] ")
+                                .withStyle(s -> s.withColor(fullbrightMode.getColor()))
+                );
+            }
+        }
 
 		if (config.getLocationConfig().isEnabled()) {
 			Component[] format = LocationFormatTool.applyColor(
 					getConfig().getLocationConfig().getCompiledFormat().apply(mc, player, mc.level)
 			);
-			// write first line with the shift for the mode
-			render.draw(stack, format[0],5 + w, 5, 0xffffffff);
-			// write next lines
-			for (int lineIndex = 1; lineIndex < format.length; lineIndex++) {
-				render.draw(stack, format[lineIndex],
-						5, 5 + render.lineHeight * lineIndex, 0xffffffff);
+
+			if (format.length > 0) {
+				buffer.append(format[0]);
+
+				for (int i = 1; i < format.length; i++) {
+					buffer.newLine();
+					buffer.append(format[i]);
+				}
 			}
 		}
-	}
+
+		buffer.draw(
+				stack,
+				mc.getWindow().getGuiScaledWidth(),
+				mc.getWindow().getGuiScaledHeight(),
+				config.getLocationConfig(),
+				render
+		);
+    }
 
 	@SubscribeEvent
 	public void onRenderWorld(RenderLevelStageEvent ev) {

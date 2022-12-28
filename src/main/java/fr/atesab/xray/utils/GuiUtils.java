@@ -21,6 +21,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
@@ -294,7 +295,7 @@ public class GuiUtils extends GuiComponent {
     /**
      * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
      * anywhere in vanilla code.
-     * 
+     *
      * @param x          x location
      * @param y          y location
      * @param u          x uv location
@@ -314,7 +315,7 @@ public class GuiUtils extends GuiComponent {
     /**
      * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
      * anywhere in vanilla code.
-     * 
+     *
      * @param x          x location
      * @param y          y location
      * @param u          x uv location
@@ -335,7 +336,7 @@ public class GuiUtils extends GuiComponent {
     /**
      * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
      * anywhere in vanilla code.
-     * 
+     *
      * @param x          x location
      * @param y          y location
      * @param u          x uv location
@@ -519,6 +520,77 @@ public class GuiUtils extends GuiComponent {
             Font font, String text, AbstractWidget field, int color, int offsetX,
             int offsetY) {
         drawRightString(stack, font, text, field.getX() + offsetX, field.getY() + offsetY, color, field.getHeight());
+    }
+
+    /**
+     * Render a scaled component (left aligned)
+     *
+     * @param matrixStack stack
+     * @param x x
+     * @param y y
+     * @param height text height
+     * @param component text
+     * @param color color
+     */
+    public static void drawTextComponentScaled(PoseStack matrixStack, int x, int y, int height,
+                                               Component component, int color) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Font font = minecraft.font;
+        float scaleX = (float) height / font.lineHeight;
+        float scaleY = (float) height / font.lineHeight;
+        matrixStack.translate(x, y, 0);
+        matrixStack.scale(scaleX, scaleY, 1f);
+        font.draw(matrixStack, component, 0, 0f, color);
+        matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
+        matrixStack.translate(-x, -y, 0);
+    }
+
+    /**
+     * Render a scaled component (center aligned)
+     *
+     * @param matrixStack stack
+     * @param x x
+     * @param y y
+     * @param height text height
+     * @param component text
+     * @param color color
+     */
+    public static void drawCenteredTextComponentScaled(PoseStack matrixStack, int x, int y, int height,
+                                                       Component component, int color) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Font font = minecraft.font;
+        float scaleX = (float) height / font.lineHeight;
+        float scaleY = (float) height / font.lineHeight;
+        matrixStack.translate(x, y, 0);
+        matrixStack.scale(scaleX, scaleY, 1f);
+        float size = font.width(component);
+        font.draw(matrixStack, component, -size / 2.0f, 0f, color);
+        matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
+        matrixStack.translate(-x, -y, 0);
+    }
+
+    /**
+     * Render a scaled component (right aligned)
+     *
+     * @param matrixStack stack
+     * @param x x
+     * @param y y
+     * @param height text height
+     * @param component text
+     * @param color color
+     */
+    public static void drawRightTextComponentScaled(PoseStack matrixStack, int x, int y, int height,
+                                                    Component component, int color) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Font font = minecraft.font;
+        float scaleX = (float) height / font.lineHeight;
+        float scaleY = (float) height / font.lineHeight;
+        matrixStack.translate(x, y, 0);
+        matrixStack.scale(scaleX, scaleY, 1f);
+        float size = font.width(component);
+        font.draw(matrixStack, component, -size, 0f, color);
+        matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
+        matrixStack.translate(-x, -y, 0);
     }
 
     /**

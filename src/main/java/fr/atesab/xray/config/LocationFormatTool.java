@@ -52,7 +52,7 @@ public class LocationFormatTool implements EnumElement {
     public static long currentHours;
     public static long currentMinutes;
     public static long currentSeconds;
-    
+
     public static final ToolFunction EMPTY_FUNCTION = (mc, player, world) -> "";
     public static final LocationFormatTool PLAYER_LOCATION_X = register("x13.mod.location.opt.x", Items.BOOK, "x",
             (mc, player, world) -> XrayMain.significantNumbers(player.position().x));
@@ -67,7 +67,8 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool PLAYER_LOCATION_FLOOR_Z = register("x13.mod.location.opt.fz", Items.BOOK, "fz",
             (mc, player, world) -> String.valueOf((int) player.position().z));
     public static final LocationFormatTool PLAYER_NAME = register("x13.mod.location.opt.name", Items.NAME_TAG, "name", (mc, player, world) -> player.getGameProfile().getName());
-    public static final LocationFormatTool FPS = register("x13.mod.location.opt.fps", Items.ITEM_FRAME, "fps", (mc, player, world) -> mc.fpsString);
+    public static final LocationFormatTool FPS = register("x13.mod.location.opt.fps", Items.ITEM_FRAME, "fps", (mc, player, world) -> ""+mc.getFps());
+    public static final LocationFormatTool FPS_DEBUG = register("x13.mod.location.opt.fps.debug", Items.ITEM_FRAME, "dfps", (mc, player, world) -> mc.fpsString);
     public static final LocationFormatTool BIOME = register("x13.mod.location.opt.biome", Items.OAK_LOG, "bio",
     		(mc, player, world) -> world.getBiome(player.blockPosition()).unwrapKey().get().location().getPath());
     public static final LocationFormatTool BIOME_TRANSLATE = register("x13.mod.location.opt.biomeTranslate", Items.STRIPPED_OAK_LOG, "biotranslate",
