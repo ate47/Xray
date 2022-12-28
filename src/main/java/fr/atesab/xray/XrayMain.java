@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Vector3f;
 
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
@@ -28,6 +28,7 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.IEventBus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -52,12 +53,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -131,7 +129,7 @@ public class XrayMain {
 	@SuppressWarnings("deprecation")
 	public static <T> T getBlockNamesCollected(Collection<Block> blocks, Collector<CharSequence, ?, T> collector) {
 		// BLOCK
-		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(Registry.BLOCK::getId).map(Objects::toString).collect(collector);
+		return blocks.stream().filter(b -> !Blocks.AIR.equals(b)).map(BuiltInRegistries.BLOCK::getId).map(Objects::toString).collect(collector);
 	}
 
 	/**

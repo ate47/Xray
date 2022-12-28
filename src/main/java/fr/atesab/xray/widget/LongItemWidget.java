@@ -33,10 +33,6 @@ public class LongItemWidget extends AbstractButton {
         this.deltaY = deltaY;
     }
 
-    @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
-        this.defaultButtonNarrationText(narrationElementOutput);
-    }
 
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
@@ -49,6 +45,8 @@ public class LongItemWidget extends AbstractButton {
             color = 0x22ffffff;
         }
 
+        int x = getX();
+        int y = getY();
         Gui.fill(stack, x, y, x + width, y + height, color);
 
         Component message = getMessage();
@@ -61,6 +59,11 @@ public class LongItemWidget extends AbstractButton {
         font.draw(stack,
                 message, x + deltaH + 16 + 2, y + getHeight() / 2 - font.lineHeight / 2,
                 packedFGColor);
+    }
+
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput p_259858_) {
+        this.defaultButtonNarrationText(p_259858_);
     }
 
     @Override

@@ -3,28 +3,33 @@ package fr.atesab.xray.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.Skin;
-import fr.atesab.xray.utils.GuiUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 
 public class XrayButton extends Button {
     private Integer bgColor = null;
 
     public XrayButton(int x, int y, int w, int h, Component text, OnPress press) {
-        super(x, y, w, h, text, press);
+        super(x, y, w, h, text, press, DEFAULT_NARRATION);
+    }
+    public XrayButton(int x, int y, int w, int h, Component text, OnPress press, CreateNarration narration) {
+        super(x, y, w, h, text, press, narration);
     }
 
-    public XrayButton(int x, int y, int w, int h, Component text, OnPress press, OnTooltip tooltip) {
-        super(x, y, w, h, text, press, tooltip);
+    public XrayButton(int x, int y, int w, int h, Component text, OnPress press, CreateNarration narration, Tooltip tooltip) {
+        this(x, y, w, h, text, press, narration);
+        setTooltip(tooltip);
+    }
+    public XrayButton(int x, int y, int w, int h, Component text, OnPress press, Tooltip tooltip) {
+        this(x, y, w, h, text, press);
+        setTooltip(tooltip);
     }
 
     @Override
     public void renderButton(PoseStack stack, int mx, int my, float delta) {
         Skin skin = XrayMain.getMod().getConfig().getSkin();
-        if (skin.renderButton(this, stack, x, y, width, height)) {
+        if (skin.renderButton(this, stack, getX(), getY(), width, height)) {
             super.renderButton(stack, mx, my, delta);
         }
     }

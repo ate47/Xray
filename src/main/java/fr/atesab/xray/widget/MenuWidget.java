@@ -30,7 +30,7 @@ public class MenuWidget extends AbstractButton {
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         Minecraft client = Minecraft.getInstance();
         boolean hovered = isHoveredOrFocused();
-        int centerX = x + width / 2;
+        int centerX = getX() + width / 2;
         int color;
         if (hovered) {
             color = 0x33ffffff;
@@ -38,15 +38,15 @@ public class MenuWidget extends AbstractButton {
             color = 0x22ffffff;
         }
 
-        Gui.fill(stack, x, y, x + width, y + height, color);
+        Gui.fill(stack, getX(), getY(), getX() + width, getY() + height, color);
 
         Component message = getMessage();
         Font font = client.font;
         ItemRenderer renderer = client.getItemRenderer();
         PoseStack modelStack = RenderSystem.getModelViewStack();
 
-        int stackCenterX = x + width / 2;
-        int stackCenterY = y + height * 2 / 5;
+        int stackCenterX = getX() + width / 2;
+        int stackCenterY = getY() + height * 2 / 5;
 
         modelStack.translate(stackCenterX, stackCenterY, 0);
         float scaleX = getWidth() * 3 / 4f / 16f;
@@ -58,19 +58,20 @@ public class MenuWidget extends AbstractButton {
         RenderSystem.applyModelViewMatrix();
 
         stack.pushPose();
-        stack.translate(centerX, y + getHeight(), 0);
+        stack.translate(centerX, getY() + getHeight(), 0);
         float scale = getHeight() * 1 / 7f / font.lineHeight;
         stack.scale(scale, scale, 1);
         drawCenteredString(stack, font, message, 0, -font.lineHeight, packedFGColor);
         stack.scale(1 / scale, 1 / scale, 1);
-        stack.translate(-centerX, -y - getHeight(), 0);
+        stack.translate(-centerX, -getY() - getHeight(), 0);
         stack.popPose();
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
-        this.defaultButtonNarrationText(narrationElementOutput);
+    protected void updateWidgetNarration(NarrationElementOutput p_259858_) {
+        this.defaultButtonNarrationText(p_259858_);
     }
+
 
     @Override
     public void onPress() {

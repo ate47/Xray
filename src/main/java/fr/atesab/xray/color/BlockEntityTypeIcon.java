@@ -2,11 +2,13 @@ package fr.atesab.xray.color;
 
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,9 +59,8 @@ public record BlockEntityTypeIcon(BlockEntityType<?> entity, ItemStack icon) {
         return register(type, new ItemStack(icon));
     }
 
-    @SuppressWarnings("deprecation")
     public static BlockEntityTypeIcon register(BlockEntityType<?> type, ItemStack icon) {
-        ResourceLocation id = Registry.BLOCK_ENTITY_TYPE.getKey(type);
+        ResourceLocation id = ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(type);
         if (id != null) {
             ICONS.put(id.toLanguageKey(), icon);
         }
@@ -67,9 +68,8 @@ public record BlockEntityTypeIcon(BlockEntityType<?> entity, ItemStack icon) {
         return new BlockEntityTypeIcon(type, icon);
     }
 
-    @SuppressWarnings("deprecation")
     public static ItemStack getIcon(BlockEntityType<?> type) {
-        ResourceLocation id = Registry.BLOCK_ENTITY_TYPE.getKey(type);
+        ResourceLocation id = ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(type);
         if (id == null) {
             return DEFAULT_ICON;
         }

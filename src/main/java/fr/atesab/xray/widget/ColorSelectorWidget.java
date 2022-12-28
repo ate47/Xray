@@ -31,7 +31,7 @@ public class ColorSelectorWidget extends AbstractButton {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
         this.defaultButtonNarrationText(narrationElementOutput);
     }
 
@@ -44,6 +44,9 @@ public class ColorSelectorWidget extends AbstractButton {
         } else {
             color |= 0x88000000;
         }
+
+        int x = getX();
+        int y = getY();
 
         Gui.fill(stack, x, y, x + width, y + height, color);
 

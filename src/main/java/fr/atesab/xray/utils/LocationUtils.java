@@ -56,6 +56,6 @@ public class LocationUtils {
 			return "false";
 		}
 		return String.valueOf(WorldgenRandom.seedSlimeChunk(chunk.x, chunk.z,
-				server.getWorldData().worldGenSettings().seed(), 987234911L).nextInt(10) == 0);
+				server.getWorldData().worldGenOptions().seed(), 987234911L).nextInt(10) == 0);
 	}
 }

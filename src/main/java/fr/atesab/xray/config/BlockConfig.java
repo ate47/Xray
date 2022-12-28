@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.google.gson.annotations.Expose;
 
+import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -14,7 +15,6 @@ import fr.atesab.xray.view.ViewMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -208,7 +208,7 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
         if (!isEnabled())
             return;
 
-        String name = Registry.BLOCK.getKey(adjacentState.getBlock()).toString();
+        String name = ForgeRegistries.BLOCKS.getKey(adjacentState.getBlock()).toString();
         boolean present = blocks.contains(name);
         boolean shouldRender = viewMode.getViewer().shouldRenderSide(present, adjacentState, blockState,
                 blockAccess, pos);

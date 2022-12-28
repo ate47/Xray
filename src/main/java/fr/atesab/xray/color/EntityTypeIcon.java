@@ -12,6 +12,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public record EntityTypeIcon(EntityType<?> entity, ItemStack icon) {
 
@@ -70,7 +71,6 @@ public record EntityTypeIcon(EntityType<?> entity, ItemStack icon) {
         return new EntityTypeIcon(type, icon);
     }
 
-    @SuppressWarnings("deprecation")
     public static ItemStack getIcon(EntityType<?> type) {
         ItemStack icon = ICONS.get(type.getDescriptionId());
         if (icon != null)
@@ -84,8 +84,7 @@ public record EntityTypeIcon(EntityType<?> entity, ItemStack icon) {
         return DEFAULT_ICON;
     }
 
-    @SuppressWarnings("deprecation")
     public static List<EntityType<?>> getEntityOfType(MobCategory cat) {
-        return Registry.ENTITY_TYPE.stream().filter(type -> type.getCategory() == cat).toList();
+        return ForgeRegistries.ENTITY_TYPES.getValues().stream().filter(type -> type.getCategory() == cat).toList();
     }
 }

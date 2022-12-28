@@ -225,11 +225,11 @@ public class ColorSelector extends XrayScreen {
                     0xffffffff);
 
             GuiUtils.drawString(matrixStack, font, I18n.get("x13.mod.color.intColor") + ":",
-                    intColor.x,
-                    intColor.y - 4 - 10, 0xffffffff, 10);
+                    intColor.getX(),
+                    intColor.getY() - 4 - 10, 0xffffffff, 10);
             GuiUtils.drawString(matrixStack, font, I18n.get("x13.mod.color.hexColor") + ":",
-                    hexColor.x,
-                    hexColor.y - 4 - 10, 0xffffffff, 10);
+                    hexColor.getX(),
+                    hexColor.getY() - 4 - 10, 0xffffffff, 10);
 
             tfr.render(matrixStack, mouseX, mouseY, partialTicks);
             tfg.render(matrixStack, mouseX, mouseY, partialTicks);

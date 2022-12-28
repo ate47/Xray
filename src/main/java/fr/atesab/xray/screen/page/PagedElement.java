@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 
 public class PagedElement<E> implements GuiEventListener {
     PagedScreen<E> parentScreen;
-    private List<Widget> widgets = new ArrayList<>();
+    private List<AbstractWidget> widgets = new ArrayList<>();
     private List<GuiEventListener> guiListeners = new ArrayList<>();
 
     public PagedElement(PagedScreen<E> parent) {
@@ -25,12 +25,12 @@ public class PagedElement<E> implements GuiEventListener {
         return null;
     }
 
-    public <W extends Widget> W addSubRenderableWidget(W widget) {
+    public <W extends AbstractWidget> W addSubRenderableWidget(W widget) {
         widgets.add(widget);
         return widget;
     }
 
-    public <W extends GuiEventListener & Widget> W addSubWidget(W widget) {
+    public <W extends AbstractWidget> W addSubWidget(W widget) {
         guiListeners.add(widget);
         return addSubRenderableWidget(widget);
     }

@@ -19,7 +19,7 @@ public abstract class XraySlider extends AbstractSliderButton {
     @Override
     public void renderButton(PoseStack stack, int mx, int my, float delta) {
         Skin skin = XrayMain.getMod().getConfig().getSkin();
-        if (skin.renderSlider(this, stack, x, y, width, height)) {
+        if (skin.renderSlider(this, stack, getX(), getY(), width, height)) {
             super.renderButton(stack, mx, my, delta);
         }
     }

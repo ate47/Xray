@@ -96,8 +96,8 @@ public class XrayEntityMenu extends XrayScreen {
                 Component.literal("")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (button == 1 && mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y
-                        && mouseY <= this.y + this.height) {
+                if (button == 1 && mouseX >= this.getX() && mouseX <= this.getX() + this.width && mouseY >= this.getY()
+                        && mouseY <= this.getY() + this.height) {
                     setValue("");
                     return true;
                 }

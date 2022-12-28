@@ -143,9 +143,10 @@ public abstract class PagedScreen<E> extends XrayScreen {
     protected void init() {
         int btn = 172;
         int buttonSize = doneButton ? btn * 2 + 4 : btn;
-        lastButton.x = width / 2 - buttonSize / 2 - 26;
-        nextButton.x = width / 2 + buttonSize / 2 + 4;
-        lastButton.y = nextButton.y = height - 24;
+        lastButton.setX(width / 2 - buttonSize / 2 - 26);
+        nextButton.setX(width / 2 + buttonSize / 2 + 4);
+        nextButton.setY(height - 24);
+        lastButton.setY(height - 24);
 
         addRenderableWidget(lastButton);
         if (doneButton)

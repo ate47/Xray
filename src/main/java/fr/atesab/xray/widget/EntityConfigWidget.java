@@ -49,14 +49,17 @@ public class EntityConfigWidget extends XrayButton {
         List<ItemStack> view = stacks.limit(fit).toList();
         Minecraft client = Minecraft.getInstance();
 
-        if (mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height) {
+        int x = getX();
+        int y = getY();
+
+        if (mouseX >= x && mouseX <= x + this.width && mouseY >= y && mouseY <= y + this.height) {
             Gui.fill(matrices, x, y, x + width, y + height, 0x33ffaa00);
         } else {
             Gui.fill(matrices, x, y, x + width, y + height, 0x33ffffff);
         }
 
-        int left = this.x + this.width / 2 - view.size() * 17 / 2;
-        int top = this.y + this.height / 2 - 15 / 2;
+        int left = x + this.width / 2 - view.size() * 17 / 2;
+        int top = y + this.height / 2 - 15 / 2;
         for (ItemStack b : view) {
             client.getItemRenderer().renderGuiItem(b, left + deltaX, top + deltaY);
             left += 17;

@@ -108,7 +108,7 @@ public class KeySelector extends XrayScreen {
 
         if (isWaitingKey) {
             drawCenteredString(stack, font, Component.translatable("x13.mod.selector.key.presskey"), width / 2,
-                    keyButton.y + keyButton.getHeight() / 2 - font.lineHeight, 0xffffff00);
+                    keyButton.getY() + keyButton.getHeight() / 2 - font.lineHeight, 0xffffff00);
         }
 
         super.render(stack, mouseX, mouseY, delta);

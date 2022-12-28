@@ -31,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.LightLayer;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class LocationFormatTool implements EnumElement {
     private static final String ID_PATTERN = "([A-Za-z0-9_]+)";
@@ -82,7 +83,7 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool LOOKING_BLOCK_LIGHT = register("x13.mod.location.opt.lookingBlockLight", Items.REDSTONE_TORCH, "lookinglight",
     		(mc, player, world) -> String.valueOf(world.getBrightness(LightLayer.BLOCK, LocationUtils.getLookingFaceBlockPos(mc, player))));
     public static final LocationFormatTool LOOKINGBLOCK = register("x13.mod.location.opt.lookingBlock", Items.DIAMOND_ORE, "lookingblock",
-    		(mc, player, world) -> Registry.BLOCK.getKey(world.getBlockState(LocationUtils.getLookingBlockPos(mc)).getBlock()).getPath());
+    		(mc, player, world) -> ForgeRegistries.BLOCKS.getKey(world.getBlockState(LocationUtils.getLookingBlockPos(mc)).getBlock()).getPath());
     public static final LocationFormatTool LOOKINGBLOCK_TRANSLATE = register("x13.mod.location.opt.lookingTranslate", Items.DIAMOND_ORE, "lookingtranslate",
     		(mc, player, world) -> I18n.get(world.getBlockState(LocationUtils.getLookingBlockPos(mc))
                     .getBlock().getDescriptionId()));

@@ -12,19 +12,18 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix4f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
 
 /**
  * Advanced creative tab GuiUtils
@@ -243,7 +242,7 @@ public class GuiUtils extends GuiComponent {
     }
 
     /**
-     * Check if a {@link Widget} is hover by a location (mouse)
+     * Check if a {@link AbstractWidget} is hover by a location (mouse)
      * 
      * @param widget the widget
      * @param mouseX the mouse x location
@@ -253,7 +252,7 @@ public class GuiUtils extends GuiComponent {
      * @since 2.0
      */
     public static boolean isHover(AbstractWidget widget, int mouseX, int mouseY) {
-        return isHover(widget.x, widget.y, widget.getWidth(), widget.getHeight(), mouseX, mouseY);
+        return isHover(widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), mouseX, mouseY);
     }
 
     /**
@@ -266,7 +265,7 @@ public class GuiUtils extends GuiComponent {
      * @param mouseX the mouse x location
      * @param mouseY the mouse y location
      * @return true if the field is hover
-     * @see #isHover(Widget, int, int)
+     * @see #isHover(AbstractWidget, int, int)
      * @since 2.0
      */
     public static boolean isHover(int x, int y, int sizeX, int sizeY, int mouseX, int mouseY) {
@@ -387,8 +386,8 @@ public class GuiUtils extends GuiComponent {
      * @param height the height of the text
      * 
      * @since 2.0
-     * @see #drawCenterString(Font, String, int, int, int, int)
-     * @see #drawRightString(Font, String, int, int, int, int)
+     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawRightString(PoseStack stack, Font, String, int, int, int, int)
      */
     public static void drawString(PoseStack stack, Font font, String text, int x, int y, int color, int height) {
         font.draw(stack, text, x, y + height / 2 - font.lineHeight / 2, color);
@@ -405,8 +404,8 @@ public class GuiUtils extends GuiComponent {
      * @param color the color of the text
      * 
      * @since 2.0
-     * @see #drawCenterString(Font, String, int, int, int, int)
-     * @see #drawRightString(Font, String, int, int, int, int)
+     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawRightString(PoseStack stack, Font, String, int, int, int, int)
      */
     public static void drawString(PoseStack stack, Font font, String text, int x, int y, int color) {
         drawString(stack, font, text, x, y, color, font.lineHeight);
@@ -422,8 +421,8 @@ public class GuiUtils extends GuiComponent {
      * @param y     y text location
      * @param color text color
      * @since 2.0
-     * @see #drawCenterString(Font, String, int, int, int, int)
-     * @see #drawRightString(Font, String, int, int, int)
+     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawRightString(PoseStack stack, Font, String, int, int, int)
      */
     public static void drawCenterString(PoseStack stack, Font font, String text, int x, int y, int color) {
         drawCenterString(stack, font, text, x, y, color, font.lineHeight);
@@ -440,8 +439,8 @@ public class GuiUtils extends GuiComponent {
      * @param color  text color
      * @param height segment length
      * @since 2.0
-     * @see #drawCenterString(Font, String, int, int, int)
-     * @see #drawString(Font, String, int, int, int, int)
+     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int)
+     * @see #drawString(PoseStack stack, Font, String, int, int, int, int)
      */
     public static void drawCenterString(PoseStack stack, Font font, String text, int x, int y, int color, int height) {
         drawString(stack, font, text, x - font.width(text) / 2, y, color, height);
@@ -458,8 +457,8 @@ public class GuiUtils extends GuiComponent {
      * @param color the color of the text
      * 
      * @since 2.0
-     * @see #drawCenterString(Font, String, int, int, int)
-     * @see #drawRightString(Font, String, int, int, int, int)
+     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int)
+     * @see #drawRightString(PoseStack stack, Font, String, int, int, int, int)
      */
 
     public static void drawRightString(PoseStack stack, Font font, String text, int x, int y, int color) {
@@ -478,15 +477,15 @@ public class GuiUtils extends GuiComponent {
      * @param height the height of the text
      * 
      * @since 2.0
-     * @see #drawString(Font, String, int, int, int, int)
-     * @see #drawCenterString(Font, String, int, int, int, int)
+     * @see #drawString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int, int)
      */
     public static void drawRightString(PoseStack stack, Font font, String text, int x, int y, int color, int height) {
         drawString(stack, font, text, x - font.width(text), y, color, height);
     }
 
     /**
-     * Draw a String to the right of a {@link Widget}
+     * Draw a String to the right of a {@link AbstractWidget}
      * 
      * @param stack the stack
      * @param font  the font
@@ -495,15 +494,15 @@ public class GuiUtils extends GuiComponent {
      * @param color the color of the text
      * 
      * @since 2.0
-     * @see #drawRightString(Font, String, int, int, int)
-     * @see #drawRightString(Font, String, int, int, int, int)
+     * @see #drawRightString(PoseStack stack, Font, String, int, int, int)
+     * @see #drawRightString(PoseStack stack, Font, String, int, int, int, int)
      */
     public static void drawRightString(PoseStack stack, Font font, String text, AbstractWidget field, int color) {
-        drawRightString(stack, font, text, field.x, field.y, color, field.getHeight());
+        drawRightString(stack, font, text, field.getX(), field.getY(), color, field.getHeight());
     }
 
     /**
-     * Draw a String to the right of a {@link Widget} with offsets
+     * Draw a String to the right of a {@link AbstractWidget} with offsets
      * 
      * @param stack   the stack
      * @param font    the font
@@ -514,12 +513,12 @@ public class GuiUtils extends GuiComponent {
      * @param offsetY the y offset
      * 
      * @since 2.0
-     * @see #drawRightString(Font, String, Widget, int)
+     * @see #drawRightString(PoseStack stack, Font, String, AbstractWidget, int)
      */
     public static void drawRightString(PoseStack stack,
             Font font, String text, AbstractWidget field, int color, int offsetX,
             int offsetY) {
-        drawRightString(stack, font, text, field.x + offsetX, field.y + offsetY, color, field.getHeight());
+        drawRightString(stack, font, text, field.getX() + offsetX, field.getY() + offsetY, color, field.getHeight());
     }
 
     /**
@@ -557,7 +556,7 @@ public class GuiUtils extends GuiComponent {
      * @param y      y tl location
      * @param width  box width
      * @param height box height
-     * @param z      zlevel of the screen
+     * @param zLevel zlevel of the screen
      * 
      * @since 2.0
      */
