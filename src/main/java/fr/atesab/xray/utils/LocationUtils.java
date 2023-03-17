@@ -21,9 +21,6 @@ public class LocationUtils {
 		HitResult hitResult = mc.crosshairTarget;
 		if (hitResult instanceof BlockHitResult bir) {
 			return bir.getBlockPos();
-		} else if (hitResult != null) {
-				Vec3d pos = hitResult.getPos();
-			return new BlockPos(pos.x, pos.y, pos.z);
 		} else {
 			return new BlockPos(0, 0, 0);
 		}
@@ -42,7 +39,7 @@ public class LocationUtils {
 		} else if (pos.z == (int)pos.z) {
 			return getLookingBlockPos(mc).add(0, 0, player.getZ() < pos.z ? -1 : 1);
 		} else {
-			return new BlockPos(pos.x, pos.y, pos.z);
+			return getLookingBlockPos(mc);
 		}
 	}
 	

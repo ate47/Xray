@@ -249,7 +249,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
         String title = getTitle().getString();
         if (maxPage != 1)
             title += " (" + (page + 1) + "/" + maxPage + ")";
-        drawCenteredText(stack, textRenderer, title, width / 2, 11 - textRenderer.fontHeight / 2, 0xffffffff);
+        drawCenteredTextWithShadow(stack, textRenderer, title, width / 2, 11 - textRenderer.fontHeight / 2, 0xffffffff);
         super.render(stack, mouseX, mouseY, delta);
     }
 
@@ -313,12 +313,6 @@ public abstract class PagedScreen<E> extends XrayScreen {
             return false;
         });
         super.mouseMoved(mouseX, mouseY);
-    }
-
-    @Override
-    public boolean changeFocus(boolean shiftNotDown) {
-        applyToAllElement((element, deltaY) -> element.changeFocus(shiftNotDown));
-        return false;
     }
 
     @Override

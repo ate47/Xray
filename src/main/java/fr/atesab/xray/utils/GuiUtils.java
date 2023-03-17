@@ -285,9 +285,10 @@ public class GuiUtils extends DrawableHelper {
     public static void drawItemStack(ItemRenderer itemRender, ItemStack itemstack, int x, int y) {
         if (itemstack == null || itemstack.isEmpty())
             return;
+        MatrixStack matrixStack = new MatrixStack();
         RenderSystem.enableDepthTest();
-        itemRender.renderGuiItemIcon(itemstack, x, y);
-        itemRender.renderGuiItemOverlay(MinecraftClient.getInstance().textRenderer, itemstack, x, y, null);
+        itemRender.renderGuiItemIcon(matrixStack, itemstack, x, y);
+        itemRender.renderGuiItemOverlay(matrixStack, MinecraftClient.getInstance().textRenderer, itemstack, x, y, null);
         RenderSystem.disableBlend();
     }
 
@@ -618,7 +619,6 @@ public class GuiUtils extends DrawableHelper {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA,
@@ -638,7 +638,6 @@ public class GuiUtils extends DrawableHelper {
         fillGradient(mat, bufferbuilder, x - 3, y + height + 2, x + width + 3, y + height + 3, z, 0x5028007F, 0x5028007F);
         tessellator.draw();
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
     }
 
     /**
@@ -699,7 +698,6 @@ public class GuiUtils extends DrawableHelper {
         float blueRightBottom = (float) (rightBottomColor & 255) / 255.0F;
         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA,
@@ -717,7 +715,6 @@ public class GuiUtils extends DrawableHelper {
                 .color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom).next();
         BufferRenderer.drawWithGlobalProgram(bufferbuilder.end());
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
     }
 
     /**

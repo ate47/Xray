@@ -48,7 +48,7 @@ public class ColorSelectorWidget extends PressableWidget {
 
         Text message = getMessage();
         TextRenderer textRenderer = client.textRenderer;
-        drawCenteredText(stack, textRenderer, message, getX() + width / 2, getY() + height / 2 - textRenderer.fontHeight / 2,
+        drawCenteredTextWithShadow(stack, textRenderer, message, getX() + width / 2, getY() + height / 2 - textRenderer.fontHeight / 2,
                 0xFFFFFFFF);
     }
 

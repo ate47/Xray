@@ -99,11 +99,11 @@ public class KeySelector extends XrayScreen {
     @Override
     public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
-        drawCenteredText(stack, textRenderer, getTitle(), width / 2, height / 2 - 30 - textRenderer.fontHeight,
+        drawCenteredTextWithShadow(stack, textRenderer, getTitle(), width / 2, height / 2 - 30 - textRenderer.fontHeight,
                 0xffffffff);
 
         if (isWaitingKey) {
-            drawCenteredText(stack, textRenderer, Text.translatable("x13.mod.selector.key.presskey"), width / 2,
+            drawCenteredTextWithShadow(stack, textRenderer, Text.translatable("x13.mod.selector.key.presskey"), width / 2,
                     keyButton.getY() + keyButton.getHeight() / 2 - textRenderer.fontHeight, 0xffffff00);
         }
 

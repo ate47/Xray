@@ -56,7 +56,7 @@ public class LongItemWidget extends PressableWidget {
 
         int deltaH = (getHeight() - 16);
 
-        renderer.renderGuiItemIcon(itemStack, getX() + deltaH / 2 + deltaX, getY() + deltaH / 2 + deltaY);
+        renderer.renderGuiItemIcon(new MatrixStack(), itemStack, getX() + deltaH / 2 + deltaX, getY() + deltaH / 2 + deltaY);
         int textColor = this.active ? 16777215 : 10526880;
         textRenderer.draw(stack,
                 message, getX() + deltaH + 16 + 2, getY() + getHeight() / 2f - textRenderer.fontHeight / 2f,

@@ -52,7 +52,7 @@ public class MenuWidget extends PressableWidget {
         float scaleX = getWidth() * 3 / 4f / 16f;
         float scaleY = getHeight() * 3 / 4f / 16f;
         modelStack.scale(scaleX, scaleY, 1);
-        renderer.renderGuiItemIcon(itemStack, -8, -8);
+        renderer.renderGuiItemIcon(new MatrixStack(), itemStack, -8, -8);
         modelStack.scale(1 / scaleX, 1 / scaleY, 1);
         modelStack.translate(-stackCenterX, -stackCenterY, 0);
         RenderSystem.applyModelViewMatrix();
@@ -62,7 +62,7 @@ public class MenuWidget extends PressableWidget {
         float scale = getHeight() * 1 / 7f / textRenderer.fontHeight;
         stack.scale(scale, scale, 1);
         int textColor = this.active ? 16777215 : 10526880;
-        drawCenteredText(stack, textRenderer, message, 0, -textRenderer.fontHeight, textColor);
+        drawCenteredTextWithShadow(stack, textRenderer, message, 0, -textRenderer.fontHeight, textColor);
         stack.scale(1 / scale, 1 / scale, 1);
         stack.translate(-centerX, -getY() - getHeight(), 0);
         stack.pop();

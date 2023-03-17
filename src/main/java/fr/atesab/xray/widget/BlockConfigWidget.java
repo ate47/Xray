@@ -57,7 +57,7 @@ public class BlockConfigWidget extends XrayButton {
         int left = this.getX() + this.width / 2 - view.size() * 17 / 2;
         int top = this.getY() + this.height / 2 - 15 / 2;
         for (Block b : view) {
-            client.getItemRenderer().renderGuiItemIcon(new ItemStack(b), left + deltaX, top + deltaY);
+            client.getItemRenderer().renderGuiItemIcon(new MatrixStack(), new ItemStack(b), left + deltaX, top + deltaY);
             left += 17;
         }
     }

@@ -264,7 +264,7 @@ public class ColorSelector extends XrayScreen {
             GuiUtils.drawRect(matrixStack, x, y, x + 19, y + 19, 0xff000000 | color.getFireworkColor());
             if (GuiUtils.isHover(x, y, 19, 19, mouseX, mouseY)) {
                 show = () -> GuiUtils.drawTextBox(matrixStack, textRenderer, mouseX, mouseY, width, height,
-                        getZOffset(),
+                        0,
                         I18n.translate("item.minecraft.firework_star." + color.getName()));
             }
             GuiUtils.drawItemStack(itemRenderer, new ItemStack(DyeItem.byColor(color)), x + (19 - 16) / 2,
@@ -277,7 +277,7 @@ public class ColorSelector extends XrayScreen {
         GuiUtils.drawItemStack(itemRenderer, updatePicker(), width / 2 - 200 + 38 / 2 - 16 / 2,
                 height / 2 - 100 + 20 / 2 - 16 / 2 - getShiftY());
         if (GuiUtils.isHover(width / 2 - 200, height / 2 - 100 - getShiftY(), 38, 20, mouseX, mouseY)) {
-            show = () -> GuiUtils.drawTextBox(matrixStack, textRenderer, mouseX, mouseY, width, height, getZOffset(),
+            show = () -> GuiUtils.drawTextBox(matrixStack, textRenderer, mouseX, mouseY, width, height, 0,
                     I18n.translate("x13.mod.color.random"));
         }
 
@@ -295,9 +295,7 @@ public class ColorSelector extends XrayScreen {
         }
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        setZOffset(getZOffset() + 100);
         show.run();
-        setZOffset(getZOffset() - 100);
     }
 
     private void complete() {

@@ -81,10 +81,10 @@ public class XrayMenu extends XrayScreen {
         stack.push();
         stack.translate(width / 2f, height / 2f - 70, 0);
         stack.scale(4, 4, 1);
-        drawCenteredText(stack, client.textRenderer, XrayMain.MOD_NAME, 0, -client.textRenderer.fontHeight,
+        drawCenteredTextWithShadow(stack, client.textRenderer, XrayMain.MOD_NAME, 0, -client.textRenderer.fontHeight,
                 0xffffff33);
         stack.pop();
-        drawCenteredText(stack, client.textRenderer, Text.translatable("x13.mod.by",
+        drawCenteredTextWithShadow(stack, client.textRenderer, Text.translatable("x13.mod.by",
                         String.join(", ", XrayMain.MOD_AUTHORS)),
                 width / 2, height / 2 - 60, 0xffaaaaaa);
         int size = 400 / 5;
