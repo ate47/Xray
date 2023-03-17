@@ -167,7 +167,7 @@ public class XrayBlockMenu extends Screen {
             }
 
             fill(matrixStack, x, y, x + 18, y + 18, color);
-            client.getItemRenderer().renderGuiItemIcon(stack, x + 1, y + 1);
+            client.getItemRenderer().renderGuiItemIcon(new MatrixStack(), stack, x + 1, y + 1);
         }
         // add [+] button
         int x = left + (i % elementsX) * 18;

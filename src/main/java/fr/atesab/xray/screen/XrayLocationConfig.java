@@ -106,7 +106,7 @@ public class XrayLocationConfig extends XrayScreen {
     @Override
     public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
-        drawCenteredText(stack, textRenderer, Text.translatable("x13.mod.location"), width / 2,
+        drawCenteredTextWithShadow(stack, textRenderer, Text.translatable("x13.mod.location"), width / 2,
                 height / 2 - 52 - textRenderer.fontHeight, 0xffffffff);
         GuiUtils.drawRightString(stack, textRenderer, I18n.translate("x13.mod.location.format") + ": ", format,
                 0xffffffff);

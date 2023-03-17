@@ -347,7 +347,6 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         // RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.disableTexture();
 		if (config.getEspConfigs().stream().noneMatch(ESPConfig::isEnabled)) {
 			return;
 		}
@@ -362,7 +361,6 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		GL11.glLineWidth(config.getEspLineWidth());
 		RenderSystem.depthMask(false);
 		RenderSystem.depthFunc(GL11.GL_NEVER);
-		RenderSystem.disableTexture();
 
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder buffer = tessellator.getBuffer();
@@ -481,7 +479,6 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         tessellator.draw();
         stack.pop();
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
         RenderSystem.applyModelViewMatrix();
         RenderSystem.setShaderColor(1, 1, 1, 1);
 		RenderSystem.enableDepthTest();

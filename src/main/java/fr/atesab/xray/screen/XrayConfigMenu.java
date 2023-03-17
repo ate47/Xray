@@ -117,7 +117,7 @@ public class XrayConfigMenu extends XrayScreen {
     @Override
     public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack);
-        drawCenteredText(stack, textRenderer, title, width / 2,
+        drawCenteredTextWithShadow(stack, textRenderer, title, width / 2,
                 height / 2 - 52 - textRenderer.fontHeight, 0xffffffff);
         super.render(stack, mouseX, mouseY, delta);
     }

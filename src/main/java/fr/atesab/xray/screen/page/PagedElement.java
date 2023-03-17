@@ -110,18 +110,20 @@ public class PagedElement<E> implements Element {
     }
 
     @Override
-    public boolean changeFocus(boolean shiftNotDown) {
-        for (Element w : guiListeners)
-            if (w.changeFocus(shiftNotDown))
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        for (Element guiEventListener : guiListeners)
+            if (guiEventListener.isMouseOver(mouseX, mouseY))
                 return true;
         return false;
     }
 
     @Override
-    public boolean isMouseOver(double mouseX, double mouseY) {
-        for (Element guiEventListener : guiListeners)
-            if (guiEventListener.isMouseOver(mouseX, mouseY))
-                return true;
+    public void setFocused(boolean focused) {
+
+    }
+
+    @Override
+    public boolean isFocused() {
         return false;
     }
 
