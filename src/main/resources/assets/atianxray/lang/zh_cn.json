@@ -63,7 +63,7 @@
   "x13.mod.location.opt.fz": "地面位置 z",
   "x13.mod.location.opt.name": "玩家名字",
   "x13.mod.location.opt.fps": "FPS",
-  "x13.mod.location.opt.fps.debug": "FPS debug",
+  "x13.mod.location.opt.fps.debug": "FPS调试",
   "x13.mod.location.opt.biome": "生物群系",
   "x13.mod.location.opt.biomeCategory": "生物群系类型",
   "x13.mod.location.opt.biomeTranslate": "生物群系（已翻译）",
