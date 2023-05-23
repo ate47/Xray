@@ -283,12 +283,12 @@ public class GuiUtils extends GuiComponent {
      * 
      * @since 2.1.1
      */
-    public static void drawItemStack(ItemRenderer itemRender, ItemStack itemstack, int x, int y) {
+    public static void drawItemStack(PoseStack matrixStack, ItemRenderer itemRender, ItemStack itemstack, int x, int y) {
         if (itemstack == null || itemstack.isEmpty())
             return;
         RenderSystem.enableDepthTest();
-        itemRender.renderAndDecorateItem(itemstack, x, y);
-        itemRender.renderGuiItemDecorations(Minecraft.getInstance().font, itemstack, x, y, null);
+        itemRender.renderAndDecorateItem(matrixStack, itemstack, x, y);
+        itemRender.renderGuiItemDecorations(matrixStack, Minecraft.getInstance().font, itemstack, x, y, null);
         RenderSystem.disableBlend();
     }
 
@@ -602,18 +602,16 @@ public class GuiUtils extends GuiComponent {
      * @param y            the y location
      * @param parentWidth  the parent width
      * @param parentHeight the parent height
-     * @param zLevel       the zLevel of the screen
      * @param args         the lines to show
      * 
      * @since 2.1
      */
-    public static void drawTextBox(PoseStack matrixStack, Font font, int x, int y, int parentWidth, int parentHeight,
-            float zLevel, String... args) {
+    public static void drawTextBox(PoseStack matrixStack, Font font, int x, int y, int parentWidth, int parentHeight, String... args) {
         List<String> text = Arrays.asList(args);
         int width = text.isEmpty() ? 0 : text.stream().mapToInt(font::width).max().getAsInt();
         int height = text.size() * (1 + font.lineHeight);
         Tuple<Integer, Integer> pos = getRelativeBoxPos(x, y, width, height, parentWidth, parentHeight);
-        drawBox(matrixStack, pos.getA(), pos.getB(), width, height, zLevel);
+        drawBox(matrixStack, pos.getA(), pos.getB(), width, height);
         text.forEach(l -> {
             drawString(matrixStack, font, l, pos.getA(), pos.getB(), 0xffffffff);
             pos.setB(pos.getB() + (1 + font.lineHeight));
@@ -628,16 +626,14 @@ public class GuiUtils extends GuiComponent {
      * @param y      y tl location
      * @param width  box width
      * @param height box height
-     * @param zLevel zlevel of the screen
-     * 
+     *
      * @since 2.0
      */
-    public static void drawBox(PoseStack p, int x, int y, int width, int height, float zLevel) {
+    public static void drawBox(PoseStack p, int x, int y, int width, int height) {
         // -267386864 0xF0100010 | 1347420415 0x505000FF | 1344798847 0x5028007F
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuilder();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
@@ -645,7 +641,7 @@ public class GuiUtils extends GuiComponent {
                 GlStateManager.DestFactor.ZERO);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f mat = p.last().pose();
-        int z = (int) zLevel - 50;
+        int z = -50;
         fillGradient(mat, bufferbuilder, x - 3, y - 4, x + width + 3, y - 3, z, 0xF0100010, 0xF0100010);
         fillGradient(mat, bufferbuilder, x - 3, y + height + 3, x + width + 3, y + height + 4, z, 0xF0100010, 0xF0100010);
         fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y + height + 3, z, 0xF0100010, 0xF0100010);
@@ -657,7 +653,6 @@ public class GuiUtils extends GuiComponent {
         fillGradient(mat, bufferbuilder, x - 3, y + height + 2, x + width + 3, y + height + 3, z, 0x5028007F, 0x5028007F);
         tessellator.end();
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
     }
 
     /**
@@ -718,7 +713,6 @@ public class GuiUtils extends GuiComponent {
         float blueRightBottom = (float) (rightBottomColor & 255) / 255.0F;
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
@@ -736,7 +730,6 @@ public class GuiUtils extends GuiComponent {
                 .color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom).endVertex();
         BufferUploader.draw(bufferbuilder.end());
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
     }
 
     /**

@@ -5,11 +5,13 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 
 public class PagedElement<E> implements GuiEventListener {
     PagedScreen<E> parentScreen;
+    private boolean focus;
     private List<AbstractWidget> widgets = new ArrayList<>();
     private List<GuiEventListener> guiListeners = new ArrayList<>();
 
@@ -111,19 +113,21 @@ public class PagedElement<E> implements GuiEventListener {
     }
 
     @Override
-    public boolean changeFocus(boolean shiftNotDown) {
-        for (GuiEventListener w : guiListeners)
-            if (w.changeFocus(shiftNotDown))
-                return true;
-        return false;
-    }
-
-    @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         for (GuiEventListener guiEventListener : guiListeners)
             if (guiEventListener.isMouseOver(mouseX, mouseY))
                 return true;
         return false;
+    }
+
+    @Override
+    public void setFocused(boolean focus) {
+        this.focus = focus;
+    }
+
+    @Override
+    public boolean isFocused() {
+        return focus;
     }
 
     @Override

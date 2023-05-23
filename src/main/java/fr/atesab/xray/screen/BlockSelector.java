@@ -148,7 +148,7 @@ public abstract class BlockSelector extends XrayScreen {
             }
 
             fill(matrixStack, x, y, x + 18, y + 18, color);
-            getMinecraft().getItemRenderer().renderGuiItem(stack, x + 1, y + 1);
+            getMinecraft().getItemRenderer().renderGuiItem(matrixStack, stack, x + 1, y + 1);
         }
         super.render(matrixStack, mouseX, mouseY, partialTick);
 

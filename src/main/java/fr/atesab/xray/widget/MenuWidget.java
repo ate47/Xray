@@ -27,7 +27,7 @@ public class MenuWidget extends AbstractButton {
     }
 
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
         Minecraft client = Minecraft.getInstance();
         boolean hovered = isHoveredOrFocused();
         int centerX = getX() + width / 2;
@@ -52,7 +52,7 @@ public class MenuWidget extends AbstractButton {
         float scaleX = getWidth() * 3 / 4f / 16f;
         float scaleY = getHeight() * 3 / 4f / 16f;
         modelStack.scale(scaleX, scaleY, 1);
-        renderer.renderGuiItem(itemStack, -8, -8);
+        renderer.renderGuiItem(new PoseStack(), itemStack, -8, -8);
         modelStack.scale(1 / scaleX, 1 / scaleY, 1);
         modelStack.translate(-stackCenterX, -stackCenterY, 0);
         RenderSystem.applyModelViewMatrix();

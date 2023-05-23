@@ -13,6 +13,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.screen.XrayScreen;
 import fr.atesab.xray.utils.TagOnWriteList;
 import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -315,11 +316,6 @@ public abstract class PagedScreen<E> extends XrayScreen {
         super.mouseMoved(mouseX, mouseY);
     }
 
-    @Override
-    public boolean changeFocus(boolean shiftNotDown) {
-        applyToAllElement((element, deltaY) -> element.changeFocus(shiftNotDown));
-        return false;
-    }
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {

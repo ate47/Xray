@@ -209,7 +209,7 @@ public class XrayEntityMenu extends XrayScreen {
             }
 
             fill(matrixStack, x, y, x + 18, y + 18, color);
-            getMinecraft().getItemRenderer().renderGuiItem(stack, x + 1, y + 1);
+            getMinecraft().getItemRenderer().renderGuiItem(matrixStack, stack, x + 1, y + 1);
         }
         // add [+] button
         int x = left + (i % elementsX) * 18;

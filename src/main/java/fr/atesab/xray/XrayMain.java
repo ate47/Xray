@@ -391,7 +391,6 @@ public class XrayMain {
 		GL11.glLineWidth(config.getEspLineWidth());
 		RenderSystem.depthMask(false);
 		RenderSystem.depthFunc(GL11.GL_NEVER);
-		RenderSystem.disableTexture();
 
 		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder buffer = tessellator.getBuilder();
@@ -512,7 +511,6 @@ public class XrayMain {
 		tessellator.end();
 		stack.popPose();
 		RenderSystem.disableBlend();
-		RenderSystem.enableTexture();
 		RenderSystem.applyModelViewMatrix();
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 		RenderSystem.enableDepthTest();

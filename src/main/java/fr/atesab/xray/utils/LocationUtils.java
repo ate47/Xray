@@ -23,7 +23,7 @@ public class LocationUtils {
 			return bir.getBlockPos();
 		} else if (hitResult != null) {
 			Vec3 pos = hitResult.getLocation();
-			return new BlockPos(pos.x, pos.y, pos.z);
+			return new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
 		} else {
 			return new BlockPos(0, 0, 0);
 		}
@@ -42,7 +42,7 @@ public class LocationUtils {
 		} else if (pos.z == (int)pos.z) {
 			return getLookingBlockPos(mc).offset(0, 0, player.getZ() < pos.z ? -1 : 1);
 		} else {
-			return new BlockPos(pos.x, pos.y, pos.z);
+			return new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
 		}
 	}
 	

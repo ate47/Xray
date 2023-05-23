@@ -35,7 +35,7 @@ public class LongItemWidget extends AbstractButton {
 
 
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
         Minecraft client = Minecraft.getInstance();
         boolean hovered = isHoveredOrFocused();
         int color;
@@ -55,7 +55,7 @@ public class LongItemWidget extends AbstractButton {
 
         int deltaH = (getHeight() - 16);
 
-        renderer.renderGuiItem(itemStack, x + deltaH / 2 + deltaX, y + deltaH / 2 + deltaY);
+        renderer.renderGuiItem(new PoseStack(), itemStack, x + deltaH / 2 + deltaX, y + deltaH / 2 + deltaY);
         font.draw(stack,
                 message, x + deltaH + 16 + 2, y + getHeight() / 2 - font.lineHeight / 2,
                 packedFGColor);

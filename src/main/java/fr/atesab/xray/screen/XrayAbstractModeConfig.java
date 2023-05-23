@@ -44,7 +44,7 @@ public class XrayAbstractModeConfig extends XrayScreen {
         nameBox = new EditBox(font, width / 2 - 98, height / 2 - 22, 196, 16, Component.literal(""));
         nameBox.setMaxLength(128);
         nameBox.setValue(cfg.getModeName());
-        nameBox.setFocus(true);
+        nameBox.setFocused(true);
 
         addRenderableWidget(new ColorSelectorWidget(width / 2 - 100, height / 2, 200, 20,
                 Component.translatable("x13.mod.color.title"), minecraft, this, c -> color = c, () -> color));

@@ -23,16 +23,16 @@ public class XrayScreen extends Screen {
 
 
     @Override
-    public void renderBackground(PoseStack stack, int v) {
+    public void renderBackground(PoseStack stack) {
         if (minecraft.level != null) {
-            super.renderBackground(stack, v);
+            super.renderBackground(stack);
         } else {
             Skin skin = XrayMain.getMod().getConfig().getSkin();
             Integer bg = skin.getBackgroundColor();
             if (bg != null) {
                 GuiUtils.drawRect(stack, 0, 0, width, height, bg);
             } else {
-                super.renderBackground(stack, v);
+                super.renderBackground(stack);
             }
         }
     }

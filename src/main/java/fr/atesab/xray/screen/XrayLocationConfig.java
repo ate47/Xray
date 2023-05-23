@@ -45,7 +45,7 @@ public class XrayLocationConfig extends XrayScreen {
         format.setMaxLength(256);
         format.setValue(mod.getConfig().getLocationConfig().getFormat());
         format.setResponder(mod.getConfig().getLocationConfig()::setFormat);
-        format.setFocus(true);
+        format.setFocused(true);
         if (position != 0) {
             format.setCursorPosition(position);
             position = 0;

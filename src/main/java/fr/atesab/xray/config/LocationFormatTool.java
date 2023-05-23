@@ -78,9 +78,9 @@ public class LocationFormatTool implements EnumElement {
     public static final LocationFormatTool PLAYER_CHUNK_Z = register("x13.mod.location.opt.chunkZ", Items.BOOK, "cz",
     		(mc, player, world) -> String.valueOf(player.chunkPosition().z));
     public static final LocationFormatTool BLOCK_LIGHT = register("x13.mod.location.opt.blockLight", Items.TORCH, "blocklight",
-    		(mc, player, world) -> String.valueOf(world.getBrightness(LightLayer.BLOCK,player.blockPosition().offset(0.5,0.5,0.5))));
+    		(mc, player, world) -> String.valueOf(world.getBrightness(LightLayer.BLOCK,player.blockPosition())));
     public static final LocationFormatTool SKY_LIGHT = register("x13.mod.location.opt.skyLight", Items.ELYTRA, "skylight",
-    		(mc, player, world) -> String.valueOf(world.getBrightness(LightLayer.SKY,player.blockPosition().offset(0.5,0.5,0.5))));
+    		(mc, player, world) -> String.valueOf(world.getBrightness(LightLayer.SKY,player.blockPosition())));
     public static final LocationFormatTool LOOKING_BLOCK_LIGHT = register("x13.mod.location.opt.lookingBlockLight", Items.REDSTONE_TORCH, "lookinglight",
     		(mc, player, world) -> String.valueOf(world.getBrightness(LightLayer.BLOCK, LocationUtils.getLookingFaceBlockPos(mc, player))));
     public static final LocationFormatTool LOOKINGBLOCK = register("x13.mod.location.opt.lookingBlock", Items.DIAMOND_ORE, "lookingblock",

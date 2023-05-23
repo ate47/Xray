@@ -36,7 +36,7 @@ public class ColorSelectorWidget extends AbstractButton {
     }
 
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
         boolean hovered = isHoveredOrFocused();
         int color = getter.getAsInt() & 0xFFFFFF;
         if (hovered) {

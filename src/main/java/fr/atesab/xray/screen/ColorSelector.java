@@ -252,20 +252,20 @@ public class ColorSelector extends XrayScreen {
             int y = height / 2 - 76 + (i / 2) * 19 - getShiftY();
             GuiUtils.drawRect(matrixStack, x, y, x + 19, y + 19, 0xff000000 | color.getFireworkColor());
             if (GuiUtils.isHover(x, y, 19, 19, mouseX, mouseY)) {
-                show = () -> GuiUtils.drawTextBox(matrixStack, font, mouseX, mouseY, width, height, getBlitOffset(),
+                show = () -> GuiUtils.drawTextBox(matrixStack, font, mouseX, mouseY, width, height,
                         I18n.get("item.minecraft.firework_star." + color.getName()));
             }
-            GuiUtils.drawItemStack(itemRenderer, new ItemStack(DyeItem.byColor(color)), x + (19 - 16) / 2,
+            GuiUtils.drawItemStack(matrixStack, itemRenderer, new ItemStack(DyeItem.byColor(color)), x + (19 - 16) / 2,
                     y + (19 - 16) / 2);
         }
 
         // random
         GuiUtils.drawHoverableRect(matrixStack, width / 2 - 200, height / 2 - 100 - getShiftY(), width / 2 - 162, height / 2 - 80 - getShiftY(),
                 0xFF444444, GuiUtils.getTimeColor(RANDOM_PICKER_FREQUENCY, 50, 15), mouseX, mouseY);
-        GuiUtils.drawItemStack(itemRenderer, updatePicker(), width / 2 - 200 + 38 / 2 - 16 / 2,
+        GuiUtils.drawItemStack(matrixStack, itemRenderer, updatePicker(), width / 2 - 200 + 38 / 2 - 16 / 2,
                 height / 2 - 100 + 20 / 2 - 16 / 2 - getShiftY());
         if (GuiUtils.isHover(width / 2 - 200, height / 2 - 100 - getShiftY(), 38, 20, mouseX, mouseY)) {
-            show = () -> GuiUtils.drawTextBox(matrixStack, font, mouseX, mouseY, width, height, getBlitOffset(),
+            show = () -> GuiUtils.drawTextBox(matrixStack, font, mouseX, mouseY, width, height,
                     I18n.get("x13.mod.color.random"));
         }
 
@@ -285,9 +285,7 @@ public class ColorSelector extends XrayScreen {
         }
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        setBlitOffset(getBlitOffset() + 100);
         show.run();
-        setBlitOffset(getBlitOffset() - 100);
     }
 
     private void complete() {

@@ -41,7 +41,7 @@ public class BlockConfigWidget extends XrayButton {
     }
 
     @Override
-    public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderWidget(PoseStack matrices, int mouseX, int mouseY, float delta) {
         int fit = (width - 2) / 17;
 
         List<Block> blocks = cfg.getBlocks().getObjects();
@@ -61,7 +61,7 @@ public class BlockConfigWidget extends XrayButton {
         int left = x + this.width / 2 - view.size() * 17 / 2;
         int top = y + this.height / 2 - 15 / 2;
         for (Block b : view) {
-            client.getItemRenderer().renderGuiItem(new ItemStack(b), left + deltaX, top + deltaY);
+            client.getItemRenderer().renderGuiItem(new PoseStack(), new ItemStack(b), left + deltaX, top + deltaY);
             left += 17;
         }
     }

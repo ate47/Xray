@@ -41,7 +41,7 @@ public class EntityConfigWidget extends XrayButton {
     }
 
     @Override
-    public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderWidget(PoseStack matrices, int mouseX, int mouseY, float delta) {
         int fit = (width - 2) / 17;
 
         Stream<ItemStack> stacks = Stream.concat(cfg.getEntities().getIcons(), cfg.getBlockEntities().getIcons());
@@ -61,7 +61,7 @@ public class EntityConfigWidget extends XrayButton {
         int left = x + this.width / 2 - view.size() * 17 / 2;
         int top = y + this.height / 2 - 15 / 2;
         for (ItemStack b : view) {
-            client.getItemRenderer().renderGuiItem(b, left + deltaX, top + deltaY);
+            client.getItemRenderer().renderGuiItem(new PoseStack(), b, left + deltaX, top + deltaY);
             left += 17;
         }
     }
