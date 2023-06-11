@@ -1,16 +1,16 @@
 package fr.atesab.xray.screen.page;
 
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.util.math.MatrixStack;
-
 public class PagedElement<E> implements Element {
     PagedScreen<E> parentScreen;
-    private List<Drawable> widgets = new ArrayList<>();
-    private List<Element> guiListeners = new ArrayList<>();
+    private final List<Drawable> widgets = new ArrayList<>();
+    private final List<Element> guiListeners = new ArrayList<>();
 
     public PagedElement(PagedScreen<E> parent) {
         this.parentScreen = parent;
@@ -48,8 +48,8 @@ public class PagedElement<E> implements Element {
     public void init() {
     }
 
-    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
-        widgets.forEach(w -> w.render(stack, mouseX, mouseY, delta));
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        widgets.forEach(w -> w.render(context, mouseX, mouseY, delta));
     }
 
     public void tick() {
@@ -81,7 +81,7 @@ public class PagedElement<E> implements Element {
 
     @Override
     public boolean mouseDragged(double startMouseX, double startMouseY, int button, double endMouseX,
-            double endMouseY) {
+                                double endMouseY) {
         for (Element w : guiListeners)
             if (w.mouseDragged(startMouseX, startMouseY, button, endMouseX, endMouseY))
                 return true;

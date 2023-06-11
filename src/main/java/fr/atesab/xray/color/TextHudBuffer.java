@@ -3,6 +3,7 @@ package fr.atesab.xray.color;
 import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.utils.GuiUtils;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -41,13 +42,13 @@ public class TextHudBuffer {
     /**
      * draw the buffer
      *
-     * @param stack  stack
+     * @param context  context
      * @param screenWidth  screen width
      * @param screenHeight screen height
      * @param cfg    location config
      * @param render text renderer
      */
-    public void draw(MatrixStack stack, int screenWidth, int screenHeight, LocationConfig cfg, TextRenderer render) {
+    public void draw(DrawContext context, int screenWidth, int screenHeight, LocationConfig cfg, TextRenderer render) {
         if (lines.isEmpty()) {
             return; // ignore
         }
@@ -74,11 +75,11 @@ public class TextHudBuffer {
             // TODO: add color selector in the location config?
             switch (alignX) {
                 case LEFT ->
-                        GuiUtils.drawTextComponentScaled(stack, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
+                        GuiUtils.drawTextComponentScaled(context, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
                 case CENTER ->
-                        GuiUtils.drawCenteredTextComponentScaled(stack, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
+                        GuiUtils.drawCenteredTextComponentScaled(context, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
                 case RIGHT ->
-                        GuiUtils.drawRightTextComponentScaled(stack, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
+                        GuiUtils.drawRightTextComponentScaled(context, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
             }
         }
     }

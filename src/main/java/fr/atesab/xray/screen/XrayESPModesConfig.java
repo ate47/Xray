@@ -10,6 +10,7 @@ import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.EntityConfigWidget;
 import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
 
 public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
     private class PagedESPMode extends PagedElement<ESPConfig> {
-        private ESPConfig cfg;
+        private final ESPConfig cfg;
         private boolean textHover = false;
         private EntityConfigWidget entities;
 
@@ -81,14 +82,14 @@ public abstract class XrayESPModesConfig extends PagedScreen<ESPConfig> {
         }
 
         @Override
-        public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
+        public void render(DrawContext context, int mouseX, int mouseY, float delta) {
             textHover = XrayUtils.isHover(mouseX, mouseY, width / 2 - 200, 0, width / 2 - 125 - 4, 20);
-            fill(stack, width / 2 - 200, 0, width / 2 - 125 - 4, 20, textHover ? 0x33ffaa00 : 0x33ffffff);
+            context.fill(width / 2 - 200, 0, width / 2 - 125 - 4, 20, textHover ? 0x33ffaa00 : 0x33ffffff);
             int w = textRenderer.getWidth(cfg.getModeName());
-            textRenderer.draw(stack, cfg.getModeName(), width / 2 - (200 - 125 - 4) / 2 - 125 - 4 - w / 2,
+            context.drawText(textRenderer, cfg.getModeName(), width / 2 - (200 - 125 - 4) / 2 - 125 - 4 - w / 2,
                     10 - textRenderer.fontHeight / 2,
-                    cfg.getColor());
-            super.render(stack, mouseX, mouseY, delta);
+                    cfg.getColor(), false);
+            super.render(context, mouseX, mouseY, delta);
         }
 
         @Override

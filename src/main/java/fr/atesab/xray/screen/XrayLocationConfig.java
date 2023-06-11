@@ -7,6 +7,7 @@ import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -104,14 +105,14 @@ public class XrayLocationConfig extends XrayScreen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
-        drawCenteredTextWithShadow(stack, textRenderer, Text.translatable("x13.mod.location"), width / 2,
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context);
+        context.drawCenteredTextWithShadow(textRenderer, Text.translatable("x13.mod.location"), width / 2,
                 height / 2 - 52 - textRenderer.fontHeight, 0xffffffff);
-        GuiUtils.drawRightString(stack, textRenderer, I18n.translate("x13.mod.location.format") + ": ", format,
+        GuiUtils.drawRightString(context, textRenderer, I18n.translate("x13.mod.location.format") + ": ", format,
                 0xffffffff);
-        format.render(stack, mouseX, mouseY, delta);
-        super.render(stack, mouseX, mouseY, delta);
+        format.render(context, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     protected void save() {

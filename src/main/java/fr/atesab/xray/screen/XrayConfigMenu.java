@@ -8,6 +8,7 @@ import fr.atesab.xray.widget.LongItemWidget;
 import fr.atesab.xray.widget.XraySlider;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -115,10 +116,10 @@ public class XrayConfigMenu extends XrayScreen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
-        drawCenteredTextWithShadow(stack, textRenderer, title, width / 2,
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context);
+        context.drawCenteredTextWithShadow(textRenderer, title, width / 2,
                 height / 2 - 52 - textRenderer.fontHeight, 0xffffffff);
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 }

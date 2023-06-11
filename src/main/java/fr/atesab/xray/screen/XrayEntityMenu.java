@@ -4,13 +4,14 @@ import fr.atesab.xray.color.BlockEntityTypeIcon;
 import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.config.ESPConfig;
+import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -65,10 +66,10 @@ public class XrayEntityMenu extends Screen {
             .formatted(Formatting.YELLOW);
     private static final Text DELETE = Text.translatable("x13.mod.menu.delete")
             .formatted(Formatting.RED);
-    private Screen parent;
-    private ESPConfig mode;
-    private List<EntityUnion> config;
-    private List<EntityUnion> visible = new ArrayList<>();
+    private final Screen parent;
+    private final ESPConfig mode;
+    private final List<EntityUnion> config;
+    private final List<EntityUnion> visible = new ArrayList<>();
     private TextFieldWidget searchBar;
     private ButtonWidget nextPage;
     private ButtonWidget lastPage;
@@ -171,7 +172,7 @@ public class XrayEntityMenu extends Screen {
     }
 
     public void updateSearch() {
-        String query = searchBar.getText().toString().toLowerCase();
+        String query = searchBar.getText().toLowerCase();
         visible.clear();
         config.stream().filter(block -> I18n.translate(block.text()).toLowerCase().contains(query))
                 .forEach(visible::add);
@@ -184,9 +185,9 @@ public class XrayEntityMenu extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(matrixStack);
-        searchBar.render(matrixStack, mouseX, mouseY, partialTick);
+    public void render(DrawContext context, int mouseX, int mouseY, float partialTick) {
+        renderBackground(context);
+        searchBar.render(context, mouseX, mouseY, partialTick);
 
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;
@@ -211,8 +212,8 @@ public class XrayEntityMenu extends Screen {
                 color = 0x44666699;
             }
 
-            fill(matrixStack, x, y, x + 18, y + 18, color);
-            client.getItemRenderer().renderGuiItemIcon(new MatrixStack(), stack, x + 1, y + 1);
+            context.fill(x, y, x + 18, y + 18, color);
+            GuiUtils.renderItemIdentity(context, stack, x + 1, y + 1);
         }
         // add [+] button
         int x = left + (i % elementsX) * 18;
@@ -226,14 +227,14 @@ public class XrayEntityMenu extends Screen {
             color = 0x44669966;
         }
 
-        fill(matrixStack, x, y, x + 18, y + 18, color);
-        textRenderer.draw(matrixStack, ADD, x + 18 / 2 - textRenderer.getWidth(ADD) / 2,
-                y + 18 / 2 - textRenderer.fontHeight / 2, color);
+        context.fill(x, y, x + 18, y + 18, color);
+        context.drawText(textRenderer, ADD, x + 18 / 2 - textRenderer.getWidth(ADD) / 2,
+                y + 18 / 2 - textRenderer.fontHeight / 2, color, true);
 
-        super.render(matrixStack, mouseX, mouseY, partialTick);
+        super.render(context, mouseX, mouseY, partialTick);
 
         if (hovered != null) {
-            renderTooltip(matrixStack,
+            context.drawTooltip(textRenderer,
                     Arrays.asList(Text.translatable(hoveredBlock.text()), REPLACE, DELETE),
                     mouseX, mouseY);
         }

@@ -49,6 +49,9 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
                 // 1.18
                 Blocks.COPPER_BLOCK,
 
+                // 1.20
+                Blocks.CHISELED_BOOKSHELF,
+
                 /* Ore Blocks */
                 Blocks.COAL_BLOCK, Blocks.IRON_BLOCK, Blocks.GOLD_BLOCK, Blocks.DIAMOND_BLOCK,
                 Blocks.EMERALD_BLOCK, Blocks.REDSTONE_BLOCK, Blocks.LAPIS_BLOCK, Blocks.NETHERITE_BLOCK,

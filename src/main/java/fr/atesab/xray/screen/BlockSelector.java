@@ -1,12 +1,13 @@
 package fr.atesab.xray.screen;
 
+import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
@@ -15,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BlockSelector extends Screen {
-    private Screen parent;
-    private List<Block> blocks;
-    private List<Block> visible = new ArrayList<>();
+    private final Screen parent;
+    private final List<Block> blocks;
+    private final List<Block> visible = new ArrayList<>();
     private TextFieldWidget searchBar;
     private ButtonWidget nextPage;
     private ButtonWidget lastPage;
@@ -111,7 +112,7 @@ public abstract class BlockSelector extends Screen {
     }
 
     public void updateSearch() {
-        String query = searchBar.getText().toString().toLowerCase();
+        String query = searchBar.getText().toLowerCase();
         visible.clear();
         blocks.stream().filter(block -> I18n.translate(block.getTranslationKey()).toLowerCase().contains(query))
                 .forEach(visible::add);
@@ -124,9 +125,9 @@ public abstract class BlockSelector extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(matrixStack);
-        searchBar.render(matrixStack, mouseX, mouseY, partialTick);
+    public void render(DrawContext context, int mouseX, int mouseY, float partialTick) {
+        renderBackground(context);
+        searchBar.render(context, mouseX, mouseY, partialTick);
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;
 
@@ -148,13 +149,13 @@ public abstract class BlockSelector extends Screen {
                 color = 0x44666699;
             }
 
-            fill(matrixStack, x, y, x + 18, y + 18, color);
-            client.getItemRenderer().renderGuiItemIcon(new MatrixStack(), stack, x + 1, y + 1);
+            context.fill(x, y, x + 18, y + 18, color);
+            GuiUtils.renderItemIdentity(context, stack, x + 1, y + 1);
         }
-        super.render(matrixStack, mouseX, mouseY, partialTick);
+        super.render(context, mouseX, mouseY, partialTick);
 
         if (hoveredBlock != null) {
-            renderTooltip(matrixStack, Text.translatable(hoveredBlock.getTranslationKey()), mouseX, mouseY);
+            context.drawTooltip(textRenderer, Text.translatable(hoveredBlock.getTranslationKey()), mouseX, mouseY);
         }
     }
 

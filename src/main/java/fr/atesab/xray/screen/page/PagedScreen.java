@@ -1,5 +1,14 @@
 package fr.atesab.xray.screen.page;
 
+import fr.atesab.xray.screen.XrayScreen;
+import fr.atesab.xray.utils.TagOnWriteList;
+import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,15 +16,6 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import fr.atesab.xray.screen.XrayScreen;
-import fr.atesab.xray.utils.TagOnWriteList;
-import fr.atesab.xray.widget.XrayButton;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
-
-import net.minecraft.text.Text;
 
 
 public abstract class PagedScreen<E> extends XrayScreen {
@@ -31,14 +31,14 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     private int page;
     private int maxPage;
-    private int elementHeight;
+    private final int elementHeight;
     private int elementByPage;
     private boolean doneButton = true;
 
     private ListIterator<PagedElement<E>> iterator;
     private final TagOnWriteList<PagedElement<E>> elements = new TagOnWriteList<>(new ArrayList<>());
-    private ButtonWidget nextButton;
-    private ButtonWidget lastButton;
+    private final ButtonWidget nextButton;
+    private final ButtonWidget lastButton;
 
     protected PagedScreen(Text title, Screen parent, int elementHeight, Stream<E> stream) {
         super(title, parent);
@@ -161,9 +161,9 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
         addDrawableChild(
                 XrayButton.builder(Text.translatable("gui.cancel"), b -> {
-                            cancel();
-                            client.setScreen(parent);
-                        }).dimensions(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20).build());
+                    cancel();
+                    client.setScreen(parent);
+                }).dimensions(width / 2 + (doneButton ? 2 : -(btn / 2 + 1)), height - 24, 172, 20).build());
 
         addDrawableChild(nextButton);
 
@@ -236,21 +236,22 @@ public abstract class PagedScreen<E> extends XrayScreen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context);
         applyToAllElement((element, deltaY) -> {
+            MatrixStack stack = context.getMatrices();
             stack.translate(0, deltaY, 0);
-            element.render(stack, mouseX, mouseY - deltaY, delta);
+            element.render(context, mouseX, mouseY - deltaY, delta);
             stack.translate(0, -deltaY, 0);
             return false;
         });
-        fill(stack, 0, 0, width, 22, 0xff444444);
-        fill(stack, 0, height - 28, width, height, 0xff444444);
+        context.fill(0, 0, width, 22, 0xff444444);
+        context.fill(0, height - 28, width, height, 0xff444444);
         String title = getTitle().getString();
         if (maxPage != 1)
             title += " (" + (page + 1) + "/" + maxPage + ")";
-        drawCenteredTextWithShadow(stack, textRenderer, title, width / 2, 11 - textRenderer.fontHeight / 2, 0xffffffff);
-        super.render(stack, mouseX, mouseY, delta);
+        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 11 - textRenderer.fontHeight / 2, 0xffffffff);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -282,7 +283,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     @Override
     public boolean mouseDragged(double startMouseX, double startMouseY, int button, double endMouseX,
-            double endMouseY) {
+                                double endMouseY) {
         applyToAllElement(
                 (element, deltaY) -> element.mouseDragged(startMouseX, startMouseY - deltaY, button, endMouseX,
                         endMouseY - deltaY));

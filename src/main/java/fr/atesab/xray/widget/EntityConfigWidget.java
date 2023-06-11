@@ -5,8 +5,9 @@ import java.util.stream.Stream;
 
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.screen.XrayEntityMenu;
+import fr.atesab.xray.utils.GuiUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -40,7 +41,7 @@ public class EntityConfigWidget extends XrayButton {
     }
 
     @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
         int fit = (width - 2) / 17;
 
         Stream<ItemStack> stacks = Stream.concat(cfg.getEntities().getIcons(), cfg.getBlockEntities().getIcons());
@@ -49,15 +50,15 @@ public class EntityConfigWidget extends XrayButton {
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (mouseX >= this.getX() && mouseX <= this.getX() + this.width && mouseY >= this.getY() && mouseY <= this.getY() + this.height) {
-            DrawableHelper.fill(matrices, getX(), getY(), getX() + width, getY() + height, 0x33ffaa00);
+            context.fill(getX(), getY(), getX() + width, getY() + height, 0x33ffaa00);
         } else {
-            DrawableHelper.fill(matrices, getX(), getY(), getX() + width, getY() + height, 0x33ffffff);
+            context.fill(getX(), getY(), getX() + width, getY() + height, 0x33ffffff);
         }
 
         int left = this.getX() + this.width / 2 - view.size() * 17 / 2;
         int top = this.getY() + this.height / 2 - 15 / 2;
         for (ItemStack b : view) {
-            client.getItemRenderer().renderGuiItemIcon(new MatrixStack(), b, left + deltaX, top + deltaY);
+            GuiUtils.renderItemIdentity(context, b, left + deltaX, top + deltaY);
             left += 17;
         }
     }

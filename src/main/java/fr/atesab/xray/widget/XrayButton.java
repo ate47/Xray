@@ -4,6 +4,7 @@ import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.Skin;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -90,10 +91,10 @@ public class XrayButton extends ButtonWidget {
     }
 
     @Override
-    public void renderButton(MatrixStack stack, int mx, int my, float delta) {
+    public void renderButton(DrawContext context, int mx, int my, float delta) {
         Skin skin = XrayMain.getMod().getConfig().getSkin();
-        if (skin.renderButton(this, stack, getX(), getY(), width, height)) {
-            super.renderButton(stack, mx, my, delta);
+        if (skin.renderButton(this, context, getX(), getY(), width, height)) {
+            super.renderButton(context, mx, my, delta);
         }
     }
 

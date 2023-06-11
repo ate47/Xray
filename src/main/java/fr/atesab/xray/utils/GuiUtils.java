@@ -1,15 +1,10 @@
 package fr.atesab.xray.utils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.BufferBuilder;
@@ -18,18 +13,20 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.joml.Matrix4f;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 /**
- * Advanced creative tab GuiUtils
- * https://github.com/ate47/AdvancedCreativeTab/blob/1.18-forge/src/main/java/fr/atesab/act/utils/GuiUtils.java
+ * Advanced creative tab <a href="https://github.com/ate47/AdvancedCreativeTab/blob/1.18-forge/src/main/java/fr/atesab/act/utils/GuiUtils.java">GuiUtils</a>
  */
-public class GuiUtils extends DrawableHelper {
+public class GuiUtils {
     private static final Random RANDOM = new Random();
 
     public record HSLResult(int hue, int saturation, int lightness, int alpha) {
@@ -48,7 +45,7 @@ public class GuiUtils extends DrawableHelper {
     /**
      * @param rgba argb color
      * @return true if the rgba value has an alpha part or if the color is fully
-     *         transparent
+     * transparent
      */
     public static boolean hasAlpha(int rgba) {
         return (rgba & 0xFF000000) != 0;
@@ -56,12 +53,12 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * Convert r g b param to rgba int
-     * 
+     *
      * @param r red
      * @param g green
      * @param b red
      * @param a alpha
-     * @return (a << 24) | (r << 16) | (g << 8) | b
+     * @return (a < < 24) | (r << 16) | (g << 8) | b
      */
     public static int asRGBA(int r, int g, int b, int a) {
         return (a << 24) | (r << 16) | (g << 8) | b;
@@ -69,12 +66,12 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * Convert r g b param to rgba int
-     * 
+     *
      * @param r red
      * @param g green
      * @param b red
      * @param a alpha
-     * @return (a << 24) | (r << 16) | (g << 8) | b
+     * @return (a < < 24) | (r << 16) | (g << 8) | b
      */
     public static int asRGBA(float r, float g, float b, float a) {
         return ((int) (a * 0xFF) << 24) | ((int) (r * 0xFF) << 16) | ((int) (g * 0xFF) << 8) | (int) (b * 0xFF);
@@ -82,7 +79,7 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * convert hsl parm to rgba
-     * 
+     *
      * @param h hue, angle [0-360[
      * @param s saturation, percentage [0-100]
      * @param l lightness, percentage [0-100]
@@ -94,7 +91,7 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * convert hsl parm to rgba
-     * 
+     *
      * @param h hue, angle [0-360[
      * @param s saturation, percentage
      * @param l lightness, percentage
@@ -120,7 +117,7 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * get HSL from RGBA
-     * 
+     *
      * @param rgba int rgba
      * @return HSL
      */
@@ -142,7 +139,7 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * get HSL from RGBA with an option to preserve hue/saturation with gray scale
-     * 
+     *
      * @param rgba          int rgba
      * @param oldHue        old hue, to avoid loosing it
      * @param oldSaturation old saturation, to avoid loosing it
@@ -194,22 +191,22 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * Draws a solid color rectangle with the specified coordinates and color.
-     * 
-     * @param stack  the matrix stack
-     * @param left   left location
-     * @param top    top location
-     * @param right  right location
-     * @param bottom bottom location
-     * @param color  the color
+     *
+     * @param graphics the graphics
+     * @param left     left location
+     * @param top      top location
+     * @param right    right location
+     * @param bottom   bottom location
+     * @param color    the color
      */
-    public static void drawRect(MatrixStack stack, int left, int top, int right, int bottom, int color) {
-        DrawableHelper.fill(stack, left, top, right, bottom, color);
+    public static void drawRect(DrawContext graphics, int left, int top, int right, int bottom, int color) {
+        graphics.fill(left, top, right, bottom, color);
     }
 
     /**
      * Draws a solid color rectangle with the specified coordinates and color.
-     * 
-     * @param stack        the matrix stack
+     *
+     * @param graphics     the graphics
      * @param left         left location
      * @param top          top location
      * @param right        right location
@@ -219,10 +216,10 @@ public class GuiUtils extends DrawableHelper {
      * @param mouseX       the mouseX
      * @param mouseY       the mouseY
      */
-    public static void drawHoverableRect(MatrixStack stack, int left, int top, int right, int bottom, int color,
-            int colorHovered, int mouseX, int mouseY) {
+    public static void drawHoverableRect(DrawContext graphics, int left, int top, int right, int bottom, int color,
+                                         int colorHovered, int mouseX, int mouseY) {
         int c = (isHover(left, top, right - left, bottom - top, mouseX, mouseY) ? colorHovered : color);
-        DrawableHelper.fill(stack, left, top, right, bottom, c);
+        graphics.fill(left, top, right, bottom, c);
     }
 
     /**
@@ -243,7 +240,7 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * Check if a {@link ClickableWidget} is hover by a location (mouse)
-     * 
+     *
      * @param widget the widget
      * @param mouseX the mouse x location
      * @param mouseY the mouse y location
@@ -257,7 +254,7 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * Check if a box is hover by a location (mouse)
-     * 
+     *
      * @param x      the x location
      * @param y      the y location
      * @param sizeX  the width
@@ -274,118 +271,115 @@ public class GuiUtils extends DrawableHelper {
 
     /**
      * Draw an {@link ItemStack} on a {@link Screen}
-     * 
-     * @param itemRender the renderer
-     * @param itemstack  the stack
-     * @param x          the x location
-     * @param y          the y location
-     * 
+     *
+     * @param graphics  the graphics
+     * @param itemstack the stack
+     * @param x         the x location
+     * @param y         the y location
      * @since 2.1.1
      */
-    public static void drawItemStack(ItemRenderer itemRender, ItemStack itemstack, int x, int y) {
+    public static void drawItemStack(DrawContext graphics, ItemStack itemstack, int x, int y) {
         if (itemstack == null || itemstack.isEmpty())
             return;
-        MatrixStack matrixStack = new MatrixStack();
         RenderSystem.enableDepthTest();
-        itemRender.renderGuiItemIcon(matrixStack, itemstack, x, y);
-        itemRender.renderGuiItemOverlay(matrixStack, MinecraftClient.getInstance().textRenderer, itemstack, x, y, null);
+        graphics.drawItem(itemstack, x, y);
+        graphics.drawItemInSlot(MinecraftClient.getInstance().textRenderer, itemstack, x, y);
         RenderSystem.disableBlend();
     }
 
     /**
      * Draw a String on the screen at middle of an height
      *
-     * @param stack        the stack
+     * @param graphics     the graphics
      * @param textRenderer the textRenderer
      * @param text         the string to render
      * @param x            the x location
      * @param y            the y location
      * @param color        the color of the text
      * @param height       the height of the text
-     *
+     * @see #drawCenterString(DrawContext, TextRenderer, String, int, int, int)
+     * @see #drawRightString(DrawContext, TextRenderer, String, int, int, int)
      * @since 2.0
-     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int)
-     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int)
      */
-    public static void drawString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y, int color,
+    public static void drawString(DrawContext graphics, TextRenderer textRenderer, String text, int x, int y, int color,
                                   int height) {
-        textRenderer.draw(stack, text, x, y + height / 2 - textRenderer.fontHeight / 2, color);
-    }
-    /**
-     * Draw a String on the screen at middle of an height
-     *
-     * @param stack        the stack
-     * @param textRenderer the textRenderer
-     * @param text         the string to render
-     * @param x            the x location
-     * @param y            the y location
-     * @param color        the color of the text
-     * @param height       the height of the text
-     *
-     * @since 2.0
-     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int)
-     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int)
-     */
-    public static void drawString(MatrixStack stack, TextRenderer textRenderer, Text text, int x, int y, int color,
-                                  int height) {
-        textRenderer.draw(stack, text, x, y + height / 2 - textRenderer.fontHeight / 2, color);
+        graphics.drawText(textRenderer, text, x, y + height / 2 - textRenderer.fontHeight / 2, color, false);
     }
 
     /**
      * Draw a String on the screen at middle of an height
-     * 
-     * @param stack        the stack
+     *
+     * @param graphics     the graphics
      * @param textRenderer the textRenderer
      * @param text         the string to render
      * @param x            the x location
      * @param y            the y location
      * @param color        the color of the text
-     * 
+     * @param height       the height of the text
+     * @see #drawCenterString(DrawContext, TextRenderer, String, int, int, int)
+     * @see #drawRightString(DrawContext, TextRenderer, String, int, int, int)
      * @since 2.0
-     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
-     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int)
      */
-    public static void drawString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y, int color) {
-        drawString(stack, textRenderer, text, x, y, color, textRenderer.fontHeight);
+    public static void drawString(DrawContext graphics, TextRenderer textRenderer, Text text, int x, int y, int color,
+                                  int height) {
+        graphics.drawText(textRenderer, text, x, y + height / 2 - textRenderer.fontHeight / 2, color, false);
+    }
+
+    /**
+     * Draw a String on the screen at middle of an height
+     *
+     * @param graphics     the graphics
+     * @param textRenderer the textRenderer
+     * @param text         the string to render
+     * @param x            the x location
+     * @param y            the y location
+     * @param color        the color of the text
+     * @see #drawCenterString(DrawContext, TextRenderer, String, int, int, int, int)
+     * @see #drawRightString(DrawContext, TextRenderer, String, int, int, int)
+     * @since 2.0
+     */
+    public static void drawString(DrawContext graphics, TextRenderer textRenderer, String text, int x, int y, int color) {
+        drawString(graphics, textRenderer, text, x, y, color, textRenderer.fontHeight);
     }
 
     /**
      * Draw a String centered
-     * 
+     *
      * @param stack        the stack
      * @param textRenderer the textRenderer
      * @param text         the text
      * @param x            x text location
      * @param y            y text location
      * @param color        text color
+     * @see #drawCenterString(DrawContext, TextRenderer, String, int, int, int)
+     * @see #drawRightString(DrawContext, TextRenderer, String, int, int, int, int)
      * @since 2.0
-     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int)
-     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int, int)
      */
-    public static void drawCenterString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y,
-            int color) {
+    public static void drawCenterString(DrawContext stack, TextRenderer textRenderer, String text, int x, int y,
+                                        int color) {
         drawCenterString(stack, textRenderer, text, x, y, color, textRenderer.fontHeight);
     }
 
     /**
      * Draw a String centered of a vertical segment
      *
-     * @param stack        the stack
+     * @param graphics     the graphics
      * @param textRenderer the textRenderer
      * @param text         the text
      * @param x            x text location
      * @param y            y text location
      * @param color        text color
      * @param height       segment length
+     * @see #drawCenterString(DrawContext, TextRenderer, String, int, int, int, int)
+     * @see #drawString(DrawContext, TextRenderer, String, int, int, int)
      * @since 2.0
-     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
-     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
      */
-    public static void drawCenterString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y,
+    public static void drawCenterString(DrawContext graphics, TextRenderer textRenderer, String text, int x, int y,
                                         int color,
                                         int height) {
-        drawString(stack, textRenderer, text, x - textRenderer.getWidth(text) / 2, y, color, height);
+        drawString(graphics, textRenderer, text, x - textRenderer.getWidth(text) / 2, y, color, height);
     }
+
     /**
      * Draw a String centered of a vertical segment
      *
@@ -396,15 +390,16 @@ public class GuiUtils extends DrawableHelper {
      * @param y            y text location
      * @param color        text color
      * @param height       segment length
+     * @see #drawCenterString(DrawContext, TextRenderer, String, int, int, int, int)
+     * @see #drawString(DrawContext, TextRenderer, String, int, int, int)
      * @since 2.0
-     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
-     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
      */
-    public static void drawCenterString(MatrixStack stack, TextRenderer textRenderer, Text text, int x, int y,
+    public static void drawCenterString(DrawContext stack, TextRenderer textRenderer, Text text, int x, int y,
                                         int color,
                                         int height) {
         drawString(stack, textRenderer, text, x - textRenderer.getWidth(text) / 2, y, color, height);
     }
+
     /**
      * Draw a String centered of a vertical segment
      *
@@ -414,38 +409,37 @@ public class GuiUtils extends DrawableHelper {
      * @param x            x text location
      * @param y            y text location
      * @param color        text color
+     * @see #drawCenterString(DrawContext, TextRenderer, String, int, int, int, int)
+     * @see #drawString(DrawContext, TextRenderer, String, int, int, int)
      * @since 2.0
-     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
-     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
      */
-    public static void drawCenterString(MatrixStack stack, TextRenderer textRenderer, Text text, int x, int y,
+    public static void drawCenterString(DrawContext stack, TextRenderer textRenderer, Text text, int x, int y,
                                         int color) {
         drawString(stack, textRenderer, text, x - textRenderer.getWidth(text) / 2, y, color, textRenderer.fontHeight);
     }
 
     /**
      * Draw a String to the the right of a location
-     * 
+     *
      * @param stack        the stack
      * @param textRenderer the textRenderer
      * @param text         the string to render
      * @param x            the x location
      * @param y            the y location
      * @param color        the color of the text
-     * 
+     * @see #drawCenterString(DrawContext, TextRenderer, String, int, int, int, int)
+     * @see #drawString(DrawContext, TextRenderer, String, int, int, int)
      * @since 2.0
-     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int, int)
-     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
      */
 
-    public static void drawRightString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y,
-            int color) {
+    public static void drawRightString(DrawContext stack, TextRenderer textRenderer, String text, int x, int y,
+                                       int color) {
         drawRightString(stack, textRenderer, text, x, y, color, textRenderer.fontHeight);
     }
 
     /**
      * Draw a String on the screen at middle of an height to the right of location
-     * 
+     *
      * @param stack        the stack
      * @param textRenderer the textRenderer
      * @param text         the string to render
@@ -453,39 +447,37 @@ public class GuiUtils extends DrawableHelper {
      * @param y            the y location
      * @param color        the color of the text
      * @param height       the height of the text
-     * 
+     * @see #drawString(DrawContext, TextRenderer, String, int, int, int)
+     * @see #drawCenterString(DrawContext, TextRenderer, String, int, int, int)
      * @since 2.0
-     * @see #drawString(MatrixStack, TextRenderer, String, int, int, int)
-     * @see #drawCenterString(MatrixStack, TextRenderer, String, int, int, int)
      */
-    public static void drawRightString(MatrixStack stack, TextRenderer textRenderer, String text, int x, int y,
-            int color,
-            int height) {
+    public static void drawRightString(DrawContext stack, TextRenderer textRenderer, String text, int x, int y,
+                                       int color,
+                                       int height) {
         drawString(stack, textRenderer, text, x - textRenderer.getWidth(text), y, color, height);
     }
 
     /**
      * Draw a String to the right of a {@link ClickableWidget}
-     * 
+     *
      * @param stack        the stack
      * @param textRenderer the textRenderer
      * @param text         the string to render
      * @param field        the widget
      * @param color        the color of the text
-     * 
+     * @see #drawRightString(DrawContext, TextRenderer, String, int, int, int)
+     * @see #drawRightString(DrawContext, TextRenderer, String, int, int, int, int)
      * @since 2.0
-     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int)
-     * @see #drawRightString(MatrixStack, TextRenderer, String, int, int, int, int)
      */
-    public static void drawRightString(MatrixStack stack, TextRenderer textRenderer, String text,
-            ClickableWidget field,
-            int color) {
+    public static void drawRightString(DrawContext stack, TextRenderer textRenderer, String text,
+                                       ClickableWidget field,
+                                       int color) {
         drawRightString(stack, textRenderer, text, field.getX(), field.getY(), color, field.getHeight());
     }
 
     /**
      * Draw a String to the right of a {@link ClickableWidget} with offsets
-     * 
+     *
      * @param stack        the stack
      * @param textRenderer the textRenderer
      * @param text         the string to render
@@ -493,35 +485,35 @@ public class GuiUtils extends DrawableHelper {
      * @param color        the color of the text
      * @param offsetX      the x offset
      * @param offsetY      the y offset
-     * 
+     * @see #drawRightString(DrawContext, TextRenderer, String, ClickableWidget, int)
      * @since 2.0
-     * @see #drawRightString(MatrixStack, TextRenderer, String, ClickableWidget, int)
      */
-    public static void drawRightString(MatrixStack stack,
-            TextRenderer textRenderer, String text, ClickableWidget field, int color, int offsetX,
-            int offsetY) {
+    public static void drawRightString(DrawContext stack,
+                                       TextRenderer textRenderer, String text, ClickableWidget field, int color, int offsetX,
+                                       int offsetY) {
         drawRightString(stack, textRenderer, text, field.getX() + offsetX, field.getY() + offsetY, color, field.getHeight());
     }
 
     /**
      * Render a scaled component (left aligned)
      *
-     * @param matrixStack stack
-     * @param x x
-     * @param y y
-     * @param height text height
+     * @param graphics  graphics
+     * @param x         x
+     * @param y         y
+     * @param height    text height
      * @param component text
-     * @param color color
+     * @param color     color
      */
-    public static void drawTextComponentScaled(MatrixStack matrixStack, int x, int y, int height,
-                                              Text component, int color) {
+    public static void drawTextComponentScaled(DrawContext graphics, int x, int y, int height,
+                                               Text component, int color) {
         MinecraftClient minecraft = MinecraftClient.getInstance();
         TextRenderer font = minecraft.textRenderer;
         float scaleX = (float) height / font.fontHeight;
         float scaleY = (float) height / font.fontHeight;
+        MatrixStack matrixStack = graphics.getMatrices();
         matrixStack.translate(x, y, 0);
         matrixStack.scale(scaleX, scaleY, 1f);
-        font.draw(matrixStack, component, 0, 0f, color);
+        graphics.drawText(font, component, 0, 0, color, false);
         matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
         matrixStack.translate(-x, -y, 0);
     }
@@ -529,23 +521,24 @@ public class GuiUtils extends DrawableHelper {
     /**
      * Render a scaled component (center aligned)
      *
-     * @param matrixStack stack
-     * @param x x
-     * @param y y
-     * @param height text height
+     * @param graphics  graphics
+     * @param x         x
+     * @param y         y
+     * @param height    text height
      * @param component text
-     * @param color color
+     * @param color     color
      */
-    public static void drawCenteredTextComponentScaled(MatrixStack matrixStack, int x, int y, int height,
-                                                      Text component, int color) {
+    public static void drawCenteredTextComponentScaled(DrawContext graphics, int x, int y, int height,
+                                                       Text component, int color) {
         MinecraftClient minecraft = MinecraftClient.getInstance();
         TextRenderer font = minecraft.textRenderer;
         float scaleX = (float) height / font.fontHeight;
         float scaleY = (float) height / font.fontHeight;
+        MatrixStack matrixStack = graphics.getMatrices();
         matrixStack.translate(x, y, 0);
         matrixStack.scale(scaleX, scaleY, 1f);
-        float size = font.getWidth(component);
-        font.draw(matrixStack, component, -size / 2.0f, 0f, color);
+        int size = font.getWidth(component);
+        graphics.drawText(font, component, -size / 2, 0, color, false);
         matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
         matrixStack.translate(-x, -y, 0);
     }
@@ -553,31 +546,32 @@ public class GuiUtils extends DrawableHelper {
     /**
      * Render a scaled component (right aligned)
      *
-     * @param matrixStack stack
-     * @param x x
-     * @param y y
-     * @param height text height
+     * @param graphics  graphics
+     * @param x         x
+     * @param y         y
+     * @param height    text height
      * @param component text
-     * @param color color
+     * @param color     color
      */
-    public static void drawRightTextComponentScaled(MatrixStack matrixStack, int x, int y, int height,
-                                                   Text component, int color) {
+    public static void drawRightTextComponentScaled(DrawContext graphics, int x, int y, int height,
+                                                    Text component, int color) {
         MinecraftClient minecraft = MinecraftClient.getInstance();
         TextRenderer font = minecraft.textRenderer;
         float scaleX = (float) height / font.fontHeight;
         float scaleY = (float) height / font.fontHeight;
+        MatrixStack matrixStack = graphics.getMatrices();
         matrixStack.translate(x, y, 0);
         matrixStack.scale(scaleX, scaleY, 1f);
-        float size = font.getWidth(component);
-        font.draw(matrixStack, component, -size, 0f, color);
+        int size = font.getWidth(component);
+        graphics.drawText(font, component, -size, 0, color, false);
         matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
         matrixStack.translate(-x, -y, 0);
     }
 
     /**
      * Draw a text box on the screen
-     * 
-     * @param matrixStack  the matrixStack
+     *
+     * @param graphics     the graphics
      * @param textRenderer the renderer
      * @param x            the x location
      * @param y            the y location
@@ -585,64 +579,67 @@ public class GuiUtils extends DrawableHelper {
      * @param parentHeight the parent height
      * @param zLevel       the zLevel of the screen
      * @param args         the lines to show
-     * 
      * @since 2.1
      */
-    public static void drawTextBox(MatrixStack matrixStack, TextRenderer textRenderer, int x, int y, int parentWidth,
-            int parentHeight,
-            float zLevel, String... args) {
+    public static void drawTextBox(DrawContext graphics, TextRenderer textRenderer, int x, int y, int parentWidth,
+                                   int parentHeight,
+                                   float zLevel, String... args) {
         List<String> text = Arrays.asList(args);
         int width = text.isEmpty() ? 0 : text.stream().mapToInt(textRenderer::getWidth).max().getAsInt();
         int height = text.size() * (1 + textRenderer.fontHeight);
         Pair<Integer, Integer> pos = getRelativeBoxPos(x, y, width, height, parentWidth, parentHeight);
-        drawBox(matrixStack, pos.getLeft(), pos.getRight(), width, height, zLevel);
+        drawBox(graphics, pos.getLeft(), pos.getRight(), width, height, zLevel);
         text.forEach(l -> {
-            drawString(matrixStack, textRenderer, l, pos.getLeft(), pos.getRight(), 0xffffffff);
+            drawString(graphics, textRenderer, l, pos.getLeft(), pos.getRight(), 0xffffffff);
             pos.setRight(pos.getRight() + (1 + textRenderer.fontHeight));
         });
     }
 
     /**
      * Draw a box on the screen
-     * 
-     * @param p      matrix stack
-     * @param x      x tl location
-     * @param y      y tl location
-     * @param width  box width
-     * @param height box height
-     * @param zLevel      zlevel of the screen
-     * 
+     *
+     * @param graphics draw context
+     * @param x        x tl location
+     * @param y        y tl location
+     * @param width    box width
+     * @param height   box height
+     * @param zLevel   zlevel of the screen
      * @since 2.0
      */
-    public static void drawBox(MatrixStack p, int x, int y, int width, int height, float zLevel) {
+    public static void drawBox(DrawContext graphics, int x, int y, int width, int height, float zLevel) {
         // -267386864 0xF0100010 | 1347420415 0x505000FF | 1344798847 0x5028007F
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA,
-                GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE,
-                GlStateManager.DstFactor.ZERO);
-        bufferbuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        Matrix4f mat = p.peek().getPositionMatrix();
         int z = (int) zLevel - 50;
-        fillGradient(mat, bufferbuilder, x - 3, y - 4, x + width + 3, y - 3, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x - 3, y + height + 3, x + width + 3, y + height + 4, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y + height + 3, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x - 4, y - 3, x - 3, y + height + 3, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x + width + 3, y - 3, x + width + 4, y + height + 3, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
-        fillGradient(mat, bufferbuilder, x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
-        fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y - 3 + 1, z, 0x505000FF, 0x505000FF);
-        fillGradient(mat, bufferbuilder, x - 3, y + height + 2, x + width + 3, y + height + 3, z, 0x5028007F, 0x5028007F);
-        tessellator.draw();
+        graphics.fillGradient(x - 3, y - 4, x + width + 3, y - 3, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x - 3, y + height + 3, x + width + 3, y + height + 4, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x - 3, y - 3, x + width + 3, y + height + 3, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x - 4, y - 3, x - 3, y + height + 3, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x + width + 3, y - 3, x + width + 4, y + height + 3, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
+        graphics.fillGradient(x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
+        graphics.fillGradient(x - 3, y - 3, x + width + 3, y - 3 + 1, z, 0x505000FF, 0x505000FF);
+        graphics.fillGradient(x - 3, y + height + 2, x + width + 3, y + height + 3, z, 0x5028007F, 0x5028007F);
         RenderSystem.disableBlend();
+    }
+
+    public static void renderItemIdentity(DrawContext graphics, ItemStack stack, int x, int y) {
+        MatrixStack pose = graphics.getMatrices();
+        pose.push();
+        pose.loadIdentity();
+        graphics.drawItem(stack, x, y);
+        pose.pop();
+    }
+
+    public static void renderItemDecorationIdentity(DrawContext graphics, TextRenderer font, ItemStack stack, int x, int y) {
+        MatrixStack pose = graphics.getMatrices();
+        pose.push();
+        pose.loadIdentity();
+        graphics.drawItemInSlot(font, stack, x, y);
+        pose.pop();
     }
 
     /**
      * Draw a rectangle with a vertical gradient
-     * 
+     *
      * @param stack      matrix stack
      * @param left       left location
      * @param top        top location
@@ -651,19 +648,18 @@ public class GuiUtils extends DrawableHelper {
      * @param startColor startColor color
      * @param endColor   endColor color
      * @param zLevel     zLevel of the screen
-     * 
      * @see #drawGradientRect(MatrixStack, int, int, int, int, int, int, int, int,
-     *      float)
+     * float)
      * @since 2.0
      */
     public static void drawGradientRect(MatrixStack stack, int left, int top, int right, int bottom, int startColor,
-            int endColor, float zLevel) {
+                                        int endColor, float zLevel) {
         drawGradientRect(stack, left, top, right, bottom, startColor, startColor, endColor, endColor, zLevel);
     }
 
     /**
      * Draw a gradient rectangle
-     * 
+     *
      * @param stack            matrix stack
      * @param left             left location
      * @param top              top location
@@ -674,12 +670,11 @@ public class GuiUtils extends DrawableHelper {
      * @param leftBottomColor  leftBottomColor color (ARGB)
      * @param rightBottomColor rightBottomColor color (ARGB)
      * @param zLevel           zLevel of the screen
-     * 
      * @see #drawGradientRect(MatrixStack, int, int, int, int, int, int, float)
      * @since 2.0
      */
     public static void drawGradientRect(MatrixStack stack, int left, int top, int right, int bottom, int rightTopColor,
-            int leftTopColor, int leftBottomColor, int rightBottomColor, float zLevel) {
+                                        int leftTopColor, int leftBottomColor, int rightBottomColor, float zLevel) {
         float alphaRightTop = (float) (rightTopColor >> 24 & 255) / 255.0F;
         float redRightTop = (float) (rightTopColor >> 16 & 255) / 255.0F;
         float greenRightTop = (float) (rightTopColor >> 8 & 255) / 255.0F;
@@ -720,20 +715,18 @@ public class GuiUtils extends DrawableHelper {
     /**
      * get a tuple of (x,y) location on the screen for a box to put it without
      * loosing it at borders
-     * 
+     *
      * @param x            the x location
      * @param y            the y location
      * @param width        the width
      * @param height       the height
      * @param parentWidth  the parent width
      * @param parentHeight the parent height
-     * 
-     * @return (x,y) location
-     * 
+     * @return (x, y) location
      * @since 2.0
      */
     public static Pair<Integer, Integer> getRelativeBoxPos(int x, int y, int width, int height, int parentWidth,
-            int parentHeight) {
+                                                           int parentHeight) {
         if (x + width > parentWidth) {
             x -= width + 5;
             if (x < 0)
@@ -765,7 +758,7 @@ public class GuiUtils extends DrawableHelper {
      * @param tileHeight tile height
      */
     public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width,
-            int height, float tileWidth, float tileHeight) {
+                                                     int height, float tileWidth, float tileHeight) {
         drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight, 0xffffff);
     }
 
@@ -786,7 +779,7 @@ public class GuiUtils extends DrawableHelper {
      * @param color      tile color
      */
     public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width,
-            int height, float tileWidth, float tileHeight, int color) {
+                                                     int height, float tileWidth, float tileHeight, int color) {
         drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight, color, false);
     }
 
@@ -808,7 +801,7 @@ public class GuiUtils extends DrawableHelper {
      * @param useAlpha   use the alpha of the color
      */
     public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width,
-            int height, float tileWidth, float tileHeight, int color, boolean useAlpha) {
+                                                     int height, float tileWidth, float tileHeight, int color, boolean useAlpha) {
         float scaleX = 1.0F / tileWidth;
         float scaleY = 1.0F / tileHeight;
         int red = (color >> 16) & 0xFF;
