@@ -1,17 +1,17 @@
 package fr.atesab.xray.color;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.widget.XrayButton;
 import fr.atesab.xray.widget.XraySlider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 
 public enum Skin {
     XRAY(XrayMain.MOD_NAME) {
         @Override
-        public boolean renderSlider(XraySlider widget, PoseStack stack, int x, int y, int w, int h) {
+        public boolean renderSlider(XraySlider widget, GuiGraphics graphics, int x, int y, int w, int h) {
             int bgColor;
             if (!widget.active) {
                 bgColor = 0x99_000000;
@@ -21,18 +21,18 @@ public enum Skin {
                 bgColor = 0x99_666666;
             }
             int location = (int) (widget.getValue() * (double) (w - 8));
-            GuiUtils.drawRect(stack, x, y, x + location, y + h, 0x99_222222);
-            GuiUtils.drawRect(stack, x + location + 8, y, x + w, y + h, 0x99_222222);
-            GuiUtils.drawRect(stack, x + location, y, x + location + 8, y + h, bgColor);
+            GuiUtils.drawRect(graphics, x, y, x + location, y + h, 0x99_222222);
+            GuiUtils.drawRect(graphics, x + location + 8, y, x + w, y + h, 0x99_222222);
+            GuiUtils.drawRect(graphics, x + location, y, x + location + 8, y + h, bgColor);
             Minecraft minecraft = Minecraft.getInstance();
             Font font = minecraft.font;
             int color = widget.getFGColor();
-            GuiUtils.drawCenteredString(stack, font, widget.getMessage(), x + w / 2, y + (h - 8) / 2, color | 0xFF000000);
+            graphics.drawCenteredString(font, widget.getMessage(), x + w / 2, y + (h - 8) / 2, color | 0xFF000000);
             return false;
         }
 
         @Override
-        public boolean renderButton(XrayButton widget, PoseStack stack, int x, int y, int w, int h) {
+        public boolean renderButton(XrayButton widget, GuiGraphics graphics, int x, int y, int w, int h) {
             int bgColor;
 
             if (!widget.active) {
@@ -44,11 +44,11 @@ public enum Skin {
             } else {
                 bgColor = 0x99_666666;
             }
-            GuiUtils.drawRect(stack, x, y, x + w, y + h, bgColor);
+            GuiUtils.drawRect(graphics, x, y, x + w, y + h, bgColor);
             Minecraft minecraft = Minecraft.getInstance();
             Font font = minecraft.font;
             int color = widget.getFGColor();
-            GuiUtils.drawCenteredString(stack, font, widget.getMessage(), x + w / 2, y + (h - 8) / 2, color | 0xFF000000);
+            graphics.drawCenteredString(font, widget.getMessage(), x + w / 2, y + (h - 8) / 2, color | 0xFF000000);
             return false;
         }
 
@@ -62,8 +62,9 @@ public enum Skin {
          * high frequency to reduce Epilepsy
          */
         private static final int FREQUENCY = 10_000;
+
         @Override
-        public boolean renderSlider(XraySlider widget, PoseStack stack, int x, int y, int w, int h) {
+        public boolean renderSlider(XraySlider widget, GuiGraphics graphics, int x, int y, int w, int h) {
             int bgColor;
             if (!widget.active) {
                 bgColor = 0x99_000000;
@@ -73,18 +74,18 @@ public enum Skin {
                 bgColor = 0x99_666666 | (0xFFFFFF & GuiUtils.getTimeColor(FREQUENCY / 3, FREQUENCY, 100, 50));
             }
             int location = (int) (widget.getValue() * (double) (w - 8));
-            GuiUtils.drawRect(stack, x, y, x + location, y + h, 0x99_222222);
-            GuiUtils.drawRect(stack, x + location + 8, y, x + w, y + h, 0x99_222222);
-            GuiUtils.drawRect(stack, x + location, y, x + location + 8, y + h, bgColor);
+            GuiUtils.drawRect(graphics, x, y, x + location, y + h, 0x99_222222);
+            GuiUtils.drawRect(graphics, x + location + 8, y, x + w, y + h, 0x99_222222);
+            GuiUtils.drawRect(graphics, x + location, y, x + location + 8, y + h, bgColor);
             Minecraft minecraft = Minecraft.getInstance();
             Font font = minecraft.font;
             int color = widget.getFGColor();
-            GuiUtils.drawCenteredString(stack, font, widget.getMessage(), x + w / 2, y + (h - 8) / 2, color | 0xFF000000);
+            graphics.drawCenteredString(font, widget.getMessage(), x + w / 2, y + (h - 8) / 2, color | 0xFF000000);
             return false;
         }
 
         @Override
-        public boolean renderButton(XrayButton widget, PoseStack stack, int x, int y, int w, int h) {
+        public boolean renderButton(XrayButton widget, GuiGraphics graphics, int x, int y, int w, int h) {
             int bgColor;
 
             if (!widget.active) {
@@ -96,11 +97,11 @@ public enum Skin {
             } else {
                 bgColor = 0x99_666666 | (0xFFFFFF & GuiUtils.getTimeColor(FREQUENCY / 3, FREQUENCY, 100, 50));
             }
-            GuiUtils.drawRect(stack, x, y, x + w, y + h, bgColor);
+            GuiUtils.drawRect(graphics, x, y, x + w, y + h, bgColor);
             Minecraft minecraft = Minecraft.getInstance();
             Font font = minecraft.font;
             int color = widget.getFGColor();
-            GuiUtils.drawCenteredString(stack, font, widget.getMessage(), x + w / 2, y + (h - 8) / 2, color | 0xFF000000);
+            graphics.drawCenteredString(font, widget.getMessage(), x + w / 2, y + (h - 8) / 2, color | 0xFF000000);
             return false;
         }
 
@@ -121,11 +122,11 @@ public enum Skin {
         return title;
     }
 
-    public boolean renderSlider(XraySlider widget, PoseStack stack, int x, int y, int w, int h) {
+    public boolean renderSlider(XraySlider widget, GuiGraphics graphics, int x, int y, int w, int h) {
         return true;
     }
 
-    public boolean renderButton(XrayButton widget, PoseStack stack, int x, int y, int w, int h) {
+    public boolean renderButton(XrayButton widget, GuiGraphics graphics, int x, int y, int w, int h) {
         return true;
     }
 

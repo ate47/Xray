@@ -6,6 +6,7 @@ import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.widget.ColorSelectorWidget;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -62,9 +63,9 @@ public class XrayAbstractModeConfig extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
-        nameBox.render(stack, mouseX, mouseY, delta);
-        super.render(stack, mouseX, mouseY, delta);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        renderBackground(graphics);
+        nameBox.render(graphics, mouseX, mouseY, delta);
+        super.render(graphics, mouseX, mouseY, delta);
     }
 }

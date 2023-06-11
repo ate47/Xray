@@ -15,22 +15,19 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 
 /**
- * Advanced creative tab GuiUtils
- * https://github.com/ate47/AdvancedCreativeTab/blob/1.18-forge/src/main/java/fr/atesab/act/utils/GuiUtils.java
+ * Advanced creative tab <a href="https://github.com/ate47/AdvancedCreativeTab/blob/1.18-forge/src/main/java/fr/atesab/act/utils/GuiUtils.java">GuiUtils</a>
  */
-public class GuiUtils extends GuiComponent {
+public class GuiUtils {
     private static final Random RANDOM = new Random();
 
     public record HSLResult(int hue, int saturation, int lightness, int alpha) {
@@ -196,21 +193,21 @@ public class GuiUtils extends GuiComponent {
     /**
      * Draws a solid color rectangle with the specified coordinates and color.
      * 
-     * @param stack  the matrix stack
+     * @param graphics  the graphics
      * @param left   left location
      * @param top    top location
      * @param right  right location
      * @param bottom bottom location
      * @param color  the color
      */
-    public static void drawRect(PoseStack stack, int left, int top, int right, int bottom, int color) {
-        Gui.fill(stack, left, top, right, bottom, color);
+    public static void drawRect(GuiGraphics graphics, int left, int top, int right, int bottom, int color) {
+        graphics.fill(left, top, right, bottom, color);
     }
 
     /**
      * Draws a solid color rectangle with the specified coordinates and color.
-     * 
-     * @param stack        the matrix stack
+     *
+     * @param graphics  the graphics
      * @param left         left location
      * @param top          top location
      * @param right        right location
@@ -220,10 +217,10 @@ public class GuiUtils extends GuiComponent {
      * @param mouseX       the mouseX
      * @param mouseY       the mouseY
      */
-    public static void drawHoverableRect(PoseStack stack, int left, int top, int right, int bottom, int color,
+    public static void drawHoverableRect(GuiGraphics graphics, int left, int top, int right, int bottom, int color,
             int colorHovered, int mouseX, int mouseY) {
         int c = (isHover(left, top, right - left, bottom - top, mouseX, mouseY) ? colorHovered : color);
-        Gui.fill(stack, left, top, right, bottom, c);
+        graphics.fill(left, top, right, bottom, c);
     }
 
     /**
@@ -275,20 +272,20 @@ public class GuiUtils extends GuiComponent {
 
     /**
      * Draw an {@link ItemStack} on a {@link Screen}
-     * 
-     * @param itemRender the renderer
+     *
+     * @param graphics  the graphics
      * @param itemstack  the stack
      * @param x          the x location
      * @param y          the y location
      * 
      * @since 2.1.1
      */
-    public static void drawItemStack(PoseStack matrixStack, ItemRenderer itemRender, ItemStack itemstack, int x, int y) {
+    public static void drawItemStack(GuiGraphics graphics, ItemStack itemstack, int x, int y) {
         if (itemstack == null || itemstack.isEmpty())
             return;
         RenderSystem.enableDepthTest();
-        itemRender.renderAndDecorateItem(matrixStack, itemstack, x, y);
-        itemRender.renderGuiItemDecorations(matrixStack, Minecraft.getInstance().font, itemstack, x, y, null);
+        GuiUtils.renderItemIdentity(graphics, itemstack, x, y);
+        GuiUtils.renderItemDecorationIdentity(graphics, Minecraft.getInstance().font, itemstack, x, y);
         RenderSystem.disableBlend();
     }
 
@@ -377,8 +374,8 @@ public class GuiUtils extends GuiComponent {
 
     /**
      * Draw a String on the screen at middle of an height
-     * 
-     * @param stack  the stack
+     *
+     * @param graphics  the graphics
      * @param font   the font
      * @param text   the string to render
      * @param x      the x location
@@ -387,17 +384,17 @@ public class GuiUtils extends GuiComponent {
      * @param height the height of the text
      * 
      * @since 2.0
-     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int, int)
-     * @see #drawRightString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawCenterString(GuiGraphics graphics, Font, String, int, int, int, int)
+     * @see #drawRightString(GuiGraphics graphics, Font, String, int, int, int, int)
      */
-    public static void drawString(PoseStack stack, Font font, String text, int x, int y, int color, int height) {
-        font.draw(stack, text, x, y + height / 2 - font.lineHeight / 2, color);
+    public static void drawString(GuiGraphics graphics, Font font, String text, int x, int y, int color, int height) {
+        graphics.drawString(font, text, x, y + height / 2 - font.lineHeight / 2, color);
     }
 
     /**
      * Draw a String on the screen at middle of an height
-     * 
-     * @param stack the stack
+     *
+     * @param graphics  the graphics
      * @param font  the font
      * @param text  the string to render
      * @param x     the x location
@@ -405,34 +402,34 @@ public class GuiUtils extends GuiComponent {
      * @param color the color of the text
      * 
      * @since 2.0
-     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int, int)
-     * @see #drawRightString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawCenterString(GuiGraphics graphics, Font, String, int, int, int, int)
+     * @see #drawRightString(GuiGraphics graphics, Font, String, int, int, int, int)
      */
-    public static void drawString(PoseStack stack, Font font, String text, int x, int y, int color) {
-        drawString(stack, font, text, x, y, color, font.lineHeight);
+    public static void drawString(GuiGraphics graphics, Font font, String text, int x, int y, int color) {
+        drawString(graphics, font, text, x, y, color, font.lineHeight);
     }
 
     /**
      * Draw a String centered
-     * 
-     * @param stack the stack
+     *
+     * @param graphics  the graphics
      * @param font  the font
      * @param text  the text
      * @param x     x text location
      * @param y     y text location
      * @param color text color
      * @since 2.0
-     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int, int)
-     * @see #drawRightString(PoseStack stack, Font, String, int, int, int)
+     * @see #drawCenterString(GuiGraphics graphics, Font, String, int, int, int, int)
+     * @see #drawRightString(GuiGraphics graphics, Font, String, int, int, int)
      */
-    public static void drawCenterString(PoseStack stack, Font font, String text, int x, int y, int color) {
-        drawCenterString(stack, font, text, x, y, color, font.lineHeight);
+    public static void drawCenterString(GuiGraphics graphics, Font font, String text, int x, int y, int color) {
+        drawCenterString(graphics, font, text, x, y, color, font.lineHeight);
     }
 
     /**
      * Draw a String centered of a vertical segment
-     * 
-     * @param stack  the stack
+     *
+     * @param graphics  the graphics
      * @param font   the font
      * @param text   the text
      * @param x      x text location
@@ -440,17 +437,17 @@ public class GuiUtils extends GuiComponent {
      * @param color  text color
      * @param height segment length
      * @since 2.0
-     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int)
-     * @see #drawString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawCenterString(GuiGraphics graphics, Font, String, int, int, int)
+     * @see #drawString(GuiGraphics graphics, Font, String, int, int, int, int)
      */
-    public static void drawCenterString(PoseStack stack, Font font, String text, int x, int y, int color, int height) {
-        drawString(stack, font, text, x - font.width(text) / 2, y, color, height);
+    public static void drawCenterString(GuiGraphics graphics, Font font, String text, int x, int y, int color, int height) {
+        drawString(graphics, font, text, x - font.width(text) / 2, y, color, height);
     }
 
     /**
-     * Draw a String to the the right of a location
-     * 
-     * @param stack the stack
+     * Draw a String to the right of a location
+     *
+     * @param graphics  the graphics
      * @param font  the font
      * @param text  the string to render
      * @param x     the x location
@@ -458,18 +455,18 @@ public class GuiUtils extends GuiComponent {
      * @param color the color of the text
      * 
      * @since 2.0
-     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int)
-     * @see #drawRightString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawCenterString(GuiGraphics graphics, Font, String, int, int, int)
+     * @see #drawRightString(GuiGraphics graphics, Font, String, int, int, int, int)
      */
 
-    public static void drawRightString(PoseStack stack, Font font, String text, int x, int y, int color) {
-        drawRightString(stack, font, text, x, y, color, font.lineHeight);
+    public static void drawRightString(GuiGraphics graphics, Font font, String text, int x, int y, int color) {
+        drawRightString(graphics, font, text, x, y, color, font.lineHeight);
     }
 
     /**
      * Draw a String on the screen at middle of an height to the right of location
-     * 
-     * @param stack  the stack
+     *
+     * @param graphics  the graphics
      * @param font   the font
      * @param text   the string to render
      * @param x      the x location
@@ -478,34 +475,34 @@ public class GuiUtils extends GuiComponent {
      * @param height the height of the text
      * 
      * @since 2.0
-     * @see #drawString(PoseStack stack, Font, String, int, int, int, int)
-     * @see #drawCenterString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawString(GuiGraphics graphics, Font, String, int, int, int, int)
+     * @see #drawCenterString(GuiGraphics graphics, Font, String, int, int, int, int)
      */
-    public static void drawRightString(PoseStack stack, Font font, String text, int x, int y, int color, int height) {
-        drawString(stack, font, text, x - font.width(text), y, color, height);
+    public static void drawRightString(GuiGraphics graphics, Font font, String text, int x, int y, int color, int height) {
+        drawString(graphics, font, text, x - font.width(text), y, color, height);
     }
 
     /**
      * Draw a String to the right of a {@link AbstractWidget}
-     * 
-     * @param stack the stack
+     *
+     * @param graphics  the graphics
      * @param font  the font
      * @param text  the string to render
      * @param field the widget
      * @param color the color of the text
      * 
      * @since 2.0
-     * @see #drawRightString(PoseStack stack, Font, String, int, int, int)
-     * @see #drawRightString(PoseStack stack, Font, String, int, int, int, int)
+     * @see #drawRightString(GuiGraphics graphics, Font, String, int, int, int)
+     * @see #drawRightString(GuiGraphics graphics, Font, String, int, int, int, int)
      */
-    public static void drawRightString(PoseStack stack, Font font, String text, AbstractWidget field, int color) {
-        drawRightString(stack, font, text, field.getX(), field.getY(), color, field.getHeight());
+    public static void drawRightString(GuiGraphics graphics, Font font, String text, AbstractWidget field, int color) {
+        drawRightString(graphics, font, text, field.getX(), field.getY(), color, field.getHeight());
     }
 
     /**
      * Draw a String to the right of a {@link AbstractWidget} with offsets
-     * 
-     * @param stack   the stack
+     *
+     * @param graphics  the graphics
      * @param font    the font
      * @param text    the string to render
      * @param field   the widget
@@ -514,89 +511,92 @@ public class GuiUtils extends GuiComponent {
      * @param offsetY the y offset
      * 
      * @since 2.0
-     * @see #drawRightString(PoseStack stack, Font, String, AbstractWidget, int)
+     * @see #drawRightString(GuiGraphics graphics, Font, String, AbstractWidget, int)
      */
-    public static void drawRightString(PoseStack stack,
+    public static void drawRightString(GuiGraphics graphics,
             Font font, String text, AbstractWidget field, int color, int offsetX,
             int offsetY) {
-        drawRightString(stack, font, text, field.getX() + offsetX, field.getY() + offsetY, color, field.getHeight());
+        drawRightString(graphics, font, text, field.getX() + offsetX, field.getY() + offsetY, color, field.getHeight());
     }
 
     /**
      * Render a scaled component (left aligned)
      *
-     * @param matrixStack stack
+     * @param graphics  the graphics
      * @param x x
      * @param y y
      * @param height text height
      * @param component text
      * @param color color
      */
-    public static void drawTextComponentScaled(PoseStack matrixStack, int x, int y, int height,
+    public static void drawTextComponentScaled(GuiGraphics graphics, int x, int y, int height,
                                                Component component, int color) {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         float scaleX = (float) height / font.lineHeight;
         float scaleY = (float) height / font.lineHeight;
-        matrixStack.translate(x, y, 0);
-        matrixStack.scale(scaleX, scaleY, 1f);
-        font.draw(matrixStack, component, 0, 0f, color);
-        matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
-        matrixStack.translate(-x, -y, 0);
+        PoseStack pose = graphics.pose();
+        pose.translate(x, y, 0);
+        pose.scale(scaleX, scaleY, 1f);
+        graphics.drawString(font, component, 0, 0, color);
+        pose.scale(1 / scaleX, 1 / scaleY, 1f);
+        pose.translate(-x, -y, 0);
     }
 
     /**
      * Render a scaled component (center aligned)
      *
-     * @param matrixStack stack
+     * @param graphics  the graphics
      * @param x x
      * @param y y
      * @param height text height
      * @param component text
      * @param color color
      */
-    public static void drawCenteredTextComponentScaled(PoseStack matrixStack, int x, int y, int height,
+    public static void drawCenteredTextComponentScaled(GuiGraphics graphics, int x, int y, int height,
                                                        Component component, int color) {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         float scaleX = (float) height / font.lineHeight;
         float scaleY = (float) height / font.lineHeight;
-        matrixStack.translate(x, y, 0);
-        matrixStack.scale(scaleX, scaleY, 1f);
-        float size = font.width(component);
-        font.draw(matrixStack, component, -size / 2.0f, 0f, color);
-        matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
-        matrixStack.translate(-x, -y, 0);
+        PoseStack pose = graphics.pose();
+        pose.translate(x, y, 0);
+        pose.scale(scaleX, scaleY, 1f);
+        int size = font.width(component);
+        graphics.drawString(font, component, -size / 2, 0, color);
+        pose.scale(1 / scaleX, 1 / scaleY, 1f);
+        pose.translate(-x, -y, 0);
     }
 
     /**
      * Render a scaled component (right aligned)
      *
-     * @param matrixStack stack
+     * @param graphics  the graphics
      * @param x x
      * @param y y
      * @param height text height
      * @param component text
      * @param color color
      */
-    public static void drawRightTextComponentScaled(PoseStack matrixStack, int x, int y, int height,
+    public static void drawRightTextComponentScaled(GuiGraphics graphics, int x, int y, int height,
                                                     Component component, int color) {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         float scaleX = (float) height / font.lineHeight;
         float scaleY = (float) height / font.lineHeight;
-        matrixStack.translate(x, y, 0);
-        matrixStack.scale(scaleX, scaleY, 1f);
-        float size = font.width(component);
-        font.draw(matrixStack, component, -size, 0f, color);
-        matrixStack.scale(1 / scaleX, 1 / scaleY, 1f);
-        matrixStack.translate(-x, -y, 0);
+        PoseStack pose = graphics.pose();
+        pose.translate(x, y, 0);
+        pose.scale(scaleX, scaleY, 1f);
+        int size = font.width(component);
+        graphics.drawString(font, component, -size, 0, color);
+        pose.scale(1 / scaleX, 1 / scaleY, 1f);
+        pose.translate(-x, -y, 0);
     }
 
     /**
      * Draw a text box on the screen
-     * 
-     * @param matrixStack  the matrixStack
+     *
+     * @param graphics  the graphics
      * @param font         the renderer
      * @param x            the x location
      * @param y            the y location
@@ -606,22 +606,22 @@ public class GuiUtils extends GuiComponent {
      * 
      * @since 2.1
      */
-    public static void drawTextBox(PoseStack matrixStack, Font font, int x, int y, int parentWidth, int parentHeight, String... args) {
+    public static void drawTextBox(GuiGraphics graphics, Font font, int x, int y, int parentWidth, int parentHeight, String... args) {
         List<String> text = Arrays.asList(args);
         int width = text.isEmpty() ? 0 : text.stream().mapToInt(font::width).max().getAsInt();
         int height = text.size() * (1 + font.lineHeight);
         Tuple<Integer, Integer> pos = getRelativeBoxPos(x, y, width, height, parentWidth, parentHeight);
-        drawBox(matrixStack, pos.getA(), pos.getB(), width, height);
+        drawBox(graphics, pos.getA(), pos.getB(), width, height);
         text.forEach(l -> {
-            drawString(matrixStack, font, l, pos.getA(), pos.getB(), 0xffffffff);
+            drawString(graphics, font, l, pos.getA(), pos.getB(), 0xffffffff);
             pos.setB(pos.getB() + (1 + font.lineHeight));
         });
     }
 
     /**
      * Draw a box on the screen
-     * 
-     * @param p      matrix stack
+     *
+     * @param graphics  the graphics
      * @param x      x tl location
      * @param y      y tl location
      * @param width  box width
@@ -629,36 +629,52 @@ public class GuiUtils extends GuiComponent {
      *
      * @since 2.0
      */
-    public static void drawBox(PoseStack p, int x, int y, int width, int height) {
+    public static void drawBox(GuiGraphics graphics, int x, int y, int width, int height) {
         // -267386864 0xF0100010 | 1347420415 0x505000FF | 1344798847 0x5028007F
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuilder();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO);
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f mat = p.last().pose();
+        //Tesselator tessellator = Tesselator.getInstance();
+        //BufferBuilder bufferbuilder = tessellator.getBuilder();
+        //RenderSystem.enableBlend();
+        //RenderSystem.defaultBlendFunc();
+        //RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        //RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+        //        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+        //        GlStateManager.DestFactor.ZERO);
+        //bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        //Matrix4f mat = graphics.pose().last().pose();
         int z = -50;
-        fillGradient(mat, bufferbuilder, x - 3, y - 4, x + width + 3, y - 3, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x - 3, y + height + 3, x + width + 3, y + height + 4, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y + height + 3, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x - 4, y - 3, x - 3, y + height + 3, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x + width + 3, y - 3, x + width + 4, y + height + 3, z, 0xF0100010, 0xF0100010);
-        fillGradient(mat, bufferbuilder, x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
-        fillGradient(mat, bufferbuilder, x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
-        fillGradient(mat, bufferbuilder, x - 3, y - 3, x + width + 3, y - 3 + 1, z, 0x505000FF, 0x505000FF);
-        fillGradient(mat, bufferbuilder, x - 3, y + height + 2, x + width + 3, y + height + 3, z, 0x5028007F, 0x5028007F);
-        tessellator.end();
+        graphics.fillGradient(x - 3, y - 4, x + width + 3, y - 3, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x - 3, y + height + 3, x + width + 3, y + height + 4, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x - 3, y - 3, x + width + 3, y + height + 3, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x - 4, y - 3, x - 3, y + height + 3, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x + width + 3, y - 3, x + width + 4, y + height + 3, z, 0xF0100010, 0xF0100010);
+        graphics.fillGradient(x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
+        graphics.fillGradient(x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, z, 0x505000FF, 0x5028007F);
+        graphics.fillGradient(x - 3, y - 3, x + width + 3, y - 3 + 1, z, 0x505000FF, 0x505000FF);
+        graphics.fillGradient(x - 3, y + height + 2, x + width + 3, y + height + 3, z, 0x5028007F, 0x5028007F);
+        //tessellator.end();
         RenderSystem.disableBlend();
+    }
+
+    public static void renderItemIdentity(GuiGraphics graphics, ItemStack stack, int x, int y) {
+        PoseStack pose = graphics.pose();
+        pose.pushPose();
+        pose.setIdentity();
+        graphics.renderItem(stack, x, y);
+        pose.popPose();
+    }
+
+    public static void renderItemDecorationIdentity(GuiGraphics graphics, Font font, ItemStack stack, int x, int y) {
+        PoseStack pose = graphics.pose();
+        pose.pushPose();
+        pose.setIdentity();
+        graphics.renderItemDecorations(font, stack, x, y);
+        pose.popPose();
     }
 
     /**
      * Draw a rectangle with a vertical gradient
-     * 
-     * @param stack      matrix stack
+     *
+     * @param graphics  the graphics
      * @param left       left location
      * @param top        top location
      * @param right      right location
@@ -667,19 +683,19 @@ public class GuiUtils extends GuiComponent {
      * @param endColor   endColor color
      * @param zLevel     zLevel of the screen
      * 
-     * @see #drawGradientRect(PoseStack, int, int, int, int, int, int, int, int,
+     * @see #drawGradientRect(GuiGraphics, int, int, int, int, int, int, int, int,
      *      float)
      * @since 2.0
      */
-    public static void drawGradientRect(PoseStack stack, int left, int top, int right, int bottom, int startColor,
+    public static void drawGradientRect(GuiGraphics graphics, int left, int top, int right, int bottom, int startColor,
             int endColor, float zLevel) {
-        drawGradientRect(stack, left, top, right, bottom, startColor, startColor, endColor, endColor, zLevel);
+        drawGradientRect(graphics, left, top, right, bottom, startColor, startColor, endColor, endColor, zLevel);
     }
 
     /**
      * Draw a gradient rectangle
-     * 
-     * @param stack            matrix stack
+     *
+     * @param graphics  the graphics
      * @param left             left location
      * @param top              top location
      * @param right            right location
@@ -690,10 +706,10 @@ public class GuiUtils extends GuiComponent {
      * @param rightBottomColor rightBottomColor color (ARGB)
      * @param zLevel           zLevel of the screen
      * 
-     * @see #drawGradientRect(PoseStack, int, int, int, int, int, int, float)
+     * @see #drawGradientRect(GuiGraphics, int, int, int, int, int, int, float)
      * @since 2.0
      */
-    public static void drawGradientRect(PoseStack stack, int left, int top, int right, int bottom, int rightTopColor,
+    public static void drawGradientRect(GuiGraphics graphics, int left, int top, int right, int bottom, int rightTopColor,
             int leftTopColor, int leftBottomColor, int rightBottomColor, float zLevel) {
         float alphaRightTop = (float) (rightTopColor >> 24 & 255) / 255.0F;
         float redRightTop = (float) (rightTopColor >> 16 & 255) / 255.0F;
@@ -719,7 +735,7 @@ public class GuiUtils extends GuiComponent {
                 GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
                 GlStateManager.DestFactor.ZERO);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f mat = stack.last().pose();
+        Matrix4f mat = graphics.pose().last().pose();
         bufferbuilder.vertex(mat, right, top, zLevel).color(redRightTop, greenRightTop, blueRightTop, alphaRightTop)
                 .endVertex();
         bufferbuilder.vertex(mat, left, top, zLevel).color(redLeftTop, greenLeftTop, blueLeftTop, alphaLeftTop)

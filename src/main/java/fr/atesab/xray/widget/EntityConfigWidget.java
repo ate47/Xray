@@ -7,8 +7,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.screen.XrayEntityMenu;
+import fr.atesab.xray.utils.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -41,7 +43,7 @@ public class EntityConfigWidget extends XrayButton {
     }
 
     @Override
-    public void renderWidget(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         int fit = (width - 2) / 17;
 
         Stream<ItemStack> stacks = Stream.concat(cfg.getEntities().getIcons(), cfg.getBlockEntities().getIcons());
@@ -53,15 +55,15 @@ public class EntityConfigWidget extends XrayButton {
         int y = getY();
 
         if (mouseX >= x && mouseX <= x + this.width && mouseY >= y && mouseY <= y + this.height) {
-            Gui.fill(matrices, x, y, x + width, y + height, 0x33ffaa00);
+            graphics.fill(x, y, x + width, y + height, 0x33ffaa00);
         } else {
-            Gui.fill(matrices, x, y, x + width, y + height, 0x33ffffff);
+            graphics.fill(x, y, x + width, y + height, 0x33ffffff);
         }
 
         int left = x + this.width / 2 - view.size() * 17 / 2;
         int top = y + this.height / 2 - 15 / 2;
         for (ItemStack b : view) {
-            client.getItemRenderer().renderGuiItem(new PoseStack(), b, left + deltaX, top + deltaY);
+            GuiUtils.renderItemIdentity(graphics, b, left + deltaX, top + deltaY);
             left += 17;
         }
     }

@@ -9,6 +9,7 @@ import fr.atesab.xray.screen.ColorSelector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -36,7 +37,7 @@ public class ColorSelectorWidget extends AbstractButton {
     }
 
     @Override
-    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         boolean hovered = isHoveredOrFocused();
         int color = getter.getAsInt() & 0xFFFFFF;
         if (hovered) {
@@ -48,11 +49,11 @@ public class ColorSelectorWidget extends AbstractButton {
         int x = getX();
         int y = getY();
 
-        Gui.fill(stack, x, y, x + width, y + height, color);
+        graphics.fill(x, y, x + width, y + height, color);
 
         Component message = getMessage();
         Font font = minecraft.font;
-        drawCenteredString(stack, font, message, x + width / 2, y + height / 2 - font.lineHeight / 2, 0xFFFFFFFF);
+        graphics.drawCenteredString(font, message, x + width / 2, y + height / 2 - font.lineHeight / 2, 0xFFFFFFFF);
     }
 
     @Override

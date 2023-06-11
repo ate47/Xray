@@ -1,5 +1,13 @@
 package fr.atesab.xray.screen.page;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import fr.atesab.xray.screen.XrayScreen;
+import fr.atesab.xray.utils.TagOnWriteList;
+import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,15 +15,6 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import fr.atesab.xray.screen.XrayScreen;
-import fr.atesab.xray.utils.TagOnWriteList;
-import fr.atesab.xray.widget.XrayButton;
-import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 
 public abstract class PagedScreen<E> extends XrayScreen {
     @FunctionalInterface
@@ -237,21 +236,22 @@ public abstract class PagedScreen<E> extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        renderBackground(graphics);
         applyToAllElement((element, deltaY) -> {
+            PoseStack stack = graphics.pose();
             stack.translate(0, deltaY, 0);
-            element.render(stack, mouseX, mouseY - deltaY, delta);
+            element.render(graphics, mouseX, mouseY - deltaY, delta);
             stack.translate(0, -deltaY, 0);
             return false;
         });
-        fill(stack, 0, 0, width, 22, 0xff444444);
-        fill(stack, 0, height - 28, width, height, 0xff444444);
+        graphics.fill(0, 0, width, 22, 0xff444444);
+        graphics.fill(0, height - 28, width, height, 0xff444444);
         String title = getTitle().getString();
         if (maxPage != 1)
             title += " (" + (page + 1) + "/" + maxPage + ")";
-        drawCenteredString(stack, font, title, width / 2, 11 - font.lineHeight / 2, 0xffffffff);
-        super.render(stack, mouseX, mouseY, delta);
+        graphics.drawCenteredString(font, title, width / 2, 11 - font.lineHeight / 2, 0xffffffff);
+        super.render(graphics, mouseX, mouseY, delta);
     }
 
     @Override
@@ -283,7 +283,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     @Override
     public boolean mouseDragged(double startMouseX, double startMouseY, int button, double endMouseX,
-            double endMouseY) {
+                                double endMouseY) {
         applyToAllElement(
                 (element, deltaY) -> element.mouseDragged(startMouseX, startMouseY - deltaY, button, endMouseX,
                         endMouseY - deltaY));

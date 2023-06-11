@@ -14,6 +14,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 
 import net.minecraft.client.OptionInstance;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -306,7 +307,7 @@ public class XrayMain {
 
 	@SubscribeEvent
 	public void onHudRender(RenderGuiOverlayEvent ev) {
-		PoseStack stack = ev.getPoseStack();
+		GuiGraphics graphics = ev.getGuiGraphics();
 		Minecraft mc = Minecraft.getInstance();
 		Font render = mc.font;
 		LocalPlayer player = mc.player;
@@ -353,7 +354,7 @@ public class XrayMain {
 		}
 
 		buffer.draw(
-				stack,
+				graphics,
 				mc.getWindow().getGuiScaledWidth(),
 				mc.getWindow().getGuiScaledHeight(),
 				config.getLocationConfig(),

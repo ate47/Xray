@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -102,16 +103,16 @@ public class KeySelector extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
-        drawCenteredString(stack, font, getTitle(), width / 2, height / 2 - 30 - font.lineHeight, 0xffffffff);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        renderBackground(graphics);
+        graphics.drawCenteredString(font, getTitle(), width / 2, height / 2 - 30 - font.lineHeight, 0xffffffff);
 
         if (isWaitingKey) {
-            drawCenteredString(stack, font, Component.translatable("x13.mod.selector.key.presskey"), width / 2,
+            graphics.drawCenteredString(font, Component.translatable("x13.mod.selector.key.presskey"), width / 2,
                     keyButton.getY() + keyButton.getHeight() / 2 - font.lineHeight, 0xffffff00);
         }
 
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(graphics, mouseX, mouseY, delta);
     }
 
 }

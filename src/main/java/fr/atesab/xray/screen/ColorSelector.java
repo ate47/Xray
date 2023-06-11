@@ -1,19 +1,14 @@
 package fr.atesab.xray.screen;
 
-import java.util.OptionalInt;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
-
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.HSLResult;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -28,6 +23,10 @@ import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.OptionalInt;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+
 public class ColorSelector extends XrayScreen {
 
     private enum DragState {
@@ -40,6 +39,7 @@ public class ColorSelector extends XrayScreen {
     private static int getShiftY() {
         return filledBuffer ? 12 : 0;
     }
+
     private static final int PICKER_SIZE_Y = 200;
     private static final int PICKER_S_SIZE_X = 20;
     private static final int PICKER_HL_SIZE_X = 200;
@@ -132,12 +132,12 @@ public class ColorSelector extends XrayScreen {
     }
 
     public ColorSelector(Screen parent, Consumer<OptionalInt> setter, OptionalInt color,
-            boolean transparentAsDefault) {
+                         boolean transparentAsDefault) {
         this(parent, setter, color, color.orElse(0), transparentAsDefault);
     }
 
     public ColorSelector(Screen parent, Consumer<OptionalInt> setter, OptionalInt color, int defaultColor,
-            boolean transparentAsDefault) {
+                         boolean transparentAsDefault) {
         super(Component.translatable("x13.mod.color.title"), parent);
         int rgba = color.orElse(defaultColor);
         this.color = rgba & 0xFFFFFF; // remove alpha
@@ -168,11 +168,11 @@ public class ColorSelector extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         // allow multiple color modifiers
         setPickerState(localHue, localSaturation, localLightness);
 
-        renderBackground(matrixStack);
+        renderBackground(graphics);
 
         if (!advanced) {
             // S PICKER
@@ -184,9 +184,9 @@ public class ColorSelector extends XrayScreen {
 
             // - S Index
             int saturationDelta = pickerSaturation * 76 * 2 / 100;
-            GuiUtils.drawRect(matrixStack, width / 2 + 178, height / 2 - 76 + saturationDelta - 2 - getShiftY(), width / 2 + 178 + 22,
+            GuiUtils.drawRect(graphics, width / 2 + 178, height / 2 - 76 + saturationDelta - 2 - getShiftY(), width / 2 + 178 + 22,
                     height / 2 - 76 + saturationDelta + 2 - getShiftY(), 0xff222222);
-            GuiUtils.drawRect(matrixStack, width / 2 + 180, height / 2 - 76 + saturationDelta - 1 - getShiftY(), width / 2 + 180 + 20,
+            GuiUtils.drawRect(graphics, width / 2 + 180, height / 2 - 76 + saturationDelta - 1 - getShiftY(), width / 2 + 180 + 20,
                     height / 2 - 76 + saturationDelta + 1 - getShiftY(), 0xff999999);
 
             // HL Picker
@@ -199,49 +199,49 @@ public class ColorSelector extends XrayScreen {
             // - HL Index
             int hueDelta = pickerHue * (158 + 176) / 360;
             int lightnessDelta = pickerLightness * (76 * 2) / 100;
-            GuiUtils.drawRect(matrixStack, width / 2 - 158 + hueDelta - 5, height / 2 - 76 + lightnessDelta - 2 - getShiftY(),
+            GuiUtils.drawRect(graphics, width / 2 - 158 + hueDelta - 5, height / 2 - 76 + lightnessDelta - 2 - getShiftY(),
                     width / 2 - 158 + hueDelta - 5 + 10, height / 2 - 76 + lightnessDelta - 2 + 4 - getShiftY(), 0xff222222);
-            GuiUtils.drawRect(matrixStack, width / 2 - 158 + hueDelta - 2, height / 2 - 76 + lightnessDelta - 5 - getShiftY(),
+            GuiUtils.drawRect(graphics, width / 2 - 158 + hueDelta - 2, height / 2 - 76 + lightnessDelta - 5 - getShiftY(),
                     width / 2 - 158 + hueDelta - 2 + 4, height / 2 - 76 + lightnessDelta - 5 + 10 - getShiftY(), 0xff222222);
 
-            GuiUtils.drawRect(matrixStack, width / 2 - 158 + hueDelta - 4, height / 2 - 76 + lightnessDelta - 1 - getShiftY(),
+            GuiUtils.drawRect(graphics, width / 2 - 158 + hueDelta - 4, height / 2 - 76 + lightnessDelta - 1 - getShiftY(),
                     width / 2 - 158 + hueDelta - 4 + 8, height / 2 - 76 + lightnessDelta - 1 + 2 - getShiftY(), 0xff999999);
-            GuiUtils.drawRect(matrixStack, width / 2 - 158 + hueDelta - 1, height / 2 - 76 + lightnessDelta - 4 - getShiftY(),
+            GuiUtils.drawRect(graphics, width / 2 - 158 + hueDelta - 1, height / 2 - 76 + lightnessDelta - 4 - getShiftY(),
                     width / 2 - 158 + hueDelta - 1 + 2, height / 2 - 76 + lightnessDelta - 4 + 8 - getShiftY(), 0xff999999);
         } else {
-            GuiUtils.drawRect(matrixStack, width / 2 - 158, height / 2 - 76 - getShiftY(), width / 2 + 200, height / 2 + 76 - getShiftY(),
+            GuiUtils.drawRect(graphics, width / 2 - 158, height / 2 - 76 - getShiftY(), width / 2 + 200, height / 2 + 76 - getShiftY(),
                     0x88000000);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.red") + ": ", tfr, 0xffffffff);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.green") + ": ", tfg, 0xffffffff);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.blue") + ": ", tfb, 0xffffffff);
+            GuiUtils.drawRightString(graphics, font, I18n.get("x13.mod.color.red") + ": ", tfr, 0xffffffff);
+            GuiUtils.drawRightString(graphics, font, I18n.get("x13.mod.color.green") + ": ", tfg, 0xffffffff);
+            GuiUtils.drawRightString(graphics, font, I18n.get("x13.mod.color.blue") + ": ", tfb, 0xffffffff);
 
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.hue") + ": ", tfh,
+            GuiUtils.drawRightString(graphics, font, I18n.get("x13.mod.color.hue") + ": ", tfh,
                     0xffffffff);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.lightness") + ": ",
+            GuiUtils.drawRightString(graphics, font, I18n.get("x13.mod.color.lightness") + ": ",
                     tfl,
                     0xffffffff);
-            GuiUtils.drawRightString(matrixStack, font, I18n.get("x13.mod.color.saturation") + ": ",
+            GuiUtils.drawRightString(graphics, font, I18n.get("x13.mod.color.saturation") + ": ",
                     tfs,
                     0xffffffff);
 
-            GuiUtils.drawString(matrixStack, font, I18n.get("x13.mod.color.intColor") + ":",
+            GuiUtils.drawString(graphics, font, I18n.get("x13.mod.color.intColor") + ":",
                     intColor.getX(),
                     intColor.getY() - 4 - 10, 0xffffffff, 10);
-            GuiUtils.drawString(matrixStack, font, I18n.get("x13.mod.color.hexColor") + ":",
+            GuiUtils.drawString(graphics, font, I18n.get("x13.mod.color.hexColor") + ":",
                     hexColor.getX(),
                     hexColor.getY() - 4 - 10, 0xffffffff, 10);
 
-            tfr.render(matrixStack, mouseX, mouseY, partialTicks);
-            tfg.render(matrixStack, mouseX, mouseY, partialTicks);
-            tfb.render(matrixStack, mouseX, mouseY, partialTicks);
-            tfh.render(matrixStack, mouseX, mouseY, partialTicks);
-            tfl.render(matrixStack, mouseX, mouseY, partialTicks);
-            tfs.render(matrixStack, mouseX, mouseY, partialTicks);
-            intColor.render(matrixStack, mouseX, mouseY, partialTicks);
-            hexColor.render(matrixStack, mouseX, mouseY, partialTicks);
+            tfr.render(graphics, mouseX, mouseY, partialTicks);
+            tfg.render(graphics, mouseX, mouseY, partialTicks);
+            tfb.render(graphics, mouseX, mouseY, partialTicks);
+            tfh.render(graphics, mouseX, mouseY, partialTicks);
+            tfl.render(graphics, mouseX, mouseY, partialTicks);
+            tfs.render(graphics, mouseX, mouseY, partialTicks);
+            intColor.render(graphics, mouseX, mouseY, partialTicks);
+            hexColor.render(graphics, mouseX, mouseY, partialTicks);
         }
         if ((color & 0xFF000000) == 0)
-            GuiUtils.drawRect(matrixStack, width / 2 - 158, height / 2 - 100 - getShiftY(), width / 2 + 176, height / 2 - 80 - getShiftY(),
+            GuiUtils.drawRect(graphics, width / 2 - 158, height / 2 - 100 - getShiftY(), width / 2 + 176, height / 2 - 80 - getShiftY(),
                     color | 0xff000000);
 
         Runnable show = () -> {
@@ -250,41 +250,41 @@ public class ColorSelector extends XrayScreen {
             DyeColor color = DyeColor.values()[i];
             int x = width / 2 - 200 + (i % 2) * 19;
             int y = height / 2 - 76 + (i / 2) * 19 - getShiftY();
-            GuiUtils.drawRect(matrixStack, x, y, x + 19, y + 19, 0xff000000 | color.getFireworkColor());
+            GuiUtils.drawRect(graphics, x, y, x + 19, y + 19, 0xff000000 | color.getFireworkColor());
             if (GuiUtils.isHover(x, y, 19, 19, mouseX, mouseY)) {
-                show = () -> GuiUtils.drawTextBox(matrixStack, font, mouseX, mouseY, width, height,
+                show = () -> GuiUtils.drawTextBox(graphics, font, mouseX, mouseY, width, height,
                         I18n.get("item.minecraft.firework_star." + color.getName()));
             }
-            GuiUtils.drawItemStack(matrixStack, itemRenderer, new ItemStack(DyeItem.byColor(color)), x + (19 - 16) / 2,
+            GuiUtils.drawItemStack(graphics, new ItemStack(DyeItem.byColor(color)), x + (19 - 16) / 2,
                     y + (19 - 16) / 2);
         }
 
         // random
-        GuiUtils.drawHoverableRect(matrixStack, width / 2 - 200, height / 2 - 100 - getShiftY(), width / 2 - 162, height / 2 - 80 - getShiftY(),
+        GuiUtils.drawHoverableRect(graphics, width / 2 - 200, height / 2 - 100 - getShiftY(), width / 2 - 162, height / 2 - 80 - getShiftY(),
                 0xFF444444, GuiUtils.getTimeColor(RANDOM_PICKER_FREQUENCY, 50, 15), mouseX, mouseY);
-        GuiUtils.drawItemStack(matrixStack, itemRenderer, updatePicker(), width / 2 - 200 + 38 / 2 - 16 / 2,
+        GuiUtils.drawItemStack(graphics, updatePicker(), width / 2 - 200 + 38 / 2 - 16 / 2,
                 height / 2 - 100 + 20 / 2 - 16 / 2 - getShiftY());
         if (GuiUtils.isHover(width / 2 - 200, height / 2 - 100 - getShiftY(), 38, 20, mouseX, mouseY)) {
-            show = () -> GuiUtils.drawTextBox(matrixStack, font, mouseX, mouseY, width, height,
+            show = () -> GuiUtils.drawTextBox(graphics, font, mouseX, mouseY, width, height,
                     I18n.get("x13.mod.color.random"));
         }
 
         // delete
-        GuiUtils.drawHoverableRect(matrixStack, width / 2 + 180, height / 2 - 100 - getShiftY(), width / 2 + 200, height / 2 - 80 - getShiftY(),
+        GuiUtils.drawHoverableRect(graphics, width / 2 + 180, height / 2 - 100 - getShiftY(), width / 2 + 200, height / 2 - 80 - getShiftY(),
                 0xFFDD4444, 0xFFFF4444, mouseX, mouseY);
-        GuiUtils.drawCenterString(matrixStack, font, "x", width / 2 + 190, height / 2 - 100 - getShiftY(), 0xFFFFFFFF, 20);
+        GuiUtils.drawCenterString(graphics, font, "x", width / 2 + 190, height / 2 - 100 - getShiftY(), 0xFFFFFFFF, 20);
 
         // history
         if (filledBuffer) {
             for (int i = 0; i < buffer.length; i++) {
                 int bx = width / 2 - 200 + 20 * i;
                 int by = height / 2 + 104 - getShiftY();
-                GuiUtils.drawHoverableRect(matrixStack, bx, by, bx + 19, by + 19, 0xFF_FF_FF_FF, 0xFF_BB_BB_BB, mouseX, mouseY);
-                GuiUtils.drawRect(matrixStack, bx + 1, by + 1, bx + 18, by + 18, buffer[i] | 0xFF_00_00_00);
+                GuiUtils.drawHoverableRect(graphics, bx, by, bx + 19, by + 19, 0xFF_FF_FF_FF, 0xFF_BB_BB_BB, mouseX, mouseY);
+                GuiUtils.drawRect(graphics, bx + 1, by + 1, bx + 18, by + 18, buffer[i] | 0xFF_00_00_00);
             }
         }
 
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
         show.run();
     }
 
@@ -313,10 +313,10 @@ public class ColorSelector extends XrayScreen {
                 }));
         advButton = addRenderableWidget(new XrayButton(width / 2 - 66, height / 2 + 80 - getShiftY(), 132, 20,
                 Component.translatable("x13.mod.color.advanced"), b -> {
-                    advanced ^= true;
-                    advButton.setMessage(Component.translatable(
-                            advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
-                }));
+            advanced ^= true;
+            advButton.setMessage(Component.translatable(
+                    advanced ? "x13.mod.color.picker" : "x13.mod.color.advanced"));
+        }));
         addRenderableWidget(
                 new XrayButton(width / 2 + 70, height / 2 + 80 - getShiftY(), 130, 20, Component.translatable("gui.cancel"), b -> getMinecraft().setScreen(parent)));
 
@@ -417,50 +417,50 @@ public class ColorSelector extends XrayScreen {
                 try {
                     updateRed(tfr.getValue().isEmpty() ? 0 : Integer.parseInt(tfr.getValue()));
                 } catch (Exception ignored) {
-                    
+
                 }
             else if (tfg.isFocused())
                 try {
                     updateGreen(tfg.getValue().isEmpty() ? 0 : Integer.parseInt(tfg.getValue()));
                 } catch (Exception ignored) {
-                    
+
                 }
             else if (tfb.isFocused())
                 try {
                     updateBlue(tfb.getValue().isEmpty() ? 0 : Integer.parseInt(tfb.getValue()));
                 } catch (Exception ignored) {
-                    
+
                 }
             else if (tfh.isFocused())
                 try {
                     updateHue(tfh.getValue().isEmpty() ? 0 : Integer.parseInt(tfh.getValue()));
                 } catch (Exception ignored) {
-                    
+
                 }
             else if (tfs.isFocused())
                 try {
                     updateSaturation(tfs.getValue().isEmpty() ? 0 : Integer.parseInt(tfs.getValue()));
                 } catch (Exception ignored) {
-                    
+
                 }
             else if (tfl.isFocused())
                 try {
                     updateLightness(tfl.getValue().isEmpty() ? 0 : Integer.parseInt(tfl.getValue()));
                 } catch (Exception ignored) {
-                    
+
                 }
             else if (hexColor.isFocused())
                 try {
                     String s = hexColor.getValue().substring(1);
                     updateColor(s.isEmpty() ? 0 : Integer.parseInt(s, 16));
                 } catch (Exception ignored) {
-                    
+
                 }
             else if (intColor.isFocused())
                 try {
                     updateColor(intColor.getValue().isEmpty() ? 0 : Integer.parseInt(intColor.getValue()));
                 } catch (Exception ignored) {
-                    
+
                 }
         }
         return super.keyPressed(key, scanCode, modifiers);
@@ -571,16 +571,16 @@ public class ColorSelector extends XrayScreen {
         localHue = h;
         localSaturation = s;
         localLightness = l;
-        tfh.setValue("" + localHue);
-        tfs.setValue("" + localSaturation);
-        tfl.setValue("" + localLightness);
+        tfh.setValue(String.valueOf(localHue));
+        tfs.setValue(String.valueOf(localSaturation));
+        tfl.setValue(String.valueOf(localLightness));
         setPickerState(localHue, localSaturation, localLightness);
 
         color = rgba & 0xffffff;
-        tfr.setValue("" + (color >> 16 & 0xFF));
-        tfg.setValue("" + (color >> 8 & 0xFF));
-        tfb.setValue("" + (color & 0xFF));
-        this.intColor.setValue("" + color);
+        tfr.setValue(String.valueOf(color >> 16 & 0xFF));
+        tfg.setValue(String.valueOf(color >> 8 & 0xFF));
+        tfb.setValue(String.valueOf(color & 0xFF));
+        this.intColor.setValue(String.valueOf(color));
         this.hexColor.setValue("#" + Integer.toHexString(color));
     }
 

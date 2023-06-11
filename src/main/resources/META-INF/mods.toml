@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[37,)"
+loaderVersion="[46,)"
 issueTrackerURL="https://github.com/ate47/Xray/issues"
 license="The Unlicense"
 [[mods]]
@@ -14,6 +14,6 @@ license="The Unlicense"
 [[dependencies.atianxray]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19,1.20)"
+    versionRange="[1.20,1.21)"
     ordering="NONE"
     side="BOTH"

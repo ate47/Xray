@@ -1,9 +1,9 @@
 package fr.atesab.xray.color;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.utils.GuiUtils;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -41,13 +41,13 @@ public class TextHudBuffer {
     /**
      * draw the buffer
      *
-     * @param stack  stack
+     * @param graphics     graphics
      * @param screenWidth  screen width
      * @param screenHeight screen height
-     * @param cfg    location config
-     * @param render text renderer
+     * @param cfg          location config
+     * @param render       text renderer
      */
-    public void draw(PoseStack stack, int screenWidth, int screenHeight, LocationConfig cfg, Font render) {
+    public void draw(GuiGraphics graphics, int screenWidth, int screenHeight, LocationConfig cfg, Font render) {
         if (lines.isEmpty()) {
             return; // ignore
         }
@@ -74,11 +74,11 @@ public class TextHudBuffer {
             // TODO: add color selector in the location config?
             switch (alignX) {
                 case LEFT ->
-                        GuiUtils.drawTextComponentScaled(stack, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
+                        GuiUtils.drawTextComponentScaled(graphics, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
                 case CENTER ->
-                        GuiUtils.drawCenteredTextComponentScaled(stack, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
+                        GuiUtils.drawCenteredTextComponentScaled(graphics, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
                 case RIGHT ->
-                        GuiUtils.drawRightTextComponentScaled(stack, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
+                        GuiUtils.drawRightTextComponentScaled(graphics, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
             }
         }
     }

@@ -1,7 +1,5 @@
 package fr.atesab.xray.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.config.LocationFormatTool;
@@ -9,6 +7,7 @@ import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -28,10 +27,10 @@ public class XrayLocationConfig extends XrayScreen {
         XrayMain mod = XrayMain.getMod();
         addRenderableWidget(new XrayButton(width / 2 - 100, height / 2 - 48, 200, 20,
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(), "x13.mod.location"), b -> {
-                    mod.getConfig().getLocationConfig().setEnabled(!mod.getConfig().getLocationConfig().isEnabled());
-                    b.setMessage(XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(),
-                            "x13.mod.location"));
-                }));
+            mod.getConfig().getLocationConfig().setEnabled(!mod.getConfig().getLocationConfig().isEnabled());
+            b.setMessage(XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isEnabled(),
+                    "x13.mod.location"));
+        }));
 
         addRenderableWidget(new XrayButton(width / 2 - 100, height / 2 - 24, 200, 20,
                 XrayUtils.getToggleable(mod.getConfig().getLocationConfig().isShowMode(), "x13.mod.location.showmodes"),
@@ -108,13 +107,13 @@ public class XrayLocationConfig extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
-        drawCenteredString(stack, font, Component.translatable("x13.mod.location"), width / 2,
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        renderBackground(graphics);
+        graphics.drawCenteredString(font, Component.translatable("x13.mod.location"), width / 2,
                 height / 2 - 52 - font.lineHeight, 0xffffffff);
-        GuiUtils.drawRightString(stack, font, I18n.get("x13.mod.location.format") + ": ", format, 0xffffffff);
-        format.render(stack, mouseX, mouseY, delta);
-        super.render(stack, mouseX, mouseY, delta);
+        GuiUtils.drawRightString(graphics, font, I18n.get("x13.mod.location.format") + ": ", format, 0xffffffff);
+        format.render(graphics, mouseX, mouseY, delta);
+        super.render(graphics, mouseX, mouseY, delta);
     }
 
     protected void save() {

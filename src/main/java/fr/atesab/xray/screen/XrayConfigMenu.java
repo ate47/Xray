@@ -1,9 +1,5 @@
 package fr.atesab.xray.screen;
 
-import java.net.URL;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.Skin;
 import fr.atesab.xray.config.XrayConfig;
@@ -13,12 +9,15 @@ import fr.atesab.xray.widget.XrayButton;
 import fr.atesab.xray.widget.XraySlider;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+
+import java.net.URL;
 
 public class XrayConfigMenu extends XrayScreen {
 
@@ -64,6 +63,7 @@ public class XrayConfigMenu extends XrayScreen {
             {
                 updateMessage();
             }
+
             @Override
             protected void updateMessage() {
                 float range = cfg.getEspLineWidth();
@@ -90,18 +90,18 @@ public class XrayConfigMenu extends XrayScreen {
                             minecraft.setScreen(parent);
                         }));
 
-        addRenderableWidget(new LongItemWidget(width * 0 / 3, height - 20, width / 3, 20,
+        addRenderableWidget(new LongItemWidget(0, height - 20, width / 3, 20,
                 Component.translatable("x13.mod.link.mod"), new ItemStack(Blocks.GOLD_ORE), () -> {
-                    openLink(XrayMain.MOD_LINK);
-                }));
-        addRenderableWidget(new LongItemWidget(width * 1 / 3, height - 20, width / 3, 20,
+            openLink(XrayMain.MOD_LINK);
+        }));
+        addRenderableWidget(new LongItemWidget(width / 3, height - 20, width / 3, 20,
                 Component.translatable("x13.mod.link.issue"), new ItemStack(Blocks.TNT), () -> {
-                    openLink(XrayMain.MOD_ISSUE);
-                }));
+            openLink(XrayMain.MOD_ISSUE);
+        }));
         addRenderableWidget(new LongItemWidget(width * 2 / 3, height - 20, width - width * 2 / 3, 20,
                 Component.translatable("x13.mod.link.source"), new ItemStack(Items.PAPER), () -> {
-                    openLink(XrayMain.MOD_SOURCE);
-                }));
+            openLink(XrayMain.MOD_SOURCE);
+        }));
         super.init();
     }
 
@@ -113,10 +113,10 @@ public class XrayConfigMenu extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
-        drawCenteredString(stack, font, title, width / 2,
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        renderBackground(graphics);
+        graphics.drawCenteredString(font, title, width / 2,
                 height / 2 - 52 - font.lineHeight, 0xffffffff);
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(graphics, mouseX, mouseY, delta);
     }
 }

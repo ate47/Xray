@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -123,9 +125,9 @@ public abstract class BlockSelector extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(matrixStack);
-        searchBar.render(matrixStack, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        renderBackground(graphics);
+        searchBar.render(graphics, mouseX, mouseY, partialTick);
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;
 
@@ -147,13 +149,13 @@ public abstract class BlockSelector extends XrayScreen {
                 color = 0x44666699;
             }
 
-            fill(matrixStack, x, y, x + 18, y + 18, color);
-            getMinecraft().getItemRenderer().renderGuiItem(matrixStack, stack, x + 1, y + 1);
+            graphics.fill(x, y, x + 18, y + 18, color);
+            GuiUtils.renderItemIdentity(graphics, stack, x + 1, y + 1);
         }
-        super.render(matrixStack, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
 
         if (hoveredBlock != null) {
-            renderTooltip(matrixStack, Component.translatable(hoveredBlock.getDescriptionId()), mouseX, mouseY);
+            graphics.renderTooltip(font, Component.translatable(hoveredBlock.getDescriptionId()), mouseX, mouseY);
         }
     }
 

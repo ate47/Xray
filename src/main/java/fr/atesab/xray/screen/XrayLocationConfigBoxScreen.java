@@ -7,6 +7,7 @@ import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.widget.XrayButton;
 import fr.atesab.xray.widget.XraySlider;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -126,8 +127,8 @@ public class XrayLocationConfigBoxScreen extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, delta);
     }
 }

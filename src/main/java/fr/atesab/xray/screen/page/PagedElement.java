@@ -1,19 +1,17 @@
 package fr.atesab.xray.screen.page;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.minecraft.client.gui.ComponentPath;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PagedElement<E> implements GuiEventListener {
     PagedScreen<E> parentScreen;
     private boolean focus;
-    private List<AbstractWidget> widgets = new ArrayList<>();
-    private List<GuiEventListener> guiListeners = new ArrayList<>();
+    private final List<AbstractWidget> widgets = new ArrayList<>();
+    private final List<GuiEventListener> guiListeners = new ArrayList<>();
 
     public PagedElement(PagedScreen<E> parent) {
         this.parentScreen = parent;
@@ -51,8 +49,8 @@ public class PagedElement<E> implements GuiEventListener {
     public void init() {
     }
 
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        widgets.forEach(w -> w.render(stack, mouseX, mouseY, delta));
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        widgets.forEach(w -> w.render(graphics, mouseX, mouseY, delta));
     }
 
     public void tick() {
@@ -84,7 +82,7 @@ public class PagedElement<E> implements GuiEventListener {
 
     @Override
     public boolean mouseDragged(double startMouseX, double startMouseY, int button, double endMouseX,
-            double endMouseY) {
+                                double endMouseY) {
         for (GuiEventListener w : guiListeners)
             if (w.mouseDragged(startMouseX, startMouseY, button, endMouseX, endMouseY))
                 return true;

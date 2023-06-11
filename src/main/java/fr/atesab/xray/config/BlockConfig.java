@@ -47,7 +47,10 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
 
                 // 1.18
                 Blocks.COPPER_BLOCK,
-                
+
+                // 1.20
+                Blocks.CHISELED_BOOKSHELF,
+
                 /* Ore Blocks */
                 Blocks.COAL_BLOCK, Blocks.IRON_BLOCK, Blocks.GOLD_BLOCK, Blocks.DIAMOND_BLOCK,
                 Blocks.EMERALD_BLOCK, Blocks.REDSTONE_BLOCK, Blocks.LAPIS_BLOCK, Blocks.NETHERITE_BLOCK,
@@ -202,13 +205,12 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void shouldSideBeRendered(BlockState adjacentState, BlockGetter blockState, BlockPos blockAccess,
             Direction pos, CallbackInfoReturnable<Boolean> ci) {
         if (!isEnabled())
             return;
 
-        String name = ForgeRegistries.BLOCKS.getKey(adjacentState.getBlock()).toString();
+        String name = Objects.requireNonNullElse(ForgeRegistries.BLOCKS.getKey(adjacentState.getBlock()), "").toString();
         boolean present = blocks.contains(name);
         boolean shouldRender = viewMode.getViewer().shouldRenderSide(present, adjacentState, blockState,
                 blockAccess, pos);

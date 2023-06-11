@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.Skin;
 import fr.atesab.xray.utils.GuiUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.network.chat.Component;
 
@@ -14,10 +15,10 @@ public abstract class XraySlider extends AbstractSliderButton {
     }
 
     @Override
-    public void renderWidget(PoseStack stack, int mx, int my, float delta) {
+    public void renderWidget(GuiGraphics graphics, int mx, int my, float delta) {
         Skin skin = XrayMain.getMod().getConfig().getSkin();
-        if (skin.renderSlider(this, stack, getX(), getY(), width, height)) {
-            super.renderWidget(stack, mx, my, delta);
+        if (skin.renderSlider(this, graphics, getX(), getY(), width, height)) {
+            super.renderWidget(graphics, mx, my, delta);
         }
     }
 

@@ -16,6 +16,7 @@ import fr.atesab.xray.utils.XrayUtils;
 import fr.atesab.xray.view.ViewMode;
 import fr.atesab.xray.widget.BlockConfigWidget;
 import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -93,14 +94,14 @@ public abstract class XrayBlockModesConfig extends PagedScreen<BlockConfig> {
         }
 
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
             textHover = XrayUtils.isHover(mouseX, mouseY, width / 2 - 200, 0, width / 2 - 125 - 4, 20);
-            fill(stack, width / 2 - 200, 0, width / 2 - 125 - 4, 20, textHover ? 0x33ffaa00 : 0x33ffffff);
+            graphics.fill(width / 2 - 200, 0, width / 2 - 125 - 4, 20, textHover ? 0x33ffaa00 : 0x33ffffff);
             int w = font.width(cfg.getModeName());
-            font.draw(stack, cfg.getModeName(), width / 2 - (200 - 125 - 4) / 2 - 125 - 4 - w / 2,
+            graphics.drawString(font, cfg.getModeName(), width / 2 - (200 - 125 - 4) / 2 - 125 - 4 - w / 2,
                     10 - font.lineHeight / 2,
                     cfg.getColor());
-            super.render(stack, mouseX, mouseY, delta);
+            super.render(graphics, mouseX, mouseY, delta);
         }
 
         @Override

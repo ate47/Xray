@@ -1,9 +1,9 @@
 package fr.atesab.xray.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.Skin;
 import fr.atesab.xray.utils.GuiUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -23,16 +23,16 @@ public class XrayScreen extends Screen {
 
 
     @Override
-    public void renderBackground(PoseStack stack) {
+    public void renderBackground(GuiGraphics graphics) {
         if (minecraft.level != null) {
-            super.renderBackground(stack);
+            super.renderBackground(graphics);
         } else {
             Skin skin = XrayMain.getMod().getConfig().getSkin();
             Integer bg = skin.getBackgroundColor();
             if (bg != null) {
-                GuiUtils.drawRect(stack, 0, 0, width, height, bg);
+                GuiUtils.drawRect(graphics, 0, 0, width, height, bg);
             } else {
-                super.renderBackground(stack);
+                super.renderBackground(graphics);
             }
         }
     }

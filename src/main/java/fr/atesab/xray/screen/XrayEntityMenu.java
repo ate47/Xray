@@ -9,8 +9,10 @@ import fr.atesab.xray.color.BlockEntityTypeIcon;
 import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.config.ESPConfig;
+import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -181,9 +183,9 @@ public class XrayEntityMenu extends XrayScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(matrixStack);
-        searchBar.render(matrixStack, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        renderBackground(graphics);
+        searchBar.render(graphics, mouseX, mouseY, partialTick);
 
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;
@@ -208,8 +210,8 @@ public class XrayEntityMenu extends XrayScreen {
                 color = 0x44666699;
             }
 
-            fill(matrixStack, x, y, x + 18, y + 18, color);
-            getMinecraft().getItemRenderer().renderGuiItem(matrixStack, stack, x + 1, y + 1);
+            graphics.fill(x, y, x + 18, y + 18, color);
+            GuiUtils.renderItemIdentity(graphics, stack, x + 1, y + 1);
         }
         // add [+] button
         int x = left + (i % elementsX) * 18;
@@ -223,21 +225,19 @@ public class XrayEntityMenu extends XrayScreen {
             color = 0x44669966;
         }
 
-        fill(matrixStack, x, y, x + 18, y + 18, color);
-        font.draw(
-                matrixStack,
-                ADD, x + 18f / 2 - font.width(ADD) / 2f, y + 18 / 2 - font.lineHeight / 2f, color);
+        graphics.fill(x, y, x + 18, y + 18, color);
+        graphics.drawString(font, ADD, x + (18 - font.width(ADD)) / 2, y + (18 - font.lineHeight) / 2, color);
 
-        super.render(matrixStack, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
 
         if (hovered != null) {
-            renderTooltip(matrixStack,
+            graphics.renderTooltip(font,
                     List.of(
                             Component.translatable(hoveredBlock.text()).getVisualOrderText(),
                             REPLACE.getVisualOrderText(),
                             DELETE.getVisualOrderText()
                     ),
-                    mouseX, mouseY, font);
+                    mouseX, mouseY);
         }
     }
 
