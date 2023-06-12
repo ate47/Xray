@@ -6,6 +6,7 @@ import fr.atesab.xray.color.EnumElement;
 import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -184,9 +185,9 @@ public class XrayEntityMenu extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(matrixStack);
-        searchBar.render(matrixStack, mouseX, mouseY, partialTick);
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTick) {
+        renderBackground(drawContext);
+        searchBar.render(drawContext, mouseX, mouseY, partialTick);
 
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;
@@ -211,8 +212,8 @@ public class XrayEntityMenu extends Screen {
                 color = 0x44666699;
             }
 
-            fill(matrixStack, x, y, x + 18, y + 18, color);
-            client.getItemRenderer().renderGuiItemIcon(new MatrixStack(), stack, x + 1, y + 1);
+            drawContext.fill(x, y, x + 18, y + 18, color);
+            drawContext.drawItem(stack, x + 1, y + 1);
         }
         // add [+] button
         int x = left + (i % elementsX) * 18;
@@ -226,16 +227,14 @@ public class XrayEntityMenu extends Screen {
             color = 0x44669966;
         }
 
-        fill(matrixStack, x, y, x + 18, y + 18, color);
-        textRenderer.draw(matrixStack, ADD, x + 18 / 2 - textRenderer.getWidth(ADD) / 2,
-                y + 18 / 2 - textRenderer.fontHeight / 2, color);
+        drawContext.fill(x, y, x + 18, y + 18, color);
+        drawContext.drawText(this.textRenderer, ADD, x + 18 / 2 - textRenderer.getWidth(ADD) / 2,
+                y + 18 / 2 - textRenderer.fontHeight / 2, color, false);
 
-        super.render(matrixStack, mouseX, mouseY, partialTick);
+        super.render(drawContext, mouseX, mouseY, partialTick);
 
         if (hovered != null) {
-            renderTooltip(matrixStack,
-                    Arrays.asList(Text.translatable(hoveredBlock.text()), REPLACE, DELETE),
-                    mouseX, mouseY);
+            drawContext.drawTooltip(this.textRenderer, Arrays.asList(Text.translatable(hoveredBlock.text()), REPLACE, DELETE), mouseX, mouseY);
         }
     }
 

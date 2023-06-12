@@ -5,6 +5,7 @@ import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.widget.XrayButton;
 import fr.atesab.xray.widget.XraySlider;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -128,8 +129,8 @@ public class XrayLocationConfigBoxScreen extends XrayScreen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        renderBackground(drawContext);
+        super.render(drawContext, mouseX, mouseY, delta);
     }
 }

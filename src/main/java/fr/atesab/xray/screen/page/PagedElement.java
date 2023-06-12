@@ -3,6 +3,7 @@ package fr.atesab.xray.screen.page;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
@@ -48,8 +49,8 @@ public class PagedElement<E> implements Element {
     public void init() {
     }
 
-    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
-        widgets.forEach(w -> w.render(stack, mouseX, mouseY, delta));
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        widgets.forEach(w -> w.render(context, mouseX, mouseY, delta));
     }
 
     public void tick() {

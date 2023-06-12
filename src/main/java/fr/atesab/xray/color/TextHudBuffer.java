@@ -3,8 +3,9 @@ package fr.atesab.xray.color;
 import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.utils.GuiUtils;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -41,13 +42,13 @@ public class TextHudBuffer {
     /**
      * draw the buffer
      *
-     * @param stack  stack
+     * @param drawContext  drawContext
      * @param screenWidth  screen width
      * @param screenHeight screen height
      * @param cfg    location config
      * @param render text renderer
      */
-    public void draw(MatrixStack stack, int screenWidth, int screenHeight, LocationConfig cfg, TextRenderer render) {
+    public void draw(DrawContext drawContext, int screenWidth, int screenHeight, LocationConfig cfg, TextRenderer render) {
         if (lines.isEmpty()) {
             return; // ignore
         }
@@ -69,16 +70,16 @@ public class TextHudBuffer {
         };
 
         for (int i = 0; i < lines.size(); i++) {
-            MutableText text = lines.get(i);
+            OrderedText text = lines.get(i).asOrderedText();
 
             // TODO: add color selector in the location config?
             switch (alignX) {
                 case LEFT ->
-                        GuiUtils.drawTextComponentScaled(stack, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
+                        GuiUtils.drawTextComponentScaled(drawContext, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
                 case CENTER ->
-                        GuiUtils.drawCenteredTextComponentScaled(stack, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
+                        GuiUtils.drawCenteredTextComponentScaled(drawContext, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
                 case RIGHT ->
-                        GuiUtils.drawRightTextComponentScaled(stack, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
+                        GuiUtils.drawRightTextComponentScaled(drawContext, x, y + i * (fontSize + 1), fontSize, text, 0xffffffff);
             }
         }
     }

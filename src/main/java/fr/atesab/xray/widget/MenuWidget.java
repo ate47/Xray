@@ -4,10 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -27,7 +26,7 @@ public class MenuWidget extends PressableWidget {
     }
 
     @Override
-    public void renderButton(MatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
         boolean hovered = isHovered();
         int centerX = getX() + width / 2;
@@ -38,12 +37,11 @@ public class MenuWidget extends PressableWidget {
             color = 0x22ffffff;
         }
 
-        DrawableHelper.fill(stack, getX(), getY(), getX() + width, getY() + height, color);
+        drawContext.fill(getX(), getY(), getX() + width, getY() + height, color);
 
         Text message = getMessage();
         TextRenderer textRenderer = client.textRenderer;
-        ItemRenderer renderer = client.getItemRenderer();
-        MatrixStack modelStack = RenderSystem.getModelViewStack();
+        MatrixStack modelStack = drawContext.getMatrices();
 
         int stackCenterX = getX() + width / 2;
         int stackCenterY = getY() + height * 2 / 5;
@@ -52,17 +50,18 @@ public class MenuWidget extends PressableWidget {
         float scaleX = getWidth() * 3 / 4f / 16f;
         float scaleY = getHeight() * 3 / 4f / 16f;
         modelStack.scale(scaleX, scaleY, 1);
-        renderer.renderGuiItemIcon(new MatrixStack(), itemStack, -8, -8);
+        drawContext.drawItemWithoutEntity(itemStack, -8, -8);
         modelStack.scale(1 / scaleX, 1 / scaleY, 1);
         modelStack.translate(-stackCenterX, -stackCenterY, 0);
         RenderSystem.applyModelViewMatrix();
 
+        MatrixStack stack = drawContext.getMatrices();
         stack.push();
         stack.translate(centerX, getY() + getHeight(), 0);
         float scale = getHeight() * 1 / 7f / textRenderer.fontHeight;
         stack.scale(scale, scale, 1);
         int textColor = this.active ? 16777215 : 10526880;
-        drawCenteredTextWithShadow(stack, textRenderer, message, 0, -textRenderer.fontHeight, textColor);
+        drawContext.drawCenteredTextWithShadow(textRenderer, message, 0, -textRenderer.fontHeight, textColor);
         stack.scale(1 / scale, 1 / scale, 1);
         stack.translate(-centerX, -getY() - getHeight(), 0);
         stack.pop();

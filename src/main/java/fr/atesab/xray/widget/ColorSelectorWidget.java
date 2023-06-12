@@ -6,11 +6,10 @@ import java.util.function.IntSupplier;
 import fr.atesab.xray.screen.ColorSelector;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 public class ColorSelectorWidget extends PressableWidget {
@@ -35,7 +34,7 @@ public class ColorSelectorWidget extends PressableWidget {
     }
 
     @Override
-    public void renderButton(MatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         boolean hovered = isHovered();
         int color = getter.getAsInt() & 0xFFFFFF;
         if (hovered) {
@@ -44,11 +43,11 @@ public class ColorSelectorWidget extends PressableWidget {
             color |= 0x88000000;
         }
 
-        DrawableHelper.fill(stack, getX(), getY(), getX() + width, getY() + height, color);
+        drawContext.fill(getX(), getY(), getX() + width, getY() + height, color);
 
         Text message = getMessage();
         TextRenderer textRenderer = client.textRenderer;
-        drawCenteredTextWithShadow(stack, textRenderer, message, getX() + width / 2, getY() + height / 2 - textRenderer.fontHeight / 2,
+        drawContext.drawCenteredTextWithShadow(textRenderer, message, getX() + width / 2, getY() + height / 2 - textRenderer.fontHeight / 2,
                 0xFFFFFFFF);
     }
 

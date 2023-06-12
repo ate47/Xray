@@ -6,7 +6,7 @@ import fr.atesab.xray.config.ESPConfig;
 import fr.atesab.xray.widget.MenuWidget;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -76,21 +76,22 @@ public class XrayMenu extends XrayScreen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        MatrixStack stack = drawContext.getMatrices();
+        renderBackground(drawContext);
         stack.push();
         stack.translate(width / 2f, height / 2f - 70, 0);
         stack.scale(4, 4, 1);
-        drawCenteredTextWithShadow(stack, client.textRenderer, XrayMain.MOD_NAME, 0, -client.textRenderer.fontHeight,
+        drawContext.drawCenteredTextWithShadow(client.textRenderer, XrayMain.MOD_NAME, 0, -client.textRenderer.fontHeight,
                 0xffffff33);
         stack.pop();
-        drawCenteredTextWithShadow(stack, client.textRenderer, Text.translatable("x13.mod.by",
+        drawContext.drawCenteredTextWithShadow(client.textRenderer, Text.translatable("x13.mod.by",
                         String.join(", ", XrayMain.MOD_AUTHORS)),
                 width / 2, height / 2 - 60, 0xffaaaaaa);
         int size = 400 / 5;
-        DrawableHelper.fill(stack, 0, height / 2 - size / 2, width / 2 - 200, height / 2 + size / 2, 0x22ffffff);
-        DrawableHelper.fill(stack, width / 2 + 200, height / 2 - size / 2, width, height / 2 + size / 2, 0x22ffffff);
+        drawContext.fill(0, height / 2 - size / 2, width / 2 - 200, height / 2 + size / 2, 0x22ffffff);
+        drawContext.fill(width / 2 + 200, height / 2 - size / 2, width, height / 2 + size / 2, 0x22ffffff);
 
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(drawContext, mouseX, mouseY, delta);
     }
 }

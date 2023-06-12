@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -97,17 +98,17 @@ public class KeySelector extends XrayScreen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
-        drawCenteredTextWithShadow(stack, textRenderer, getTitle(), width / 2, height / 2 - 30 - textRenderer.fontHeight,
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        renderBackground(drawContext);
+        drawContext.drawCenteredTextWithShadow(textRenderer, getTitle(), width / 2, height / 2 - 30 - textRenderer.fontHeight,
                 0xffffffff);
 
         if (isWaitingKey) {
-            drawCenteredTextWithShadow(stack, textRenderer, Text.translatable("x13.mod.selector.key.presskey"), width / 2,
+            drawContext.drawCenteredTextWithShadow(textRenderer, Text.translatable("x13.mod.selector.key.presskey"), width / 2,
                     keyButton.getY() + keyButton.getHeight() / 2 - textRenderer.fontHeight, 0xffffff00);
         }
 
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(drawContext, mouseX, mouseY, delta);
     }
 
 }

@@ -26,6 +26,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.SimpleOption;
@@ -273,7 +274,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
     }
 
     @Override
-    public void onHudRender(MatrixStack stack, float tickDelta) {
+    public void onHudRender(DrawContext drawContext, float tickDelta) {
         MinecraftClient mc = MinecraftClient.getInstance();
         TextRenderer render = mc.textRenderer;
         ClientPlayerEntity player = mc.player;
@@ -320,7 +321,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         }
 
         buffer.draw(
-                stack,
+                drawContext,
                 mc.getWindow().getScaledWidth(),
                 mc.getWindow().getScaledHeight(),
                 config.getLocationConfig(),

@@ -2,6 +2,7 @@ package fr.atesab.xray.screen;
 
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -124,9 +125,9 @@ public abstract class BlockSelector extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(matrixStack);
-        searchBar.render(matrixStack, mouseX, mouseY, partialTick);
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTick) {
+        renderBackground(drawContext);
+        searchBar.render(drawContext, mouseX, mouseY, partialTick);
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;
 
@@ -148,13 +149,13 @@ public abstract class BlockSelector extends Screen {
                 color = 0x44666699;
             }
 
-            fill(matrixStack, x, y, x + 18, y + 18, color);
-            client.getItemRenderer().renderGuiItemIcon(new MatrixStack(), stack, x + 1, y + 1);
+            drawContext.fill(x, y, x + 18, y + 18, color);
+            drawContext.drawItem(stack, x + 1, y + 1);
         }
-        super.render(matrixStack, mouseX, mouseY, partialTick);
+        super.render(drawContext, mouseX, mouseY, partialTick);
 
         if (hoveredBlock != null) {
-            renderTooltip(matrixStack, Text.translatable(hoveredBlock.getTranslationKey()), mouseX, mouseY);
+            drawContext.drawTooltip(this.textRenderer, Text.translatable(hoveredBlock.getTranslationKey()), mouseX, mouseY);
         }
     }
 

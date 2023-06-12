@@ -3,12 +3,11 @@ package fr.atesab.xray.widget;
 import fr.atesab.xray.widget.MenuWidget.OnPress;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 public class LongItemWidget extends PressableWidget {
@@ -38,7 +37,7 @@ public class LongItemWidget extends PressableWidget {
     }
 
     @Override
-    public void renderButton(MatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
         boolean hovered = isHovered();
         int color;
@@ -48,19 +47,18 @@ public class LongItemWidget extends PressableWidget {
             color = 0x22ffffff;
         }
 
-        DrawableHelper.fill(stack, getX(), getY(), getX() + width, getY() + height, color);
+        drawContext.fill(getX(), getY(), getX() + width, getY() + height, color);
 
-        Text message = getMessage();
+        OrderedText message = getMessage().asOrderedText();
         TextRenderer textRenderer = client.textRenderer;
-        ItemRenderer renderer = client.getItemRenderer();
 
         int deltaH = (getHeight() - 16);
 
-        renderer.renderGuiItemIcon(new MatrixStack(), itemStack, getX() + deltaH / 2 + deltaX, getY() + deltaH / 2 + deltaY);
+        drawContext.drawItem(itemStack, getX() + deltaH / 2 + deltaX, getY() + deltaH / 2 + deltaY);
         int textColor = this.active ? 16777215 : 10526880;
-        textRenderer.draw(stack,
-                message, getX() + deltaH + 16 + 2, getY() + getHeight() / 2f - textRenderer.fontHeight / 2f,
-                textColor);
+        drawContext.drawText(textRenderer,
+                message, getX() + deltaH + 16 + 2, getY() + getHeight() / 2 - textRenderer.fontHeight / 2,
+                textColor, false);
     }
 
     @Override

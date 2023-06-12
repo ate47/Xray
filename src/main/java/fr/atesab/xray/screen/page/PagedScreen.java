@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import fr.atesab.xray.screen.XrayScreen;
 import fr.atesab.xray.utils.TagOnWriteList;
 import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -236,21 +237,22 @@ public abstract class PagedScreen<E> extends XrayScreen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        MatrixStack stack = context.getMatrices();
+        renderBackground(context);
         applyToAllElement((element, deltaY) -> {
             stack.translate(0, deltaY, 0);
-            element.render(stack, mouseX, mouseY - deltaY, delta);
+            element.render(context, mouseX, mouseY - deltaY, delta);
             stack.translate(0, -deltaY, 0);
             return false;
         });
-        fill(stack, 0, 0, width, 22, 0xff444444);
-        fill(stack, 0, height - 28, width, height, 0xff444444);
+        context.fill(0, 0, width, 22, 0xff444444);
+        context.fill(0, height - 28, width, height, 0xff444444);
         String title = getTitle().getString();
         if (maxPage != 1)
             title += " (" + (page + 1) + "/" + maxPage + ")";
-        drawCenteredTextWithShadow(stack, textRenderer, title, width / 2, 11 - textRenderer.fontHeight / 2, 0xffffffff);
-        super.render(stack, mouseX, mouseY, delta);
+        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 11 - textRenderer.fontHeight / 2, 0xffffffff);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override
