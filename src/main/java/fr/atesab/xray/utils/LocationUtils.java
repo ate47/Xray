@@ -1,17 +1,18 @@
 package fr.atesab.xray.utils;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 public class LocationUtils {
 	
@@ -57,5 +58,35 @@ public class LocationUtils {
 		}
 		return String.valueOf(WorldgenRandom.seedSlimeChunk(chunk.x, chunk.z,
 				server.getWorldData().worldGenOptions().seed(), 987234911L).nextInt(10) == 0);
+	}
+	
+	public static String getDurabilityOrFoodData(ItemStack item) {
+		if (item.isDamageableItem()) {
+			return String.valueOf(getRemainDurability(item));
+		} else if (item.isEdible()) {
+			return String.valueOf(item.getFoodProperties(null).getNutrition()) + "(" + String.format("%.1f",getAddSaturation(item)) + ")";
+		} else {
+			return "-";
+		}
+	}
+
+	public static String getMaxDurabilityOrAfterFoodData(ItemStack item,int currentNutrition, float currentSaturation) {
+		if (item.isDamageableItem()) {
+			return String.valueOf(item.getMaxDamage());
+		} else if (item.isEdible()) {
+			int afterNutrition = Math.min(currentNutrition + item.getFoodProperties(null).getNutrition(), 20);
+			float afterSaturation = Math.min(currentSaturation + getAddSaturation(item), 20);
+			return String.valueOf(afterNutrition) + "(" + String.format("%.1f",afterSaturation) + ")";
+		} else {
+			return "-";
+		}
+	}
+
+	public static int getRemainDurability(ItemStack item) {
+		return item.getMaxDamage() - item.getDamageValue();
+	}
+
+	public static float getAddSaturation(ItemStack item) {
+		return item.getFoodProperties(null).getNutrition() * item.getFoodProperties(null).getSaturationModifier() * 2.0F;
 	}
 }
