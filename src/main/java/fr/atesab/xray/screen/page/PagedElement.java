@@ -97,9 +97,9 @@ public class PagedElement<E> implements Element {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scroll, double verticalAmount) {
         for (Element w : guiListeners)
-            if (w.mouseScrolled(mouseX, mouseY, scroll))
+            if (w.mouseScrolled(mouseX, mouseY, scroll, verticalAmount))
                 return true;
         return false;
     }

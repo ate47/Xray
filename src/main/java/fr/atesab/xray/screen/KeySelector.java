@@ -98,7 +98,7 @@ public class KeySelector extends XrayScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderInGameBackground(context);
         context.drawCenteredTextWithShadow(textRenderer, getTitle(), width / 2, height / 2 - 30 - textRenderer.fontHeight,
                 0xffffffff);
 

@@ -117,7 +117,7 @@ public class XrayConfigMenu extends XrayScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderInGameBackground(context);
         context.drawCenteredTextWithShadow(textRenderer, title, width / 2,
                 height / 2 - 52 - textRenderer.fontHeight, 0xffffffff);
         super.render(context, mouseX, mouseY, delta);

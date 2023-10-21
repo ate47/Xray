@@ -279,7 +279,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         TextRenderer render = mc.textRenderer;
         ClientPlayerEntity player = mc.player;
 
-        if (!config.getLocationConfig().isEnabled() || player == null || mc.options.debugEnabled) {
+        if (!config.getLocationConfig().isEnabled() || player == null || mc.getDebugHud().shouldShowDebugHud()) {
             return;
         }
 

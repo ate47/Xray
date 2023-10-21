@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(targets = "me.jellysquid.mods.sodium.client.render.occlusion.BlockOcclusionCache")
+@Mixin(targets = "me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockOcclusionCache")
 public class MixinBlockOcclusionCache {
     @Inject(at = @At("HEAD"), method = "shouldDrawSide", cancellable = true, remap = false)
     private void shouldDrawSide(BlockState state, BlockView reader, BlockPos pos, Direction face,

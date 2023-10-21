@@ -165,14 +165,6 @@ public class ColorSelector extends XrayScreen {
 
     @Override
     public void tick() {
-        tfr.tick();
-        tfg.tick();
-        tfb.tick();
-        tfh.tick();
-        tfs.tick();
-        tfl.tick();
-        hexColor.tick();
-        intColor.tick();
         super.tick();
     }
 
@@ -181,7 +173,7 @@ public class ColorSelector extends XrayScreen {
         // allow multiple color modifiers
         setPickerState(localHue, localSaturation, localLightness);
 
-        renderBackground(context);
+        renderInGameBackground(context);
 
         if (!advanced) {
             // S PICKER
