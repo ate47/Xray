@@ -129,7 +129,7 @@ public class XrayLocationConfigBoxScreen extends XrayScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderInGameBackground(context);
         super.render(context, mouseX, mouseY, delta);
     }
 }

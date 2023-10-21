@@ -77,7 +77,7 @@ public class XrayMenu extends XrayScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderInGameBackground(context);
         MatrixStack stack = context.getMatrices();
         stack.push();
         stack.translate(width / 2f, height / 2f - 70, 0);

@@ -47,7 +47,7 @@ public class XrayLocationConfig extends XrayScreen {
         format.setText(mod.getConfig().getLocationConfig().getFormat());
         format.setChangedListener(mod.getConfig().getLocationConfig()::setFormat);
         if (position != 0) {
-            format.setCursor(position);
+            format.setCursor(position, false);
             position = 0;
         }
         addSelectableChild(format);
@@ -100,13 +100,12 @@ public class XrayLocationConfig extends XrayScreen {
 
     @Override
     public void tick() {
-        format.tick();
         super.tick();
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderInGameBackground(context);
         context.drawCenteredTextWithShadow(textRenderer, Text.translatable("x13.mod.location"), width / 2,
                 height / 2 - 52 - textRenderer.fontHeight, 0xffffffff);
         GuiUtils.drawRightString(context, textRenderer, I18n.translate("x13.mod.location.format") + ": ", format,

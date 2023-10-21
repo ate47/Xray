@@ -237,7 +237,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderInGameBackground(context);
         applyToAllElement((element, deltaY) -> {
             MatrixStack stack = context.getMatrices();
             stack.translate(0, deltaY, 0);
@@ -297,14 +297,14 @@ public abstract class PagedScreen<E> extends XrayScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scroll, double verticalAmount) {
         if (scroll < 0) {
             nextPage();
         } else {
             lastPage();
         }
-        applyToAllElement((element, deltaY) -> element.mouseScrolled(mouseX, mouseY - deltaY, scroll));
-        return super.mouseScrolled(mouseX, mouseY, scroll);
+        applyToAllElement((element, deltaY) -> element.mouseScrolled(mouseX, mouseY - deltaY, scroll, verticalAmount));
+        return super.mouseScrolled(mouseX, mouseY, scroll, verticalAmount);
     }
 
     @Override

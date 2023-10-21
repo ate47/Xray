@@ -126,7 +126,7 @@ public abstract class BlockSelector extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float partialTick) {
-        renderBackground(context);
+        renderInGameBackground(context);
         searchBar.render(context, mouseX, mouseY, partialTick);
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;
