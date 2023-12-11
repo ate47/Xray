@@ -4,7 +4,6 @@ import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.Skin;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -14,10 +13,10 @@ public abstract class XraySlider extends SliderWidget {
     }
 
     @Override
-    public void renderButton(DrawContext context, int mx, int my, float delta) {
+    public void renderWidget(DrawContext context, int mx, int my, float delta) {
         Skin skin = XrayMain.getMod().getConfig().getSkin();
         if (skin.renderSlider(this, context, getX(), getY(), width, height)) {
-            super.renderButton(context, mx, my, delta);
+            super.renderWidget(context, mx, my, delta);
         }
     }
     public void setValue(double value) {

@@ -83,7 +83,7 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
                 0,
                 "Cave",
                 ViewMode.INCLUSIVE,
-                Blocks.DIRT,              Blocks.GRASS,            Blocks.GRAVEL,          Blocks.GRASS_BLOCK,
+                Blocks.DIRT,              Blocks.SHORT_GRASS,            Blocks.GRAVEL,          Blocks.GRASS_BLOCK,
                 Blocks.DIRT_PATH,         Blocks.SAND,             Blocks.SANDSTONE,       Blocks.RED_SAND
             )),
         REDSTONE("x13.mod.template.redstone", new ItemStack(Blocks.REDSTONE_ORE), new BlockConfig(

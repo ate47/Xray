@@ -21,9 +21,9 @@
   "mixins": ["xray.sodium.mixins.json", "xray.vanilla.mixins.json"],
 
   "depends": {
-    "fabricloader": ">=0.14.17",
+    "fabricloader": ">=0.15.0",
     "fabric": "*",
-    "minecraft": ">=1.20"
+    "minecraft": ">=1.20.3"
   },
   "conflicts": {
     "optifabric": "*"

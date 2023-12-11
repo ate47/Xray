@@ -9,7 +9,6 @@ import fr.atesab.xray.utils.GuiUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
@@ -41,13 +40,12 @@ public class EntityConfigWidget extends XrayButton {
     }
 
     @Override
-    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         int fit = (width - 2) / 17;
 
         Stream<ItemStack> stacks = Stream.concat(cfg.getEntities().getIcons(), cfg.getBlockEntities().getIcons());
 
         List<ItemStack> view = stacks.limit(fit).toList();
-        MinecraftClient client = MinecraftClient.getInstance();
 
         if (mouseX >= this.getX() && mouseX <= this.getX() + this.width && mouseY >= this.getY() && mouseY <= this.getY() + this.height) {
             context.fill(getX(), getY(), getX() + width, getY() + height, 0x33ffaa00);

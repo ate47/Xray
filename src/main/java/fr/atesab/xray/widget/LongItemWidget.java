@@ -7,8 +7,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
@@ -39,7 +37,7 @@ public class LongItemWidget extends PressableWidget {
     }
 
     @Override
-    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
         boolean hovered = isHovered();
         int color;
@@ -53,7 +51,6 @@ public class LongItemWidget extends PressableWidget {
 
         Text message = getMessage();
         TextRenderer textRenderer = client.textRenderer;
-        ItemRenderer renderer = client.getItemRenderer();
 
         int deltaH = (getHeight() - 16);
 
