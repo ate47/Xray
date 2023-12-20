@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,10 +90,10 @@ public class XrayButton extends ButtonWidget {
     }
 
     @Override
-    public void renderButton(DrawContext context, int mx, int my, float delta) {
+    public void renderWidget(DrawContext context, int mx, int my, float delta) {
         Skin skin = XrayMain.getMod().getConfig().getSkin();
         if (skin.renderButton(this, context, getX(), getY(), width, height)) {
-            super.renderButton(context, mx, my, delta);
+            super.renderWidget(context, mx, my, delta);
         }
     }
 

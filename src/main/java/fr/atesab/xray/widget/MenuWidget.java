@@ -28,7 +28,7 @@ public class MenuWidget extends PressableWidget {
     }
 
     @Override
-    public void renderButton(DrawContext graphics, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext graphics, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
         boolean hovered = isHovered();
         int centerX = getX() + width / 2;
