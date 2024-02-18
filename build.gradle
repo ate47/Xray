@@ -61,9 +61,26 @@ mixin {
     config 'atianxray.mixins.json'
 }
 
+repositories {
+    // Put repositories for dependencies here
+    // ForgeGradle automatically adds the Forge maven and Maven Central for you
+	    maven {
+	        url "https://cursemaven.com"
+	        content {
+	            includeGroup "curse.maven"
+	        }
+	    }
+
+    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
+    // flatDir {
+    //     dir 'libs'
+    // }
+}
+
 dependencies {
     minecraft 'net.minecraftforge:forge:1.20.2-48.0.40'
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+	compileOnly fg.deobf("curse.maven:rubidium-574856:4952685") //1.20.2 isn't released.need update.
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
