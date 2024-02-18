@@ -9,30 +9,20 @@ import java.util.Objects;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-
-import net.minecraft.client.OptionInstance;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
-import net.minecraftforge.client.ConfigScreenHandler;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.eventbus.api.IEventBus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
@@ -51,23 +41,39 @@ import fr.atesab.xray.utils.XrayUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -312,7 +318,7 @@ public class XrayMain {
 		Font render = mc.font;
 		LocalPlayer player = mc.player;
 
-		if (!config.getLocationConfig().isEnabled() || player == null || mc.options.renderDebug) {
+		if (!config.getLocationConfig().isEnabled() || player == null || mc.gui.getDebugOverlay().showDebugScreen()) {
 			return;
 		}
 
@@ -454,7 +460,8 @@ public class XrayMain {
 										blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1
 								);
 
-								LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
+								RenderUtils.renderLineBoxVanillaStyle(stack, buffer, aabb, r, g, b, a);
+								//LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
 
 								if (esp.hasTracer()) {
 									Vec3 center = aabb.getCenter();
@@ -500,7 +507,8 @@ public class XrayMain {
 
 				AABB aabb = type.getAABB(x, y, z);
 
-				LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
+				RenderUtils.renderLineBoxVanillaStyle(stack, buffer, aabb, r, g, b, a);
+				//LevelRenderer.renderLineBox(stack, buffer, aabb, r, g, b, a);
 
 				if (esp.hasTracer()) {
 					Vec3 center = aabb.getCenter();

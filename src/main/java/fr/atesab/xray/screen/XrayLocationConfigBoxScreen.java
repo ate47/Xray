@@ -1,6 +1,5 @@
 package fr.atesab.xray.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.LocationConfig;
 import fr.atesab.xray.config.XrayConfig;
@@ -128,7 +127,7 @@ public class XrayLocationConfigBoxScreen extends XrayScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
     }
 }

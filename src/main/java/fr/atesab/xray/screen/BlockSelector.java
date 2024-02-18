@@ -3,15 +3,12 @@ package fr.atesab.xray.screen;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.widget.XrayButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -116,7 +113,7 @@ public abstract class BlockSelector extends XrayScreen {
         visible.clear();
         blocks.stream().filter(block -> I18n.get(block.getDescriptionId()).toLowerCase().contains(query))
                 .forEach(visible::add);
-        page = Math.min(visible.size(), page);
+        page = Math.min(visible.size() / elementByPage, page);
         updateArrows();
     }
 
@@ -126,7 +123,7 @@ public abstract class BlockSelector extends XrayScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTick);
         searchBar.render(graphics, mouseX, mouseY, partialTick);
         int left = width / 2 - elementsX * 18 / 2;
         int top = height / 2 - elementsY * 18 / 2;

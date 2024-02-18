@@ -1,6 +1,11 @@
 package fr.atesab.xray.screen;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.mojang.blaze3d.vertex.PoseStack;
+
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.config.ESPConfig;
@@ -12,10 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class XrayMenu extends XrayScreen {
 
@@ -80,7 +81,7 @@ public class XrayMenu extends XrayScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, delta);
         PoseStack stack = graphics.pose();
         stack.pushPose();
         stack.translate(width / 2f, height / 2f - 70, 0);

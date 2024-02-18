@@ -1,13 +1,5 @@
 package fr.atesab.xray.screen.page;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import fr.atesab.xray.screen.XrayScreen;
-import fr.atesab.xray.utils.TagOnWriteList;
-import fr.atesab.xray.widget.XrayButton;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +7,15 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import fr.atesab.xray.screen.XrayScreen;
+import fr.atesab.xray.utils.TagOnWriteList;
+import fr.atesab.xray.widget.XrayButton;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 public abstract class PagedScreen<E> extends XrayScreen {
     @FunctionalInterface
@@ -237,7 +238,7 @@ public abstract class PagedScreen<E> extends XrayScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, delta);
         applyToAllElement((element, deltaY) -> {
             PoseStack stack = graphics.pose();
             stack.translate(0, deltaY, 0);
@@ -297,14 +298,14 @@ public abstract class PagedScreen<E> extends XrayScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
-        if (scroll < 0) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollV, double scrollH) {
+        if (scrollV < 0) {
             nextPage();
         } else {
             lastPage();
         }
-        applyToAllElement((element, deltaY) -> element.mouseScrolled(mouseX, mouseY - deltaY, scroll));
-        return super.mouseScrolled(mouseX, mouseY, scroll);
+        applyToAllElement((element, deltaY) -> element.mouseScrolled(mouseX, mouseY - deltaY, scrollV, scrollH));
+        return super.mouseScrolled(mouseX, mouseY, scrollV, scrollH);
     }
 
     @Override

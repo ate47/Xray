@@ -3,7 +3,7 @@ package fr.atesab.xray.screen;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import org.lwjgl.glfw.GLFW;
 
 import fr.atesab.xray.utils.KeyData;
 import fr.atesab.xray.widget.XrayButton;
@@ -11,7 +11,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.lwjgl.glfw.GLFW;
 
 public class KeySelector extends XrayScreen {
     private static final MutableComponent NONE_KEY = Component.translatable("x13.mod.selector.key.none");
@@ -104,7 +103,7 @@ public class KeySelector extends XrayScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, delta);
         graphics.drawCenteredString(font, getTitle(), width / 2, height / 2 - 30 - font.lineHeight, 0xffffffff);
 
         if (isWaitingKey) {

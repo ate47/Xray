@@ -1,11 +1,11 @@
 package fr.atesab.xray.screen.page;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PagedElement<E> implements GuiEventListener {
     PagedScreen<E> parentScreen;
@@ -98,9 +98,9 @@ public class PagedElement<E> implements GuiEventListener {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollV, double scrollH) {
         for (GuiEventListener w : guiListeners)
-            if (w.mouseScrolled(mouseX, mouseY, scroll))
+            if (w.mouseScrolled(mouseX, mouseY, scrollV, scrollH))
                 return true;
         return false;
     }

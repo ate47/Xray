@@ -1,5 +1,7 @@
 package fr.atesab.xray.screen;
 
+import java.net.URL;
+
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.color.Skin;
 import fr.atesab.xray.config.XrayConfig;
@@ -16,8 +18,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-
-import java.net.URL;
 
 public class XrayConfigMenu extends XrayScreen {
 
@@ -114,7 +114,7 @@ public class XrayConfigMenu extends XrayScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, delta);
         graphics.drawCenteredString(font, title, width / 2,
                 height / 2 - 52 - font.lineHeight, 0xffffffff);
         super.render(graphics, mouseX, mouseY, delta);

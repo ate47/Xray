@@ -1,5 +1,9 @@
 package fr.atesab.xray.screen;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import fr.atesab.xray.config.BlockConfig;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.widget.XrayButton;
@@ -11,10 +15,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class XrayBlockMenu extends XrayScreen {
     private static final Component ADD = Component.literal("+").withStyle(ChatFormatting.GREEN);
@@ -130,7 +130,7 @@ public class XrayBlockMenu extends XrayScreen {
         visible.clear();
         config.stream().filter(block -> I18n.get(block.getDescriptionId()).toLowerCase().contains(query))
                 .forEach(visible::add);
-        page = Math.min(visible.size(), page);
+        page = Math.min(visible.size() / elementByPage, page);
         updateArrows();
     }
 
@@ -140,7 +140,7 @@ public class XrayBlockMenu extends XrayScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTick);
         searchBar.render(graphics, mouseX, mouseY, partialTick);
 
         int left = width / 2 - elementsX * 18 / 2;

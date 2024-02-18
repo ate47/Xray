@@ -1,7 +1,5 @@
 package fr.atesab.xray.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import fr.atesab.xray.config.AbstractModeConfig;
 import fr.atesab.xray.widget.ColorSelectorWidget;
 import fr.atesab.xray.widget.XrayButton;
@@ -58,13 +56,12 @@ public class XrayAbstractModeConfig extends XrayScreen {
 
     @Override
     public void tick() {
-        nameBox.tick();
         super.tick();
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, delta);
         nameBox.render(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
     }

@@ -1,7 +1,12 @@
 package fr.atesab.xray.screen;
 
+import java.util.OptionalInt;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import fr.atesab.xray.XrayMain;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.HSLResult;
@@ -22,10 +27,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
-import java.util.OptionalInt;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
 
 public class ColorSelector extends XrayScreen {
 
@@ -156,14 +157,6 @@ public class ColorSelector extends XrayScreen {
 
     @Override
     public void tick() {
-        tfr.tick();
-        tfg.tick();
-        tfb.tick();
-        tfh.tick();
-        tfs.tick();
-        tfl.tick();
-        hexColor.tick();
-        intColor.tick();
         super.tick();
     }
 
@@ -172,7 +165,7 @@ public class ColorSelector extends XrayScreen {
         // allow multiple color modifiers
         setPickerState(localHue, localSaturation, localLightness);
 
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTicks);
 
         if (!advanced) {
             // S PICKER

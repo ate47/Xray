@@ -102,13 +102,12 @@ public class XrayLocationConfig extends XrayScreen {
 
     @Override
     public void tick() {
-        format.tick();
         super.tick();
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, delta);
         graphics.drawCenteredString(font, Component.translatable("x13.mod.location"), width / 2,
                 height / 2 - 52 - font.lineHeight, 0xffffffff);
         GuiUtils.drawRightString(graphics, font, I18n.get("x13.mod.location.format") + ": ", format, 0xffffffff);
