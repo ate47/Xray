@@ -1,10 +1,31 @@
 package fr.atesab.xray;
 
+import java.io.File;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import fr.atesab.xray.color.ColorSupplier;
 import fr.atesab.xray.color.IColorObject;
 import fr.atesab.xray.color.TextHudBuffer;
-import fr.atesab.xray.config.*;
+import fr.atesab.xray.config.AbstractModeConfig;
+import fr.atesab.xray.config.BlockConfig;
+import fr.atesab.xray.config.ESPConfig;
+import fr.atesab.xray.config.LocationFormatTool;
+import fr.atesab.xray.config.XrayConfig;
 import fr.atesab.xray.screen.XrayMenu;
 import fr.atesab.xray.utils.GuiUtils;
 import fr.atesab.xray.utils.GuiUtils.RGBResult;
@@ -30,7 +51,12 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
@@ -39,22 +65,14 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.io.File;
-import java.net.URL;
-import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTick, AfterEntities {
     public static final String MOD_ID = "atianxray";
@@ -423,7 +441,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 										blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1
 								);
 
-								WorldRenderer.drawBox(stack, buffer, aabb, r, g, b, a);
+				                RenderUtils.drawBoxVanillaStyle(stack, buffer, aabb, r, g, b, a);
+								//WorldRenderer.drawBox(stack, buffer, aabb, r, g, b, a);
 
 								if (esp.hasTracer()) {
 									Vec3d center = aabb.getCenter();
@@ -468,7 +487,8 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
                 Box aabb = type.createSimpleBoundingBox(x, y, z);
 
-                WorldRenderer.drawBox(stack, buffer, aabb, r, g, b, a);
+                RenderUtils.drawBoxVanillaStyle(stack, buffer, aabb, r, g, b, a);
+                //WorldRenderer.drawBox(stack, buffer, aabb, r, g, b, a);
 
                 if (esp.hasTracer()) {
                     Vec3d center = aabb.getCenter();

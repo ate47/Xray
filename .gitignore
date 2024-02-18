@@ -25,3 +25,8 @@ run
 forge*changelog.txt
 
 logs
+/wrapper/
+/libs/
+/native/
+/daemon/
+/caches/

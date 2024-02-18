@@ -14,6 +14,12 @@ project.ext.groupId = project.maven_group
 project.ext.projectVersion = "${version}-fabric-${project.minecraft_version}"
 
 repositories {
+	    maven {
+	        url "https://api.modrinth.com/maven"
+	        content {
+	            includeGroup "maven.modrinth"
+	        }
+	    }
 }
 
 dependencies {
@@ -22,6 +28,7 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modCompileOnly "maven.modrinth:sodium:mc1.20.1-0.5.8"
 }
 
 processResources {
