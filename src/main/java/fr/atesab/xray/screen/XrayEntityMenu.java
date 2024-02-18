@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import fr.atesab.xray.color.BlockEntityTypeIcon;
 import fr.atesab.xray.color.EntityTypeIcon;
 import fr.atesab.xray.color.EnumElement;
@@ -174,7 +173,7 @@ public class XrayEntityMenu extends XrayScreen {
         visible.clear();
         config.stream().filter(block -> I18n.get(block.text()).toLowerCase().contains(query))
                 .forEach(visible::add);
-        page = Math.min(visible.size(), page);
+        page = Math.min(visible.size() / elementByPage, page);
         updateArrows();
     }
 
