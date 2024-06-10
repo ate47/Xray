@@ -53,7 +53,9 @@ public class XrayEntityMenu extends XrayScreen {
                 if (id == null) {
                     return blockType.getClass().getCanonicalName();
                 }
-                return id.toLanguageKey();
+                //vanilla's bug?
+                //return id.toLanguageKey();
+                return "block." + id.getNamespace() + "." + id.getPath();
             }
         }
     }
