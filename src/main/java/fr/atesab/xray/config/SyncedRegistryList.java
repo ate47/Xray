@@ -57,7 +57,7 @@ public class SyncedRegistryList<R> extends TagOnWriteList<String> implements Clo
 
     public SyncedRegistryList<R> sync() {
         objects.clear();
-        stream().map(Identifier::new).map(registry::get).filter(Objects::nonNull).forEach(objects::add);
+        stream().map(Identifier::of).map(registry::get).filter(Objects::nonNull).forEach(objects::add);
         removeUpdated();
         synced = true;
         return this;

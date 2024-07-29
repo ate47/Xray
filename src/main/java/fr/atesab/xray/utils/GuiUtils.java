@@ -691,23 +691,18 @@ public class GuiUtils {
         float redRightBottom = (float) (rightBottomColor >> 16 & 255) / 255.0F;
         float greenRightBottom = (float) (rightBottomColor >> 8 & 255) / 255.0F;
         float blueRightBottom = (float) (rightBottomColor & 255) / 255.0F;
-        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+        BufferBuilder bufferbuilder = Tessellator.getInstance().begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA,
                 GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE,
                 GlStateManager.DstFactor.ZERO);
-        bufferbuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         Matrix4f mat = stack.peek().getPositionMatrix();
-        bufferbuilder.vertex(mat, right, top, zLevel).color(redRightTop, greenRightTop, blueRightTop, alphaRightTop)
-                .next();
-        bufferbuilder.vertex(mat, left, top, zLevel).color(redLeftTop, greenLeftTop, blueLeftTop, alphaLeftTop)
-                .next();
-        bufferbuilder.vertex(mat, left, bottom, zLevel)
-                .color(redLeftBottom, greenLeftBottom, blueLeftBottom, alphaLeftBottom).next();
-        bufferbuilder.vertex(mat, right, bottom, zLevel)
-                .color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom).next();
+        bufferbuilder.vertex(mat, right, top, zLevel).color(redRightTop, greenRightTop, blueRightTop, alphaRightTop);
+        bufferbuilder.vertex(mat, left, top, zLevel).color(redLeftTop, greenLeftTop, blueLeftTop, alphaLeftTop);
+        bufferbuilder.vertex(mat, left, bottom, zLevel).color(redLeftBottom, greenLeftBottom, blueLeftBottom, alphaLeftBottom);
+        bufferbuilder.vertex(mat, right, bottom, zLevel).color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom);
         BufferRenderer.drawWithGlobalProgram(bufferbuilder.end());
         RenderSystem.disableBlend();
     }
@@ -809,19 +804,19 @@ public class GuiUtils {
         int blue = color & 0xFF;
         int alpha = useAlpha ? (color >> 24) : 0xff;
         Tessellator tesselator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuffer();
-        bufferbuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-        bufferbuilder.vertex((double) x, (double) (y + height), 0.0D)
-                .texture((float) (u * scaleX), (float) ((v + (float) vHeight) * scaleY)).color(red, green, blue, alpha)
-                .next();
-        bufferbuilder.vertex((double) (x + width), (double) (y + height), 0.0D)
+        BufferBuilder bufferbuilder = tesselator.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferbuilder.vertex((float) x, (float) (y + height), 0.0f)
+                .texture((float) (u * scaleX), (float) ((v + (float) vHeight) * scaleY))
+                .color(red, green, blue, alpha);
+        bufferbuilder.vertex((float) (x + width), (float) (y + height), 0.0f)
                 .texture((float) ((u + (float) uWidth) * scaleX), (float) ((v + (float) vHeight) * scaleY))
-                .color(red, green, blue, alpha).next();
-        bufferbuilder.vertex((double) (x + width), (double) y, 0.0D)
-                .texture((float) ((u + (float) uWidth) * scaleX), (float) (v * scaleY)).color(red, green, blue, alpha)
-                .next();
-        bufferbuilder.vertex((double) x, (double) y, 0.0D).texture((float) (u * scaleX), (float) (v * scaleY))
-                .color(red, green, blue, alpha).next();
-        tesselator.draw();
+                .color(red, green, blue, alpha);
+        bufferbuilder.vertex((float) (x + width), (float) y, 0.0f)
+                .texture((float) ((u + (float) uWidth) * scaleX), (float) (v * scaleY))
+                .color(red, green, blue, alpha);
+        bufferbuilder.vertex((float) x, (float) y, 0.0f)
+                .texture((float) (u * scaleX), (float) (v * scaleY))
+                .color(red, green, blue, alpha);
+        BufferRenderer.drawWithGlobalProgram(bufferbuilder.end());
     }
 }

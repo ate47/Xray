@@ -15,8 +15,6 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.DyeItem;
@@ -48,8 +46,8 @@ public class ColorSelector extends XrayScreen {
     private static final int PICKER_S_SIZE_X = 20;
     private static final int PICKER_HL_SIZE_X = 200;
     private static boolean pickerInit = false;
-    private static final Identifier PICKER_S_RESOURCE = new Identifier(XrayMain.MOD_ID, "picker_hl");
-    private static final Identifier PICKER_HL_RESOURCE = new Identifier(XrayMain.MOD_ID, "picker_s");
+    private static final Identifier PICKER_S_RESOURCE = Identifier.of(XrayMain.MOD_ID, "picker_hl");
+    private static final Identifier PICKER_HL_RESOURCE = Identifier.of(XrayMain.MOD_ID, "picker_s");
     private static final NativeImageBackedTexture PICKER_IMAGE_S = new NativeImageBackedTexture(
             new NativeImage(NativeImage.Format.RGBA, PICKER_S_SIZE_X, PICKER_SIZE_Y, false));
     private static final NativeImageBackedTexture PICKER_IMAGE_HL = new NativeImageBackedTexture(

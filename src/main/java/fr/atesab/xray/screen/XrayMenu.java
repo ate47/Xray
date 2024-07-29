@@ -30,10 +30,14 @@ public class XrayMenu extends XrayScreen {
 
         XrayMain mod = XrayMain.getMod();
 
+        final int blurValue = client.options.getMenuBackgroundBlurrinessValue();
+        client.options.getMenuBackgroundBlurriness().setValue(0);
+
         addDrawableChild(
                 XrayButton.builder(Text.translatable("gui.done"),
                         btn -> {
                             client.setScreen(parent);
+                            client.options.getMenuBackgroundBlurriness().setValue(blurValue);
                         }).dimensions(width / 2 - 100, height / 2 + 52, 200, 20).build());
 
         addDrawableChild(new MenuWidget(x + size * i++, height / 2 - size / 2, size, size,

@@ -274,7 +274,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
     }
 
     @Override
-    public void onHudRender(DrawContext context, float tickDelta) {
+    public void onHudRender(DrawContext context, RenderTickCounter tickCounter) {
         MinecraftClient mc = MinecraftClient.getInstance();
         TextRenderer render = mc.textRenderer;
         ClientPlayerEntity player = mc.player;
@@ -335,7 +335,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         ClientWorld level = minecraft.world;
         ClientPlayerEntity player = minecraft.player;
         MatrixStack stack = context.matrixStack();
-        float delta = context.tickDelta();
+        float delta = context.tickCounter().getTickDelta(true);
         Camera mainCamera = minecraft.gameRenderer.getCamera();
         Vec3d camera = mainCamera.getPos();
 
@@ -364,8 +364,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 		RenderSystem.depthFunc(GL11.GL_NEVER);
 
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder buffer = tessellator.getBuffer();
-		buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+		BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 
 		stack.push();
 
@@ -477,7 +476,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
                 }
             });
         });
-        tessellator.draw();
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
         stack.pop();
         RenderSystem.disableBlend();
         RenderSystem.applyModelViewMatrix();
