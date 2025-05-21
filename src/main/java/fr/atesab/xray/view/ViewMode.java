@@ -10,12 +10,11 @@ public enum ViewMode implements EnumElement {
     /**
      * Default mode, like in Xray and Redstone mode
      */
-    EXCLUSIVE("x13.mod.mode.view.exclusive", new ItemStack(Blocks.DIAMOND_ORE), (il, v1, v2, v3, v4) -> il),
+    EXCLUSIVE("x13.mod.mode.view.exclusive", new ItemStack(Blocks.DIAMOND_ORE), (inList, state, adjacentState) -> inList),
     /**
      * Inclusive mode, like in Cave Mode
      */
-    INCLUSIVE("x13.mod.mode.view.inclusive", new ItemStack(Blocks.STONE), (il, v1, reader, pos, face) -> !il
-            && reader.getBlockState(pos.add(face.getOffsetX(), face.getOffsetY(), face.getOffsetZ())).isAir());
+    INCLUSIVE("x13.mod.mode.view.inclusive", new ItemStack(Blocks.STONE), (inList, state, adjacentState) -> !inList && adjacentState.isAir());
 
     private Viewer viewer;
     private Text title;

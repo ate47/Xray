@@ -206,16 +206,13 @@ public class BlockConfig extends AbstractModeConfig implements SideRenderer, Clo
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
-            Direction pos, CallbackInfoReturnable<Boolean> ci) {
+    public void shouldSideBeRendered(BlockState state, BlockState adjacentState, CallbackInfoReturnable<Boolean> ci) {
         if (!isEnabled())
             return;
 
-        String name = Registries.BLOCK.getId(adjacentState.getBlock()).toString();
+        String name = Registries.BLOCK.getId(state.getBlock()).toString();
         boolean present = blocks.contains(name);
-        boolean shouldRender = viewMode.getViewer().shouldRenderSide(present, adjacentState, blockState,
-                blockAccess, pos);
+        boolean shouldRender = viewMode.getViewer().shouldRenderSide(present, state, adjacentState);
         ci.setReturnValue(shouldRender);
     }
 

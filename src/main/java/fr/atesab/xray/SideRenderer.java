@@ -9,7 +9,5 @@ import net.minecraft.block.BlockState;
 
 @FunctionalInterface
 public interface SideRenderer {
-	public void shouldSideBeRendered(
-			BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
-			Direction pos, CallbackInfoReturnable<Boolean> ci);
+	public void shouldSideBeRendered(BlockState state, BlockState adjacentState, CallbackInfoReturnable<Boolean> ci);
 }
