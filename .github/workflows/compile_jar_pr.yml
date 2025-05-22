@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "src/**"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,13 +15,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 21
-      - name: 🪛 Cache local Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-jdk17-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-jdk17-maven-
+          distribution: 'microsoft'
       - name: 🏗️ Build jars
         run: |
           chmod u+x gradlew
