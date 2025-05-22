@@ -25,7 +25,7 @@ jobs:
           mkdir -p build_jars
           cp -r build/libs/* build_jars
       - name: ☁️ Deploy jars
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "temp jars"
           path: "build_jars/*"
