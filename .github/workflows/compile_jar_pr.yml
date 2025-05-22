@@ -16,13 +16,6 @@ jobs:
         with:
           java-version: 21
           distribution: 'microsoft'
-      - name: 🪛 Cache local Maven repository
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-jdk17-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-jdk17-maven-
       - name: 🏗️ Build jars
         run: |
           chmod u+x gradlew
