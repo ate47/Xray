@@ -250,7 +250,7 @@ public class XrayBlockMenu extends Screen {
     }
 
     @Override
-    public void applyBlur(float delta){
+    public void applyBlur(){
 
     }
 }

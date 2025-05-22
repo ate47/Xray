@@ -4,12 +4,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
@@ -283,7 +283,7 @@ public class GuiUtils {
             return;
         RenderSystem.enableDepthTest();
         graphics.drawItem(itemstack, x, y);
-        graphics.drawItemInSlot(MinecraftClient.getInstance().textRenderer, itemstack, x, y);
+        graphics.drawStackOverlay(MinecraftClient.getInstance().textRenderer, itemstack, x, y);
         RenderSystem.disableBlend();
     }
 
@@ -633,7 +633,7 @@ public class GuiUtils {
         MatrixStack pose = graphics.getMatrices();
         pose.push();
         pose.loadIdentity();
-        graphics.drawItemInSlot(font, stack, x, y);
+        graphics.drawStackOverlay(font, stack, x, y);
         pose.pop();
     }
 
@@ -693,7 +693,7 @@ public class GuiUtils {
         float blueRightBottom = (float) (rightBottomColor & 255) / 255.0F;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA,
                 GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE,
                 GlStateManager.DstFactor.ZERO);

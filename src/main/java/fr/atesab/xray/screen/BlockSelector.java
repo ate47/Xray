@@ -194,7 +194,7 @@ public abstract class BlockSelector extends Screen {
     protected abstract void save(Block selection);
 
     @Override
-    public void applyBlur(float delta){
+    public void applyBlur(){
 
     }
 }

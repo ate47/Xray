@@ -1,34 +1,31 @@
 plugins {
 	id 'maven-publish'
-	id 'fabric-loom' version '1.7-SNAPSHOT'
+	id 'fabric-loom' version "${loom_version}"
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+base {
+	archivesName = archives_base_name
+}
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
-
-project.ext.groupId = project.maven_group
-project.ext.projectVersion = "${version}-fabric-${project.minecraft_version}"
+version = "${mod_version}-fabric-${minecraft_version}"
+group = maven_group
 
 repositories {
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	minecraft "com.mojang:minecraft:${minecraft_version}"
+	mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${loader_version}"
 
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 }
 
 processResources {
-	inputs.property "version", project.version
+	inputs.property "version", mod_version
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+		expand "version": mod_version
 	}
 }
 
@@ -44,6 +41,8 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 	// if it is present.
 	// If you remove this line, sources will not be generated.
@@ -58,9 +57,9 @@ jar {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			groupId project.ext.groupId
-			artifactId project.artifactId
-			version project.ext.projectVersion
+			groupId = project.group
+			artifactId = project.artifactId
+			version = project.version
 			// add all the jars that should be included when publishing to maven
 			artifact(remapJar) {
 				builtBy remapJar

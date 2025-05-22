@@ -12,11 +12,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(targets = "me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockOcclusionCache")
+@Mixin(targets = "net.caffeinemc.mods.sodium.client.render.chunk.compile.pipeline.BlockOcclusionCache")
 public class MixinBlockOcclusionCache {
     @Inject(at = @At("HEAD"), method = "shouldDrawSide", cancellable = true, remap = false)
-    private void shouldDrawSide(BlockState state, BlockView reader, BlockPos pos, Direction face,
-            CallbackInfoReturnable<Boolean> ci) {
-        XrayMain.getMod().shouldSideBeRendered(state, reader, pos, face, ci);
+    private void shouldDrawSide(BlockState selfBlockstate, BlockView view, BlockPos selfPos, Direction facing,
+                                CallbackInfoReturnable<Boolean> ci) {
+        BlockState adjacentState = view.getBlockState(selfPos.offset(facing));
+        XrayMain.getMod().shouldSideBeRendered(selfBlockstate, adjacentState, ci);
     }
 }

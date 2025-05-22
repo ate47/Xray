@@ -48,7 +48,7 @@ public record EntityTypeIcon(EntityType<?> entity, ItemStack icon) {
     public static final EntityTypeIcon FALLING_BLOCK = register(EntityType.FALLING_BLOCK, Blocks.SAND);
     public static final EntityTypeIcon FIREBALL = register(EntityType.FIREBALL, Items.FIRE_CHARGE);
     public static final EntityTypeIcon FIREWORK_ROCKET = register(EntityType.FIREWORK_ROCKET, Items.FIREWORK_ROCKET);
-    public static final EntityTypeIcon BOAT = register(EntityType.BOAT, Items.OAK_BOAT);
+    public static final EntityTypeIcon BOAT = register(EntityType.OAK_BOAT, Items.OAK_BOAT);
     public static final EntityTypeIcon SPIDER = register(EntityType.SPIDER, Items.SPIDER_EYE);
     public static final EntityTypeIcon POTION = register(EntityType.POTION, Items.POTION);
     public static final EntityTypeIcon PUFFERFISH = register(EntityType.PUFFERFISH, Items.PUFFERFISH);

@@ -26,6 +26,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
@@ -194,13 +195,12 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         return this;
     }
 
-    public void shouldSideBeRendered(BlockState adjacentState, BlockView blockState, BlockPos blockAccess,
-                                     Direction pos, CallbackInfoReturnable<Boolean> ci) {
+    public void shouldSideBeRendered(BlockState state, BlockState adjacentState, CallbackInfoReturnable<Boolean> ci) {
         if (ci == null)
             ci = new CallbackInfoReturnable<>("shouldSideBeRendered", true);
 
         for (BlockConfig mode : getConfig().getBlockConfigs()) {
-            mode.shouldSideBeRendered(adjacentState, blockState, blockAccess, pos, ci);
+            mode.shouldSideBeRendered(state, adjacentState, ci);
         }
     }
 
@@ -343,7 +343,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
             return;
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         // RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
@@ -352,7 +352,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 			return;
 		}
 
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+		RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		// RenderSystem.depthMask(false);
 		RenderSystem.disableDepthTest();
@@ -368,7 +368,6 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
 		stack.push();
 
-		RenderSystem.applyModelViewMatrix();
 		stack.translate(-camera.x, -camera.y, -camera.z);
 		Vector3f look = mainCamera.getHorizontalPlane();
 		float px = (float) (player.prevX + (player.getX() - player.prevX) * delta) + look.x();
@@ -422,7 +421,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 										blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1
 								);
 
-								WorldRenderer.drawBox(stack, buffer, aabb, r, g, b, a);
+								VertexRendering.drawBox(stack, buffer, aabb, r, g, b, a);
 
 								if (esp.hasTracer()) {
 									Vec3d center = aabb.getCenter();
@@ -467,7 +466,7 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
 
                 Box aabb = type.getSpawnBox(x, y, z);
 
-                WorldRenderer.drawBox(stack, buffer, aabb, r, g, b, a);
+                VertexRendering.drawBox(stack, buffer, aabb, r, g, b, a);
 
                 if (esp.hasTracer()) {
                     Vec3d center = aabb.getCenter();
@@ -479,7 +478,6 @@ public class XrayMain implements ClientModInitializer, HudRenderCallback, EndTic
         try { BufferRenderer.drawWithGlobalProgram(buffer.end()); } catch(IllegalStateException state) { System.out.println(state.getMessage());}
         stack.pop();
         RenderSystem.disableBlend();
-        RenderSystem.applyModelViewMatrix();
         RenderSystem.setShaderColor(1, 1, 1, 1);
 		RenderSystem.enableDepthTest();
 		RenderSystem.depthMask(true);
