@@ -41,7 +41,7 @@ public class XrayLocationConfig extends XrayScreen {
                 }));
 
         format = new EditBox(font, width / 2 - 98, height / 2 + 2, 196, 16, Component.literal(""));
-        format.setMaxLength(256);
+        format.setMaxLength(1024);
         format.setValue(mod.getConfig().getLocationConfig().getFormat());
         format.setResponder(mod.getConfig().getLocationConfig()::setFormat);
         format.setFocused(true);

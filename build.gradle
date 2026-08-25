@@ -14,7 +14,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
 group 'fr.atesab.xray'
-version '2.3.1'
+version '2.3.2'
 archivesBaseName = 'XrayMod'
 
 
@@ -30,7 +30,7 @@ minecraft {
     mappings channel: 'official', version: '1.20'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -61,9 +61,26 @@ mixin {
     config 'atianxray.mixins.json'
 }
 
+repositories {
+    // Put repositories for dependencies here
+    // ForgeGradle automatically adds the Forge maven and Maven Central for you
+	    maven {
+	        url "https://cursemaven.com"
+	        content {
+	            includeGroup "curse.maven"
+	        }
+	    }
+
+    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
+    // flatDir {
+    //     dir 'libs'
+    // }
+}
+
 dependencies {
     minecraft 'net.minecraftforge:forge:1.20-46.0.13'
     annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+	compileOnly fg.deobf("curse.maven:rubidium-574856:4952685")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

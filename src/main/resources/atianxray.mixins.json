@@ -6,7 +6,9 @@
   "mixins": [],
   "refmap": "mixins.atianxray.refmap.json",
   "client": [
+    "MixinBlock_rubidium",
     "MixinBlock",
+    "MixinClientLevel",
     "MixinLightmapTextureManager",
     "MixinMinecraftClient"
   ],
